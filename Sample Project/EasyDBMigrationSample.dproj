@@ -102,9 +102,13 @@
             <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\Lib\Core\UCore.pas"/>
+        <DCCReference Include="..\Lib\Core\EasyDB.Core.pas"/>
         <DCCReference Include="..\Lib\ConnectionManagers\EasyDB.ConnectionManager.Base.pas"/>
         <DCCReference Include="..\Lib\ConnectionManagers\EasyDB.ConnectionManager.SQL.pas"/>
+        <DCCReference Include="..\Lib\Runners\EasyDB.Runner.pas"/>
+        <DCCReference Include="..\Lib\Core\EasyDB.Migration.Base.pas"/>
+        <DCCReference Include="..\Lib\Core\EasyDB.Attribute.pas"/>
+        <DCCReference Include="Migrations\Users.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

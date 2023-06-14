@@ -1,4 +1,4 @@
-unit UCore;
+unit EasyDB.Core;
 
 interface
 
