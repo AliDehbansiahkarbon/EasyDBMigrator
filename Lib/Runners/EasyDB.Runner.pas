@@ -22,14 +22,17 @@ type
     FMigrationList: TObjectList<TMigration>;
     FSQLConnection: TSQLConnection;
   public
-    constructor Create(ASQLConnection: TSQLConnection = nil);
+    constructor Create(ASQLConnection: TSQLConnection = nil); overload;
+    constructor Create(ConnectionParams: TConnectionParams); overload;
     destructor Destroy; override;
-    function GetDatabaseVersion: Integer;
+    function GetDatabaseVersion: Int64;
     procedure UpgradeDatabase;
-    procedure DownGrade(AVersion: Integer);
+    procedure DownGrade(AVersion: Int64);
     procedure ArrangeMigrationList;
+    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string);
 
     property MigrationList: TObjectList<TMigration> read FMigrationList write FMigrationList;
+    property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
   end;
 
 implementation
@@ -70,19 +73,27 @@ begin
     FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
 end;
 
+constructor TRunner.Create(ConnectionParams: TConnectionParams);
+begin
+  FMigrationList := TObjectList<TMigration>.Create;
+  FInternalMigrationList := TObjectDictionary<string, TObjectList<TMigration>>.Create;
+  FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
+end;
+
 destructor TRunner.Destroy;
 begin
   FMigrationList.Free;
   FInternalMigrationList.Free;
+  FSQLConnection.Free;
   inherited;
 end;
 
 procedure TRunner.UpgradeDatabase;
 var
   LvDbVer: Int64;
+  LvBiggestVer: Int64;
   LvMigrationList: TObjectList<TMigration>;
   LvInternalMigration: TMigration;
-  LvBiggestVer: Int64;
 begin
   if FMigrationList.Count = 0 then
     Exit;
@@ -98,21 +109,22 @@ begin
     begin
       if LvInternalMigration.Version > LvDbVer then
       begin
-        if LvInternalMigration.Version > LvBiggestVer then
-          LvBiggestVer := LvInternalMigration.Version;
-
-        LvInternalMigration.Upgrade;
+        try
+          LvInternalMigration.Upgrade;
+          if LvInternalMigration.Version > LvBiggestVer then
+            LvBiggestVer := LvInternalMigration.Version;
+        except
+          //Log TODO
+        end;
       end;
+
+      if LvBiggestVer > LvDbVer then
+        UpdateVersionInfo(LvBiggestVer, '', '');
     end;
   end;
-
-// Create a Generic list for each Migration type
-// find the database latest version
-// Run downgrade from the bigest version to the given version.
-// Update version table
 end;
 
-procedure TRunner.DownGrade(AVersion: Integer);
+procedure TRunner.DownGrade(AVersion: Int64);
 begin
 // Create a generic list for each Migration Type
 // Find the version siquence and compare with the latest version in Database
@@ -120,12 +132,34 @@ begin
 // Update database table
 end;
 
-function TRunner.GetDatabaseVersion: Integer;
-var
-  LvSQL: TSQLConnection;
+function TRunner.GetDatabaseVersion: Int64;
 begin
-  if LvSQL.IsConnected then
-    Result := LvSQL.OpenAsInteger('Select max(Version) from EasyDbVersion');
+  if FSQLConnection.IsConnected then
+    Result := FSQLConnection.OpenAsInteger('Select max(Version) from EasyDBVersionInfo');
+end;
+
+procedure TRunner.UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string);
+var
+  LvScript: string;
+begin
+  //TODO
+//  LvScript := 'INSERT INTO [' + DbName + '].[' + Schema + '].[EasyDBVersionInfo] ' + #10
+  LvScript := 'INSERT INTO EasyDBVersionInfo ' + #10
+     + '( ' + #10
+     + '	Version, ' + #10
+     + '	AppliedOn, ' + #10
+     + '	Author, ' + #10
+     + '	[Description] ' + #10
+     + ') ' + #10
+     + 'VALUES ' + #10
+     + '( ' + #10
+     + '	' + ALatestVersion.ToString + ', ' + #10
+     + '	(getdate()), ' + #10
+     + '	' + AAuthor.QuotedString + ', ' + #10
+     + '	' + ADescription.QuotedString + ' ' + #10
+     + ')';
+
+  FSQLConnection.ExecuteAdHocQuery(LvScript);
 end;
 
 {TObjListHelper}
@@ -144,7 +178,5 @@ begin
     end;
   end;
 end;
-
-
 
 end.

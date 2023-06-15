@@ -5,17 +5,20 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Generics.Collections,
-  EasyDB.ConnectionManager.SQL;
+  EasyDB.ConnectionManager.SQL, EasyDB.Migration.Base, EasyDB.Runner;
 
 type
   TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    btnDowngradeDatabase: TButton;
+    btnUpgradeDatabase: TButton;
+    btnAddMigrations: TButton;
+    procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure btnAddMigrationsClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    ConnectionParams: TConnectionParams;
+    Runner: TRunner;
   public
     { Public declarations }
   end;
@@ -25,58 +28,50 @@ var
 
 implementation
 
-uses
-  EasyDB.Migration.Base, EasyDB.Runner;
 
 {$R *.dfm}
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.btnAddMigrationsClick(Sender: TObject);
 begin
-  var LvScript: string := 'update Book set price = 1000 where id = 6';
-  TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx.ExecuteAdHocQuery(LvScript);
+  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Task number #2701',
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField varchar(50)');
+  end,
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField');
+  end
+  ));
+
+
+  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField2 int');
+  end,
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField2');
+  end
+  ));
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
-var
-  LvRuner: TRunner;
-  LvSQL: TSQLConnection;
+procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  LvSQL := TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
-  LvRuner := TRunner.Create(LvSQL);
-  try
-    LvRuner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Task number #2701',
-    procedure
-    begin
-      LvSQL.ExecuteAdHocQuery('Alter table users add NewField varchar(50)');
-    end,
-    procedure
-    begin
-      LvSQL.ExecuteAdHocQuery('Alter table Users drop column NewField');
-    end
-    ));
+  Runner.DownGrade(202301010001);
+end;
 
-
-    LvRuner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
-    procedure
-    begin
-      LvSQL.ExecuteAdHocQuery('Alter table users add NewField2 int');
-    end,
-    procedure
-    begin
-      LvSQL.ExecuteAdHocQuery('Alter table Users drop column NewField2');
-    end
-    ));
-
-    LvRuner.UpgradeDatabase;
-  finally
-    LvSQL.Free;
-    LvRuner.Free;
-  end;
+procedure TForm1.btnUpgradeDatabaseClick(Sender: TObject);
+begin
+  Runner.UpgradeDatabase;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  LvConnectionParams: TConnectionParams;
 begin
-  with ConnectionParams do
+  with LvConnectionParams do // Could be loaded from ini, registry or somewhere like that.
   begin
     Server := '192.168.212.1';
     LoginTimeout := 30000;
@@ -85,6 +80,12 @@ begin
     DatabaseName := 'Library';
   end;
 
+  Runner := TRunner.Create(LvConnectionParams);
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  FreeAndNil(Runner);
 end;
 
 end.

@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 613
   Top = 332
   Caption = 'Form1'
-  ClientHeight = 297
-  ClientWidth = 513
+  ClientHeight = 135
+  ClientWidth = 211
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,23 +12,33 @@ object Form1: TForm1
   Font.Style = []
   Position = poDesigned
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
-  object Button1: TButton
-    Left = 56
-    Top = 32
-    Width = 75
+  object btnDowngradeDatabase: TButton
+    Left = 32
+    Top = 87
+    Width = 137
     Height = 25
-    Caption = 'Button1'
+    Caption = 'Downgrade Database'
     TabOrder = 0
-    OnClick = Button1Click
+    OnClick = btnDowngradeDatabaseClick
   end
-  object Button2: TButton
-    Left = 56
-    Top = 80
-    Width = 75
+  object btnUpgradeDatabase: TButton
+    Left = 32
+    Top = 56
+    Width = 137
     Height = 25
-    Caption = 'Button2'
+    Caption = 'Upgrade Database'
     TabOrder = 1
-    OnClick = Button2Click
+    OnClick = btnUpgradeDatabaseClick
+  end
+  object btnAddMigrations: TButton
+    Left = 32
+    Top = 25
+    Width = 137
+    Height = 25
+    Caption = 'Add Migrations'
+    TabOrder = 2
+    OnClick = btnAddMigrationsClick
   end
 end

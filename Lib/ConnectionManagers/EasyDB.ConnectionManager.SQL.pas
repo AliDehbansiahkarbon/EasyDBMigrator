@@ -44,7 +44,7 @@ type
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
-    function OpenAsInteger(AScript: string): Integer;
+    function OpenAsInteger(AScript: string): Largeint;
 
 
     property CommandError: string read FCommandError;
@@ -121,9 +121,9 @@ end;
 
 function TSQLConnection.InitializeDatabase: Boolean;
 var
-  LvScript: string;
+  LvTbScript, LvDropScript, LvSpScript: string;
 begin
-  LvScript := 'If Not Exists ( ' + #10
+  LvTbScript := 'If Not Exists ( ' + #10
        + '       Select * ' + #10
        + '       From   sysobjects ' + #10
        + '       Where  Name          = ''EasyDBVersionInfo'' ' + #10
@@ -131,14 +131,55 @@ begin
        + '   ) ' + #10
        + '    Create Table EasyDBVersionInfo ' + #10
        + '    ( ' + #10
-       + '    	Version Bigint Not null Primary Key Identity(1, 1), ' + #10
+       + '    	Version Bigint Not null Primary Key, ' + #10
        + '    	AppliedOn Datetime Default(Getdate()), ' + #10
+       + '    	Author Nvarchar(100), ' + #10
        + '    	Description Nvarchar(1024) ' + #10
        + '    	 ' + #10
        + '    )';
 
+  LvDropScript := 'If Exists ( ' + #10
+       + '       Select type_desc, ' + #10
+       + '              Type ' + #10
+       + '       From   sys.procedures With(Nolock) ' + #10
+       + '       Where  Name = ''EasyDBInsert'' ' + #10
+       + '              And Type = ''P'' ' + #10
+       + '   ) ' + #10
+       + '    Drop Procedure EasyDBInsert ';
+
+  LvSpScript := 'Create Procedure EasyDBInsert ' + #10
+       + '	@Version Bigint, ' + #10
+       + '	@Author Nvarchar(100), ' + #10
+       + '	@Description Nvarchar(1024) ' + #10
+       + 'As ' + #10
+       + 'Begin ' + #10
+       + '	If Not Exists( ' + #10
+       + '	       Select 1 ' + #10
+       + '	       From   EasyDBVersionInfo ' + #10
+       + '	       Where  Version = @Version ' + #10
+       + '	   ) ' + #10
+       + '	Begin ' + #10
+       + '	    Insert Into EasyDBVersionInfo ' + #10
+       + '	      ( ' + #10
+       + '	        Version, ' + #10
+       + '	        AppliedOn, ' + #10
+       + '	        Author, ' + #10
+       + '	        [Description] ' + #10
+       + '	      ) ' + #10
+       + '	    Values ' + #10
+       + '	      ( ' + #10
+       + '	        @Version, ' + #10
+       + '	        (Getdate()), ' + #10
+       + '	        Null, ' + #10
+       + '	        Null ' + #10
+       + '	      ) ' + #10
+       + '	End ' + #10
+       + 'End; ';
+
   try
-    ExecuteAdHocQuery(LvScript);
+    ExecuteAdHocQuery(LvTbScript);
+    ExecuteAdHocQuery(LvDropScript);
+    ExecuteAdHocQuery(LvSpScript);
     Result := True;
   except on E: Exception do
     begin
@@ -161,11 +202,11 @@ begin
   Result := FConnection.Connected;
 end;
 
-function TSQLConnection.OpenAsInteger(AScript: string): Integer;
+function TSQLConnection.OpenAsInteger(AScript: string): Largeint;
 begin
   FQuery.Open(AScript);
   if FQuery.RecordCount > 0 then
-    Result := FQuery.Fields[0].AsInteger
+    Result := FQuery.Fields[0].AsLargeInt
   else
     Result := -1;
 end;
