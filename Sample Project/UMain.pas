@@ -38,14 +38,13 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 var
-  LvUsersMigration: TMigration;
   LvRuner: TRunner;
   LvSQL: TSQLConnection;
 begin
-  LvRuner := TRunner.Create;
   LvSQL := TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
+  LvRuner := TRunner.Create(LvSQL);
   try
-    LvRuner.MigrationList.Add(TMigration.Create(202301010001, 'Ali', 'Task number #2701',
+    LvRuner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Task number #2701',
     procedure
     begin
       LvSQL.ExecuteAdHocQuery('Alter table users add NewField varchar(50)');
@@ -57,7 +56,7 @@ begin
     ));
 
 
-    LvRuner.MigrationList.Add(TMigration.Create(202301010002, 'Ali', 'Task number #2702',
+    LvRuner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
     procedure
     begin
       LvSQL.ExecuteAdHocQuery('Alter table users add NewField2 int');
@@ -70,6 +69,7 @@ begin
 
     LvRuner.UpgradeDatabase;
   finally
+    LvSQL.Free;
     LvRuner.Free;
   end;
 end;

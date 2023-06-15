@@ -42,8 +42,10 @@ type
     function Connect: Boolean; override;
     function ConnectEx: TSQLConnection;
     function IsConnected: Boolean;
+    function InitializeDatabase: Boolean;
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function OpenAsInteger(AScript: string): Integer;
+
 
     property CommandError: string read FCommandError;
     property LoginError: string read FLoginError write FLoginError;
@@ -56,15 +58,10 @@ implementation
 
 function TSQLConnection.ConnectEx: TSQLConnection;
 begin
-  try
-    FConnection.Connected := True;
-    Result := FInstance;
-  except on E: Exception do
-    begin
-      FLoginError := E.Message;
-      Result := nil;
-    end;
-  end;
+  if Connect then
+    Result := FInstance
+  else
+    Result := nil;
 end;
 
 constructor TSQLConnection.Create;
@@ -94,6 +91,7 @@ function TSQLConnection.Connect: Boolean;
 begin
   try
     FConnection.Connected := True;
+    InitializeDatabase;
     Result := True;
   except on E: Exception do
     begin
@@ -119,6 +117,35 @@ end;
 function TSQLConnection.GetConnectionString: string;
 begin
   Result := FConnection.ConnectionString;
+end;
+
+function TSQLConnection.InitializeDatabase: Boolean;
+var
+  LvScript: string;
+begin
+  LvScript := 'If Not Exists ( ' + #10
+       + '       Select * ' + #10
+       + '       From   sysobjects ' + #10
+       + '       Where  Name          = ''EasyDBVersionInfo'' ' + #10
+       + '              And xtype     = ''U'' ' + #10
+       + '   ) ' + #10
+       + '    Create Table EasyDBVersionInfo ' + #10
+       + '    ( ' + #10
+       + '    	Version Bigint Not null Primary Key Identity(1, 1), ' + #10
+       + '    	AppliedOn Datetime Default(Getdate()), ' + #10
+       + '    	Description Nvarchar(1024) ' + #10
+       + '    	 ' + #10
+       + '    )';
+
+  try
+    ExecuteAdHocQuery(LvScript);
+    Result := True;
+  except on E: Exception do
+    begin
+      //Log(E.Message);
+      Result := False;
+    end;
+  end;
 end;
 
 class function TSQLConnection.Instance: TSQLConnection;

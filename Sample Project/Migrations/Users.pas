@@ -22,7 +22,7 @@ begin
   try
     TSQLConnection.Instance.ExecuteAdHocQuery('');
   except on E: Exception do
-    Log(E.Message);
+    //Log(E.Message);
   end;
 
   inherited;

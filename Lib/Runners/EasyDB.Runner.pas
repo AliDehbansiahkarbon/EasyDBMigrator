@@ -4,7 +4,7 @@ unit EasyDB.Runner;
 interface
 uses
   System.Rtti, System.Generics.Collections, EasyDB.Migration.Base, Vcl.Dialogs,
-  EasyDB.Attribute, System.SysUtils, TypInfo, Contnrs, System.Classes;
+  EasyDB.Attribute, System.SysUtils, TypInfo, Contnrs, System.Classes, EasyDB.ConnectionManager.SQL;
 
 type
   TObjListHelper = class helper for TObjectList<TMigration>
@@ -18,23 +18,21 @@ type
 
   TRunner = class(TInterfacedObject, IRunner)
   private
-    FMigrationListInternal: TObjectDictionary<string, TObjectList<TMigration>>;
+    FInternalMigrationList: TObjectDictionary<string, TObjectList<TMigration>>;
     FMigrationList: TObjectList<TMigration>;
+    FSQLConnection: TSQLConnection;
   public
-    constructor Create;
+    constructor Create(ASQLConnection: TSQLConnection = nil);
     destructor Destroy; override;
+    function GetDatabaseVersion: Integer;
     procedure UpgradeDatabase;
     procedure DownGrade(AVersion: Integer);
-    procedure LoadMigrationList;
-    function GetDatabaseVersion: Integer;
     procedure ArrangeMigrationList;
 
     property MigrationList: TObjectList<TMigration> read FMigrationList write FMigrationList;
   end;
 
 implementation
-uses
-  EasyDB.ConnectionManager.SQL;
 
 { TRunner }
 
@@ -42,61 +40,71 @@ procedure TRunner.ArrangeMigrationList;
 var
   LvExternalMigration: TMigration;
   LvMigrationInternalList: TObjectList<TMigration>;
+  LvNewInternalList: TObjectList<TMigration>;
 begin
   for LvExternalMigration in FMigrationList do
   begin
-    if FMigrationListInternal.ContainsKey(LvExternalMigration.AttribEntityName) then
+    if FInternalMigrationList.ContainsKey(LvExternalMigration.EntityName) then
     begin
-      LvMigrationInternalList := FMigrationListInternal.Items[LvExternalMigration.AttribEntityName];
+      LvMigrationInternalList := FInternalMigrationList.Items[LvExternalMigration.EntityName];
 
       if not LvMigrationInternalList.Find(LvExternalMigration) then
         LvMigrationInternalList.Add(LvExternalMigration);
-
-
-      //if LvMigrationInternal LvMigration.AttribVersion then
-
     end
     else
     begin
-
+      LvNewInternalList := TObjectList<TMigration>.Create;
+      LvNewInternalList.Add(LvExternalMigration);
+      FInternalMigrationList.Add(LvExternalMigration.EntityName, LvNewInternalList);
     end;
   end;
 end;
 
-constructor TRunner.Create;
+constructor TRunner.Create(ASQLConnection: TSQLConnection = nil);
 begin
   FMigrationList := TObjectList<TMigration>.Create;
-  FMigrationListInternal := TObjectDictionary<string, TObjectList<TMigration>>.Create;
+  FInternalMigrationList := TObjectDictionary<string, TObjectList<TMigration>>.Create;
+  if Assigned(ASQLConnection) then
+    FSQLConnection:= ASQLConnection
+  else
+    FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
 end;
 
 destructor TRunner.Destroy;
 begin
   FMigrationList.Free;
-  FMigrationListInternal.Free;
+  FInternalMigrationList.Free;
   inherited;
 end;
 
 procedure TRunner.UpgradeDatabase;
 var
-  LvDbVer: Integer;
+  LvDbVer: Int64;
+  LvMigrationList: TObjectList<TMigration>;
+  LvInternalMigration: TMigration;
+  LvBiggestVer: Int64;
 begin
   if FMigrationList.Count = 0 then
     Exit;
 
   LvDbVer := GetDatabaseVersion;
+  LvBiggestVer := LvDbVer;
+
   ArrangeMigrationList;
 
-
-
-  if LvDbVer = -1 then // Initial execution
+  for LvMigrationList in FInternalMigrationList.Values do
   begin
-  end
-  else
-  begin
+    for LvInternalMigration in LvMigrationList do
+    begin
+      if LvInternalMigration.Version > LvDbVer then
+      begin
+        if LvInternalMigration.Version > LvBiggestVer then
+          LvBiggestVer := LvInternalMigration.Version;
 
+        LvInternalMigration.Upgrade;
+      end;
+    end;
   end;
-
-
 
 // Create a Generic list for each Migration type
 // find the database latest version
@@ -120,57 +128,6 @@ begin
     Result := LvSQL.OpenAsInteger('Select max(Version) from EasyDbVersion');
 end;
 
-procedure TRunner.LoadMigrationList;
-var
-  LvCtx: TRttiContext;
-  LvTypeInfo: TRttiType;
-  LvProp: TRttiProperty;
-  LvField: TRttiField;
-
-  LvMigration: TMigration;
-  LvObj: TObject;
-
-begin
-  LVCtx := TRttiContext.Create;
-
-
-  try
-    for LvTypeInfo in LvCtx.GetTypes do
-    begin
-      if LvTypeInfo.IsInstance and LvTypeInfo.AsInstance.MetaclassType.InheritsFrom(TMigration) then
-      begin
-        ShowMessage('a');
-//        lvObj := LvTypeInfo.AsInstance;
-//        ShowMessage(LvTypeInfo.GetProperty('Version').GetValue(lvObj).AsInteger.ToString);
-
-//        ShowMessage(TMigration(LvTypeInfo.GetMethod('GetMigration').Invoke(LvTypeInfo.AsInstance, []).AsObject).Version.ToString);
-//
-//        if LvTypeInfo.GetMethod('GetMigration').Invoke(LvTypeInfo.AsInstance, []).IsObject then
-//        begin
-//          LvMigration := LvTypeInfo.GetMethod('GetMigration').Invoke(LvTypeInfo.AsInstance, []).AsObject as TMigration;
-//          ShowMessage(LvMigration.Version.ToString);
-//        end;
-
-        //ShowMessage(GetPropValue(TMigration(lvObj), 'Version'));
-
-//        FMigrationList.ContainsKey(TMigration(lvObj).)
-//        LvTempMigrationList.Add(TMigration(lvObj));
-      end;
-    end;
-
-//    if LvTempMigrationList.Count > 0 then
-//    begin
-//
-//    end;
-
-  finally
-    LvCtx.Free;
-//    LvTempMigrationList
-  end;
-
-
-end;
-
 {TObjListHelper}
 
 function TObjListHelper.Find(AMigrationObj: TMigration): Boolean;
@@ -180,7 +137,7 @@ begin
   Result := False;
   for I := 0 to Pred(Count) do
   begin
-    if AMigrationObj.AttribVersion = Items[I].AttribVersion then
+    if AMigrationObj.Version = Items[I].Version then
     begin
       Result := True;
       Break;
