@@ -59,7 +59,7 @@ end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  Runner.DownGrade(202301010001);
+  Runner.Downgrade(202301010001);
 end;
 
 procedure TForm1.btnUpgradeDatabaseClick(Sender: TObject);

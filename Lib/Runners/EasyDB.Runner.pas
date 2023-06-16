@@ -25,11 +25,13 @@ type
     constructor Create(ASQLConnection: TSQLConnection = nil); overload;
     constructor Create(ConnectionParams: TConnectionParams); overload;
     destructor Destroy; override;
-    function GetDatabaseVersion: Int64;
+
     procedure UpgradeDatabase;
-    procedure DownGrade(AVersion: Int64);
+    procedure Downgrade(AVersion: Int64);
     procedure ArrangeMigrationList;
     procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string);
+    procedure DownGradeVersionInfo(AVersionToDownGrade: Int64);
+    function GetDatabaseVersion: Int64;
 
     property MigrationList: TObjectList<TMigration> read FMigrationList write FMigrationList;
     property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
@@ -119,17 +121,33 @@ begin
       end;
 
       if LvBiggestVer > LvDbVer then
-        UpdateVersionInfo(LvBiggestVer, '', '');
+        UpdateVersionInfo(LvBiggestVer, LvInternalMigration.Author, LvInternalMigration.Description);
     end;
   end;
 end;
 
-procedure TRunner.DownGrade(AVersion: Int64);
+procedure TRunner.Downgrade(AVersion: Int64);
+var
+  LvDbVer: Int64;
+  LvMigrationList: TObjectList<TMigration>;
+  LvInternalMigration: TMigration;
 begin
-// Create a generic list for each Migration Type
-// Find the version siquence and compare with the latest version in Database
-// Run the Latest Upgrades from smaller version to the bigest version
-// Update database table
+  if FMigrationList.Count = 0 then
+    Exit;
+
+  LvDbVer := GetDatabaseVersion;
+  ArrangeMigrationList;
+
+  for LvMigrationList in FInternalMigrationList.Values do
+  begin
+    for LvInternalMigration in LvMigrationList do
+    begin
+      if LvInternalMigration.Version > AVersion then
+        LvInternalMigration.Downgrade;
+    end;
+  end;
+
+  DownGradeVersionInfo(AVersion);
 end;
 
 function TRunner.GetDatabaseVersion: Int64;
@@ -159,6 +177,14 @@ begin
      + '	' + ADescription.QuotedString + ' ' + #10
      + ')';
 
+  FSQLConnection.ExecuteAdHocQuery(LvScript);
+end;
+
+procedure TRunner.DownGradeVersionInfo(AVersionToDownGrade: Int64);
+var
+  LvScript: string;
+begin
+  LvScript := 'Delete from EasyDBVersionInfo Where Version > ' + AVersionToDownGrade.ToString;
   FSQLConnection.ExecuteAdHocQuery(LvScript);
 end;
 

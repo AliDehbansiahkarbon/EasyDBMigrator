@@ -5,11 +5,7 @@ uses
   System.SysUtils, System.Classes, EasyDB.Attribute, Vcl.Dialogs, System.Rtti;
 
 type
-  IMigration = interface
-    ['{E43EA412-E62C-42F7-9087-ED75BDADC5CA}']
-  end;
-
-  TMigration = class(TInterfacedObject, IMigration) // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
+  TMigration = class // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
   private
     FUp: TProc;
     FDown: TProc;
@@ -22,8 +18,10 @@ type
     procedure Upgrade; virtual;
     procedure Downgrade; virtual;
 
-    property EntityName: string read FEntityName;
     property Version: Int64 read FVersion;
+    property Author: string read FAuthor write FAuthor;
+    property Description: string read FDescription write FDescription;
+    property EntityName: string read FEntityName;
   end;
 
 //  TMigrationEx = class(TInterfacedObject, IMigration) // You must use class level attributes with this type and you should implement Upgrade and Downgrade procedures manually;
