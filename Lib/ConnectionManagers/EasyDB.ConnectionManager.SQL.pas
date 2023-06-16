@@ -3,7 +3,7 @@ unit EasyDB.ConnectionManager.SQL;
 interface
 
 uses
-  EasyDB.ConnectionManager.Base,
+  EasyDB.ConnectionManager.Base, EasyDB.Logger, EasyDB.Core,
   System.SysUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
@@ -17,7 +17,8 @@ type
     LoginTimeout: Integer;
     UserName: string;
     Pass: string;
-    DatabaseName: string
+    DatabaseName: string;
+    Schema: string;
   end;
 
 
@@ -33,10 +34,11 @@ type
     FCommandError: string;
     FConnectionParams: TConnectionParams;
     Constructor Create;
-    Destructor Destroy; override;
     class var FInstance: TSQLConnection;
   public
     class function Instance: TSQLConnection;
+    Destructor Destroy; override;
+
     function GetConnectionString: string; override;
     function SetConnectionParam(AConnectionParams: TConnectionParams): TSQLConnection;
     function Connect: Boolean; override;
@@ -45,7 +47,6 @@ type
     function InitializeDatabase: Boolean;
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function OpenAsInteger(AScript: string): Largeint;
-
 
     property CommandError: string read FCommandError;
     property LoginError: string read FLoginError write FLoginError;
@@ -126,10 +127,10 @@ begin
   LvTbScript := 'If Not Exists ( ' + #10
        + '       Select * ' + #10
        + '       From   sysobjects ' + #10
-       + '       Where  Name          = ''EasyDBVersionInfo'' ' + #10
+       + '       Where  Name          = ' + TB.QuotedString + ' ' + #10
        + '              And xtype     = ''U'' ' + #10
        + '   ) ' + #10
-       + '    Create Table EasyDBVersionInfo ' + #10
+       + '    Create Table ' + TB + ' ' + #10
        + '    ( ' + #10
        + '    	Version Bigint Not null Primary Key, ' + #10
        + '    	AppliedOn Datetime Default(Getdate()), ' + #10
@@ -138,7 +139,7 @@ begin
        + '    	 ' + #10
        + '    )';
 
-  LvDropScript := 'If Exists ( ' + #10
+  LvDropScript := 'If Exists ( ' + #10  //TODO this should convert to script
        + '       Select type_desc, ' + #10
        + '              Type ' + #10
        + '       From   sys.procedures With(Nolock) ' + #10
@@ -155,11 +156,11 @@ begin
        + 'Begin ' + #10
        + '	If Not Exists( ' + #10
        + '	       Select 1 ' + #10
-       + '	       From   EasyDBVersionInfo ' + #10
+       + '	       From  ' + TB + ' ' + #10
        + '	       Where  Version = @Version ' + #10
        + '	   ) ' + #10
        + '	Begin ' + #10
-       + '	    Insert Into EasyDBVersionInfo ' + #10
+       + '	    Insert Into ' + TB + ' ' + #10
        + '	      ( ' + #10
        + '	        Version, ' + #10
        + '	        AppliedOn, ' + #10
@@ -183,7 +184,7 @@ begin
     Result := True;
   except on E: Exception do
     begin
-      //Log(E.Message);
+      TLogger.Instance.Log(atInitialize, E.Message);
       Result := False;
     end;
   end;

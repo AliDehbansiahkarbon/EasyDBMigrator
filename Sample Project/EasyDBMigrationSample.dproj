@@ -108,6 +108,8 @@
         <DCCReference Include="..\Lib\Runners\EasyDB.Runner.pas"/>
         <DCCReference Include="..\Lib\Core\EasyDB.Migration.Base.pas"/>
         <DCCReference Include="..\Lib\Core\EasyDB.Attribute.pas"/>
+        <DCCReference Include="..\Lib\Runners\EasyDB.MSSQLRunner.pas"/>
+        <DCCReference Include="..\Lib\Logger\EasyDB.Logger.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

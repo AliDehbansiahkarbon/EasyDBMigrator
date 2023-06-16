@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Generics.Collections,
-  EasyDB.ConnectionManager.SQL, EasyDB.Migration.Base, EasyDB.Runner;
+  EasyDB.ConnectionManager.SQL, EasyDB.Migration.Base, EasyDB.MSSQLRunner;
 
 type
   TForm1 = class(TForm)
@@ -18,7 +18,7 @@ type
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    Runner: TRunner;
+    Runner: TSQLRunner;
   public
     { Public declarations }
   end;
@@ -59,7 +59,7 @@ end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  Runner.Downgrade(202301010001);
+  Runner.DowngradeDatabase(202301010001);
 end;
 
 procedure TForm1.btnUpgradeDatabaseClick(Sender: TObject);
@@ -78,9 +78,10 @@ begin
     UserName := 'sa';
     Pass := '1';
     DatabaseName := 'Library';
+    Schema := 'dbo';
   end;
 
-  Runner := TRunner.Create(LvConnectionParams);
+  Runner := TSQLRunner.Create(LvConnectionParams);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

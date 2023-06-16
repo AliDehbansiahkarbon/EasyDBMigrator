@@ -8,7 +8,9 @@ uses
   EasyDB.ConnectionManager.SQL in '..\Lib\ConnectionManagers\EasyDB.ConnectionManager.SQL.pas',
   EasyDB.Runner in '..\Lib\Runners\EasyDB.Runner.pas',
   EasyDB.Migration.Base in '..\Lib\Core\EasyDB.Migration.Base.pas',
-  EasyDB.Attribute in '..\Lib\Core\EasyDB.Attribute.pas';
+  EasyDB.Attribute in '..\Lib\Core\EasyDB.Attribute.pas',
+  EasyDB.MSSQLRunner in '..\Lib\Runners\EasyDB.MSSQLRunner.pas',
+  EasyDB.Logger in '..\Lib\Logger\EasyDB.Logger.pas';
 
 {$R *.res}
 
