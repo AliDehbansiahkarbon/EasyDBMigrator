@@ -3,7 +3,6 @@ unit EasyDB.Attribute;
 interface
 
 type
-
   TCustomMigrationAttribute = class(TCustomAttribute)
   private
     FEntityName: string;

@@ -2,9 +2,12 @@ unit EasyDB.Runner;
 
 interface
 uses
-  System.Rtti, System.Generics.Collections, EasyDB.Migration.Base, Vcl.Dialogs,
-  EasyDB.Attribute, System.SysUtils, TypInfo, Contnrs, System.Classes,
-  EasyDB.ConnectionManager.SQL, EasyDB.Logger;
+  System.Rtti, System.Generics.Collections, Vcl.Dialogs,
+  System.SysUtils, TypInfo, Contnrs, System.Classes,
+  EasyDB.Logger,
+  EasyDB.Migration.Base,
+  EasyDB.Attribute,
+  EasyDB.ConnectionManager.SQL;
 
 type
   TObjListHelper = class helper for TObjectList<TMigration>
@@ -21,10 +24,9 @@ type
   end;
 
   TRunner = class(TInterfacedObject, IRunner)
-  protected
-    FInternalMigrationList: TObjectDictionary<string, TObjectList<TMigration>>;
-    FMigrationList: TObjectList<TMigration>;
-
+  private
+    FInternalMigrationList: TDictionary<string, TObjectList<TMigration>>;
+    FMigrationList: TList<TMigration>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -32,22 +34,55 @@ type
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
     procedure ArrangeMigrationList;
+    function Logger: TLogger;
 
     procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string); virtual; abstract;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); virtual; abstract;
     function GetDatabaseVersion: Int64; virtual; abstract;
 
-    property MigrationList: TObjectList<TMigration> read FMigrationList write FMigrationList;
+    property MigrationList: TList<TMigration> read FMigrationList write FMigrationList;
   end;
 
 implementation
 
 { TRunner }
 
+constructor TRunner.Create;
+begin
+  FMigrationList := TList<TMigration>.Create;
+  FInternalMigrationList := TDictionary<string, TObjectList<TMigration>>.Create;
+end;
+
+destructor TRunner.Destroy;
+var
+  LvKey: string;
+  I: Integer;
+begin
+  if FInternalMigrationList.Count > 0 then
+  begin
+    for LvKey in FInternalMigrationList.Keys do
+      FInternalMigrationList.Items[LvKey].Free;
+
+    FreeAndNil(FInternalMigrationList);
+    FreeAndNil(FMigrationList);
+  end
+  else
+  begin
+    FreeAndNil(FInternalMigrationList);
+
+    for I := 0 to Pred(FMigrationList.Count) do
+      FMigrationList[I].Free;
+
+    FreeAndNil(FMigrationList);
+  end;
+
+  FreeAndNil(TLogger.Instance);
+  inherited;
+end;
+
 procedure TRunner.ArrangeMigrationList;
 var
   LvExternalMigration: TMigration;
-  LvMigrationInternalList: TObjectList<TMigration>;
   LvNewInternalList: TObjectList<TMigration>;
 begin
   try
@@ -55,10 +90,8 @@ begin
     begin
       if FInternalMigrationList.ContainsKey(LvExternalMigration.EntityName) then
       begin
-        LvMigrationInternalList := FInternalMigrationList.Items[LvExternalMigration.EntityName];
-
-        if not LvMigrationInternalList.FindMigration(LvExternalMigration) then
-          LvMigrationInternalList.Add(LvExternalMigration);
+        if not FInternalMigrationList.Items[LvExternalMigration.EntityName].FindMigration(LvExternalMigration) then
+          FInternalMigrationList.Items[LvExternalMigration.EntityName].Add(LvExternalMigration);
       end
       else
       begin
@@ -68,21 +101,13 @@ begin
       end;
     end;
   except on E: Exception do
-    TLogger.Instance.Log(atPreparingMigrations, E.Message);
+    Logger.Log(atPreparingMigrations, E.Message);
   end;
 end;
 
-constructor TRunner.Create;
+function TRunner.Logger: TLogger;
 begin
-  FMigrationList := TObjectList<TMigration>.Create;
-  FInternalMigrationList := TObjectDictionary<string, TObjectList<TMigration>>.Create;
-end;
-
-destructor TRunner.Destroy;
-begin
-  FMigrationList.Free;
-  FInternalMigrationList.Free;
-  inherited;
+  Result := TLogger.Instance;
 end;
 
 procedure TRunner.UpgradeDatabase;
@@ -112,7 +137,7 @@ begin
 
           LvInternalMigration.Upgrade;
         except on E: Exception do
-          TLogger.Instance.Log(atUpgrade, E.Message, LvInternalMigration.EntityName, LvInternalMigration.Version);
+          Logger.Log(atUpgrade, E.Message, LvInternalMigration.EntityName, LvInternalMigration.Version);
         end;
       end;
 
@@ -132,6 +157,9 @@ begin
     Exit;
 
   LvDbVer := GetDatabaseVersion;
+  if LvDbVer <= AVersion then
+    Exit;
+
   ArrangeMigrationList;
 
   for LvMigrationList in FInternalMigrationList.Values do
@@ -141,8 +169,9 @@ begin
       try
         if LvInternalMigration.Version > AVersion then
           LvInternalMigration.Downgrade;
+
       except on E: Exception do
-        TLogger.Instance.Log(atUpgrade, E.Message, LvInternalMigration.EntityName, LvInternalMigration.Version);
+        Logger.Log(atUpgrade, E.Message, LvInternalMigration.EntityName, LvInternalMigration.Version);
       end;
     end;
   end;

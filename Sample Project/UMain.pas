@@ -3,15 +3,22 @@ unit UMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Generics.Collections,
-  EasyDB.ConnectionManager.SQL, EasyDB.Migration.Base, EasyDB.MSSQLRunner;
+  System.StrUtils, System.SysUtils, Vcl.Forms, Vcl.Dialogs, System.TypInfo,
+  System.Classes, Vcl.StdCtrls, Vcl.Controls,
+
+  EasyDB.ConnectionManager.SQL,
+  EasyDB.Migration.Base,
+  EasyDB.MSSQLRunner,
+  EasyDB.Logger;
 
 type
   TForm1 = class(TForm)
     btnDowngradeDatabase: TButton;
     btnUpgradeDatabase: TButton;
     btnAddMigrations: TButton;
+    edtVersion: TEdit;
+    Label1: TLabel;
+    mmoLog: TMemo;
     procedure btnDowngradeDatabaseClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -19,6 +26,7 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     Runner: TSQLRunner;
+    procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
     { Public declarations }
   end;
@@ -27,7 +35,6 @@ var
   Form1: TForm1;
 
 implementation
-
 
 {$R *.dfm}
 
@@ -44,7 +51,6 @@ begin
   end
   ));
 
-
   Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
   procedure
   begin
@@ -59,11 +65,17 @@ end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  Runner.DowngradeDatabase(202301010001);
+  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
 end;
 
 procedure TForm1.btnUpgradeDatabaseClick(Sender: TObject);
 begin
+  if Runner.MigrationList.Count = 0 then
+  begin
+    ShowMessage('You should add at least one migration object.');
+    Exit;
+  end;
+
   Runner.UpgradeDatabase;
 end;
 
@@ -71,7 +83,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   LvConnectionParams: TConnectionParams;
 begin
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere like that.
+  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
     Server := '192.168.212.1';
     LoginTimeout := 30000;
@@ -81,12 +93,34 @@ begin
     Schema := 'dbo';
   end;
 
+  {Use this line if you need local log}
+  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured befor creating the Runner.
+
+  {Use this line if you don't need local log}
+  // TLogger.Instance.OnLog := OnLog;
+
   Runner := TSQLRunner.Create(LvConnectionParams);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  FreeAndNil(Runner);
+  Runner.Free;
+end;
+
+procedure TForm1.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
+begin
+  // This method will run anyway if yo u assigne it and ignores LocalLog parameter.
+  //...
+  //...
+  // ShowMessage(AException);
+  // Do anything you need here with the log data, log on Graylog, Terlegram, email, etc...
+
+  mmoLog.Lines.Add('========== ' + DateTimeToStr(Now) + ' ==========');
+  mmoLog.Lines.Add('Action Type: ' + GetEnumName(TypeInfo(TActionTypes), Ord(AActionType)));
+  mmoLog.Lines.Add('Exception: ' + AException);
+  mmoLog.Lines.Add('Class Name: ' + IfThen(AClassName.IsEmpty, 'N/A', AClassName));
+  mmoLog.Lines.Add('Version: ' + IfThen(AVersion = 0, 'N/A', IntToStr(AVersion)));
+  mmoLog.Lines.Add('');
 end;
 
 end.

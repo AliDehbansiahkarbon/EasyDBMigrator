@@ -3,14 +3,15 @@ unit EasyDB.ConnectionManager.SQL;
 interface
 
 uses
-  EasyDB.ConnectionManager.Base, EasyDB.Logger, EasyDB.Core,
   System.SysUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet,
-  {==MSSQL==} FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase, FireDAC.Phys.MSSQL{==MSSQL==};
+  FireDAC.Comp.DataSet,{==MSSQL==} FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase, FireDAC.Phys.MSSQL,{==MSSQL==}
 
+  EasyDB.ConnectionManager.Base,
+  EasyDB.Logger,
+  EasyDB.Consts;
 type
   TConnectionParams = record
     Server: string;
@@ -30,8 +31,6 @@ type
     FServer: string;
     FUserName: string;
     FPass: string;
-    FLoginError: string;
-    FCommandError: string;
     FConnectionParams: TConnectionParams;
     Constructor Create;
     class var FInstance: TSQLConnection;
@@ -47,10 +46,10 @@ type
     function InitializeDatabase: Boolean;
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function OpenAsInteger(AScript: string): Largeint;
+    function Logger: TLogger;
 
-    property CommandError: string read FCommandError;
-    property LoginError: string read FLoginError write FLoginError;
     property ConnectionParams: TConnectionParams read FConnectionParams;
+
   end;
 
 implementation
@@ -96,7 +95,7 @@ begin
     Result := True;
   except on E: Exception do
     begin
-      FLoginError := E.Message;
+      Logger.Log(atDbConnection, E.Message);
       Result := False;
     end;
   end;
@@ -109,7 +108,7 @@ begin
     Result := True;
   except on E: Exception do
     begin
-      FCommandError := E.Message;
+      Logger.Log(atQueryExecution, E.Message);
       Result := True;
     end;
   end;
@@ -184,7 +183,7 @@ begin
     Result := True;
   except on E: Exception do
     begin
-      TLogger.Instance.Log(atInitialize, E.Message);
+      Logger.Log(atInitialize, E.Message);
       Result := False;
     end;
   end;
@@ -201,6 +200,11 @@ end;
 function TSQLConnection.IsConnected: Boolean;
 begin
   Result := FConnection.Connected;
+end;
+
+function TSQLConnection.Logger: TLogger;
+begin
+  Result := TLogger.Instance;
 end;
 
 function TSQLConnection.OpenAsInteger(AScript: string): Largeint;

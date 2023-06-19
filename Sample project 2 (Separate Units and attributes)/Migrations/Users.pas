@@ -2,33 +2,45 @@ unit Users;
 
 interface
 uses
-  System.SysUtils, EasyDB.Migration.Base, EasyDB.Attribute, EasyDB.ConnectionManager.SQL;
+  System.SysUtils,
+
+  EasyDB.Migration.Attrib,
+  EasyDB.ConnectionManager.SQL,
+  EasyDB.Logger,
+  EasyDB.Attribute;
 
 type
 
-  [CustomMigrationAttribute('TbUsers', 202301010003, 'Add users table')]
-  TUsersMgr = class(TMigration)
+  [CustomMigrationAttribute('TbUsers', 202301010003, 'Add users table', 'Alex')]
+  TUsersMgr_202301010001 = class(TMigrationEx)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;
   end;
 
+  function Logger: TLogger;
+
 implementation
 
-{ TUsersMgr }
+{ TUsersMgr_202301010001 }
 
-procedure TUsersMgr.Downgrade;
+function Logger: TLogger;
+begin
+  Result := TLogger.Instance;
+end;
+
+procedure TUsersMgr_202301010001.Downgrade;
 begin
   try
     TSQLConnection.Instance.ExecuteAdHocQuery('');
   except on E: Exception do
-    //Log(E.Message);
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
 
   inherited;
 end;
 
-procedure TUsersMgr.Upgrade;
+procedure TUsersMgr_202301010001.Upgrade;
 begin
 
   inherited;

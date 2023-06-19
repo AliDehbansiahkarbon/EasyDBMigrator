@@ -3,8 +3,11 @@ unit EasyDB.MSSQLRunner;
 interface
 
 uses
-  System.SysUtils, System.StrUtils, EasyDB.Runner, EasyDB.ConnectionManager.SQL,
-  EasyDB.Core;
+  System.SysUtils, System.StrUtils,
+  EasyDB.Runner,
+  EasyDB.ConnectionManager.SQL,
+  EasyDB.Consts,
+  EasyDB.Logger;
 
 type
 
@@ -27,7 +30,6 @@ type
     property Schema: string read FSchema write FSchema;
   end;
 
-
 implementation
 
 constructor TSQLRunner.Create(ASQLConnection: TSQLConnection = nil);
@@ -45,6 +47,12 @@ begin
   FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
   FDbName := ConnectionParams.DatabaseName;
   FSchema := ConnectionParams.Schema;
+end;
+
+destructor TSQLRunner.Destroy;
+begin
+  FSQLConnection.Free;
+  inherited;
 end;
 
 function TSQLRunner.GetDatabaseVersion: Int64;
@@ -75,12 +83,6 @@ begin
      + ')';
 
   FSQLConnection.ExecuteAdHocQuery(LvScript);
-end;
-
-destructor TSQLRunner.Destroy;
-begin
-  FSQLConnection.Free;
-  inherited;
 end;
 
 procedure TSQLRunner.DownGradeVersionInfo(AVersionToDownGrade: Int64);

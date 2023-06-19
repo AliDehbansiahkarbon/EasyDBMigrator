@@ -2,7 +2,7 @@ unit EasyDB.Migration.Base;
 
 interface
 uses
-  System.SysUtils, System.Classes, EasyDB.Attribute, Vcl.Dialogs, System.Rtti;
+  System.SysUtils;
 
 type
   TMigration = class // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
@@ -14,7 +14,7 @@ type
     FDescription: string;
     FEntityName: string;
   public
-    Constructor Create(const AEntityName: string; const AVersion: Int64; AAuthor: string; const ADescription: string; const AUp, ADown: TProc);
+    constructor Create(const AEntityName: string; const AVersion: Int64; AAuthor: string; const ADescription: string; const AUp, ADown: TProc);
     procedure Upgrade; virtual;
     procedure Downgrade; virtual;
 
@@ -23,14 +23,6 @@ type
     property Description: string read FDescription write FDescription;
     property EntityName: string read FEntityName;
   end;
-
-//  TMigrationEx = class(TInterfacedObject, IMigration) // You must use class level attributes with this type and you should implement Upgrade and Downgrade procedures manually;
-//  public
-//    procedure Upgrade; virtual; abstract;
-//    procedure Downgrade; virtual; abstract;
-//    function AttribEntityName: string;
-//    function AttribVersion: Integer;
-//  end;
 
 implementation
 
@@ -58,45 +50,4 @@ begin
     FUp;
 end;
 
-
-{ TMigrationEx }
-{
-function TMigrationEx.AttribEntityName: string;
-var
-  LContext: TRttiContext;
-  LType: TRttiType;
-  LAttr: TCustomAttribute;
-begin
-  LContext := TRttiContext.Create;
-  try
-    LType := LContext.GetType(TypeInfo(TMigrationEx));
-    for LAttr in LType.GetAttributes() do
-    begin
-      if LAttr is TCustomMigrationAttribute then
-        Result := TCustomMigrationAttribute(LAttr).EntityName;
-    end;
-  finally
-    LContext.Free;
-  end;
-end;
-
-function TMigrationEx.AttribVersion: Integer;
-var
-  LContext: TRttiContext;
-  LType: TRttiType;
-  LAttr: TCustomAttribute;
-begin
-  LContext := TRttiContext.Create;
-  try
-    LType := LContext.GetType(TypeInfo(TMigrationEx));
-    for LAttr in LType.GetAttributes() do
-    begin
-      if LAttr is TCustomMigrationAttribute then
-        Result := TCustomMigrationAttribute(LAttr).Version;
-    end;
-  finally
-    LContext.Free;
-  end;
-end;
-  }
 end.

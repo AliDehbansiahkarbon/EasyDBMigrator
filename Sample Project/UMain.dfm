@@ -1,9 +1,10 @@
 object Form1: TForm1
   Left = 613
   Top = 332
+  BorderStyle = bsToolWindow
   Caption = 'Form1'
-  ClientHeight = 135
-  ClientWidth = 211
+  ClientHeight = 310
+  ClientWidth = 450
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,9 +15,16 @@ object Form1: TForm1
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   TextHeight = 15
+  object Label1: TLabel
+    Left = 216
+    Top = 67
+    Width = 58
+    Height = 15
+    Caption = 'to version: '
+  end
   object btnDowngradeDatabase: TButton
-    Left = 32
-    Top = 87
+    Left = 64
+    Top = 63
     Width = 137
     Height = 25
     Caption = 'Downgrade Database'
@@ -24,8 +32,8 @@ object Form1: TForm1
     OnClick = btnDowngradeDatabaseClick
   end
   object btnUpgradeDatabase: TButton
-    Left = 32
-    Top = 56
+    Left = 224
+    Top = 25
     Width = 137
     Height = 25
     Caption = 'Upgrade Database'
@@ -33,12 +41,29 @@ object Form1: TForm1
     OnClick = btnUpgradeDatabaseClick
   end
   object btnAddMigrations: TButton
-    Left = 32
+    Left = 64
     Top = 25
     Width = 137
     Height = 25
     Caption = 'Add Migrations'
     TabOrder = 2
     OnClick = btnAddMigrationsClick
+  end
+  object edtVersion: TEdit
+    Left = 274
+    Top = 64
+    Width = 82
+    Height = 23
+    NumbersOnly = True
+    TabOrder = 3
+    Text = '202301010001'
+  end
+  object mmoLog: TMemo
+    Left = 8
+    Top = 104
+    Width = 430
+    Height = 187
+    ScrollBars = ssVertical
+    TabOrder = 4
   end
 end
