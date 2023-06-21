@@ -2,13 +2,16 @@ unit EasyDB.Migration.Attrib;
 
 interface
 uses
-  System.SysUtils, System.Rtti, EasyDB.Attribute;
+  System.SysUtils, System.Rtti,
+  EasyDB.Attribute,
+  EasyDB.Logger;
 
 type
   TMigrationEx = class // You must use class level attributes with this type and you should implement Upgrade and Downgrade procedures manually;
   protected
     function AttribEntityName: string;
     function AttribVersion: Integer;
+    function Logger: TLogger;
   public
     procedure Upgrade; virtual; abstract;
     procedure Downgrade; virtual; abstract;
@@ -54,6 +57,11 @@ begin
   finally
     LContext.Free;
   end;
+end;
+
+function TMigrationEx.Logger: TLogger;
+begin
+  Result := TLogger.Instance;
 end;
 
 end.

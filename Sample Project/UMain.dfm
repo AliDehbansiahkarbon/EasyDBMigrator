@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 613
   Top = 332
   BorderStyle = bsToolWindow
-  Caption = 'Form1'
+  Caption = 'Fast and simple usage.'
   ClientHeight = 310
   ClientWidth = 450
   Color = clBtnFace

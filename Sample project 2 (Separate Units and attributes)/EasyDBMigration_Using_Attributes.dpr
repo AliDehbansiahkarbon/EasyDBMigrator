@@ -3,9 +3,10 @@ program EasyDBMigration_Using_Attributes;
 uses
   Vcl.Forms,
   UMain in 'UMain.pas' {Form2},
-  Customers in 'Migrations\Customers.pas',
-  Invoices in 'Migrations\Invoices.pas',
-  Users in 'Migrations\Users.pas';
+  UCustomers in 'Migrations\UCustomers.pas',
+  UInvoices in 'Migrations\UInvoices.pas',
+  UUsers in 'Migrations\UUsers.pas',
+  UHelper in 'UHelper.pas';
 
 {$R *.res}
 
