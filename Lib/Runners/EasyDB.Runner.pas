@@ -12,8 +12,9 @@ uses
   EasyDB.ConnectionManager.SQL;
 
 type
-  TMigrations = class(TObjectList<TMigrationBase>)
-  end;
+  TArrangeMode = (umASC, umDESC);
+  TMigrations = TObjectList<TMigrationBase>;
+  TMigrationsDic = TObjectDictionary<string, TMigrations>;
 
   TObjListHelper = class helper for TMigrations
   public
@@ -30,23 +31,24 @@ type
 
   TRunner = class(TInterfacedObject, IRunner)
   private
-    FInternalMigrationList: TDictionary<string, TMigrations>;
-    FMigrationList: TList<TMigrationBase>;
+    FInternalMigrationList: TMigrationsDic;
+    FMigrationList: TMigrations;
+    function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationEx): TMigrationEx;
   public
     constructor Create;
     destructor Destroy; override;
 
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
-    procedure ArrangeMigrationList;
+    procedure ArrangeMigrationList(AArrangeMode: TArrangeMode);
     function Logger: TLogger;
-    procedure SortDictionaryByField(ADict: TDictionary<string, TMigrations>; AFieldName: string);
+    procedure SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
 
     procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); virtual; abstract;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); virtual; abstract;
     function GetDatabaseVersion: Int64; virtual; abstract;
 
-    property MigrationList: TList<TMigrationBase> read FMigrationList write FMigrationList;
+    property MigrationList: TMigrations read FMigrationList write FMigrationList;
   end;
 
 implementation
@@ -55,44 +57,44 @@ implementation
 
 constructor TRunner.Create;
 begin
-  FMigrationList := TList<TMigrationBase>.Create;
-  FInternalMigrationList := TDictionary<string, TMigrations>.Create;
+  FMigrationList := TMigrations.Create;
+  FMigrationList.OwnsObjects := True;
+  FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
+end;
+
+function TRunner.CreateInternalMigrationEx(AExternalMigrationEx: TMigrationEx): TMigrationEx;
+begin
+  Result := TMigrationEx.Create(AExternalMigrationEx.Upgrade, AExternalMigrationEx.Downgrade);
+  Result.HasAttribDic := True;
+  with AExternalMigrationEx do
+    Result.CreateHiddenAttribDic(AttribEntityName, AttribVersion, AttribAuthor, AttribDescription);
 end;
 
 destructor TRunner.Destroy;
 var
   LvKey: string;
-  I: Integer;
 begin
-  if FInternalMigrationList.Count > 0 then
-  begin
-    for LvKey in FInternalMigrationList.Keys do
-      FInternalMigrationList.Items[LvKey].Free;
-
-    FreeAndNil(FInternalMigrationList);
-    FreeAndNil(FMigrationList);
-  end
-  else
-  begin
-    FreeAndNil(FInternalMigrationList);
-
-    for I := 0 to Pred(FMigrationList.Count) do
-      FMigrationList[I].Free;
-
-    FreeAndNil(FMigrationList);
-  end;
-
+//  if (FInternalMigrationList.Count > 0) and (FMigrationList.Items[0] is TMigrationEx) then
+//  begin
+//    for LvKey in FInternalMigrationList.Keys do
+//      FreeAndNil(FInternalMigrationList.Items[LvKey]);
+//
+//    FMigrationList.OwnsObjects := False;
+//  end;
+  FreeAndNil(FInternalMigrationList);
+  FreeAndNil(FMigrationList);
   FreeAndNil(TLogger.Instance);
   inherited;
 end;
 
-procedure TRunner.ArrangeMigrationList;
+procedure TRunner.ArrangeMigrationList(AArrangeMode: TArrangeMode);
 var
   LvExternalMigration: TMigrationBase;
   LvNewInternalList: TMigrations;
 
   LvTempMigration: TMigration;
   LvTempMigrationEx: TMigrationEx;
+  LvTempEntityName: string;
 begin
   try
     for LvExternalMigration in FMigrationList do
@@ -100,36 +102,43 @@ begin
       if LvExternalMigration is TMigration then
       begin
         LvTempMigration := TMigration(LvExternalMigration);
-        if FInternalMigrationList.ContainsKey(LvTempMigration.EntityName) then
+        LvTempEntityName := LvTempMigration.EntityName;
+
+        if FInternalMigrationList.ContainsKey(LvTempEntityName) then
         begin
-          if not FInternalMigrationList.Items[LvTempMigration.EntityName].FindMigration(LvTempMigration) then
-            FInternalMigrationList.Items[LvTempMigration.EntityName].Add(LvTempMigration);
+          if not FInternalMigrationList.Items[LvTempEntityName].FindMigration(LvTempMigration) then
+          begin
+            with LvTempMigration do
+              FInternalMigrationList.Items[LvTempEntityName].Add(TMigration.Create(EntityName, Version, Author, Description, Upgrade, Downgrade));
+          end;
         end
         else
         begin
           LvNewInternalList := TMigrations.Create;
           LvNewInternalList.Add(LvTempMigration);
-          FInternalMigrationList.Add(LvTempMigration.EntityName, LvNewInternalList);
+          FInternalMigrationList.Add(LvTempEntityName, LvNewInternalList);
         end;
 
-        SortDictionaryByField(FInternalMigrationList, 'Version');
+        SortDictionaryByField(FInternalMigrationList, 'Version', AArrangeMode);
       end
       else if LvExternalMigration is TMigrationEx then
       begin
         LvTempMigrationEx := TMigrationEx(LvExternalMigration);
-        if FInternalMigrationList.ContainsKey(LvTempMigrationEx.AttribEntityName) then
+        LvTempEntityName := LvTempMigrationEx.AttribEntityName;
+
+        if FInternalMigrationList.ContainsKey(LvTempEntityName) then
         begin
-          if not FInternalMigrationList.Items[LvTempMigrationEx.AttribEntityName].FindMigration(LvTempMigrationEx) then
-            FInternalMigrationList.Items[LvTempMigrationEx.AttribEntityName].Add(LvTempMigrationEx);
+          if not FInternalMigrationList.Items[LvTempEntityName].FindMigration(LvTempMigrationEx) then
+            FInternalMigrationList.Items[LvTempEntityName].Add(CreateInternalMigrationEx(LvTempMigrationEx));
         end
         else
         begin
           LvNewInternalList := TMigrations.Create;
-          LvNewInternalList.Add(LvTempMigrationEx);
-          FInternalMigrationList.Add(LvTempMigrationEx.AttribEntityName, LvNewInternalList);
+          LvNewInternalList.Add(CreateInternalMigrationEx(LvTempMigrationEx));
+          FInternalMigrationList.Add(LvTempEntityName, LvNewInternalList);
         end;
 
-        SortDictionaryByField(FInternalMigrationList, 'AttribVersion');
+        SortDictionaryByField(FInternalMigrationList, 'AttribVersion', AArrangeMode);
       end;
     end;
   except on E: Exception do
@@ -160,7 +169,7 @@ begin
   LvWrittenVersions := TList<Int64>.Create;
   try
     LvDbVer := GetDatabaseVersion;
-    ArrangeMigrationList;
+    ArrangeMigrationList(umASC);
 
     for LvMigrationList in FInternalMigrationList.Values do
     begin
@@ -233,7 +242,7 @@ begin
   if LvDbVer <= AVersion then
     Exit;
 
-  ArrangeMigrationList;
+  ArrangeMigrationList(umDESC);
 
   for LvMigrationList in FInternalMigrationList.Values do
   begin
@@ -265,7 +274,7 @@ begin
   DownGradeVersionInfo(AVersion);
 end;
 
-procedure TRunner.SortDictionaryByField(ADict: TDictionary<string, TMigrations>; AFieldName: string);
+procedure TRunner.SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
 var
   LvValue: TMigrations;
 begin
@@ -274,7 +283,10 @@ begin
     LvValue.Sort(TComparer<TMigrationBase>.Construct(
       function (const L,R: TMigrationBase): integer
       begin
-        Result := CompareText(GetPropValue(L, AFieldName), GetPropValue(R, AFieldName));
+        if AArrangeMode = umASC then
+          Result := CompareText(GetPropValue(L, AFieldName), GetPropValue(R, AFieldName))
+        else
+          Result := CompareText(GetPropValue(R, AFieldName), GetPropValue(L, AFieldName));
 
 //        if L is TMigration then
 //        begin

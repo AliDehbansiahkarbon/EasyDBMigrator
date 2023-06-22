@@ -2,10 +2,15 @@ unit EasyDB.Migration.Base;
 
 interface
 uses
-  System.SysUtils;
+  System.SysUtils, System.Generics.Collections;
 
 type
   TMigrationBase = class
+  public
+    HiddenAttribDic: TDictionary<string, Variant>;
+    HasAttribDic: Boolean;
+    procedure CreateHiddenAttribDic(AEntityName: string; AVersion: int64; AAuthor: string; ADescription: string);
+    destructor Destroy; override;
   end;
 
 
@@ -53,6 +58,24 @@ procedure TMigration.Upgrade;
 begin
   if Assigned(FUp) then
     FUp;
+end;
+
+{ TMigrationBase }
+
+procedure TMigrationBase.CreateHiddenAttribDic(AEntityName: string; AVersion: int64; AAuthor: string; ADescription: string);
+begin
+  HiddenAttribDic := TDictionary<string, Variant>.Create;
+  HiddenAttribDic.Add('EntityName', AEntityName);
+  HiddenAttribDic.Add('Version', AVersion);
+  HiddenAttribDic.Add('Author', AAuthor);
+  HiddenAttribDic.Add('Description', ADescription);
+end;
+
+destructor TMigrationBase.Destroy;
+begin
+  if Assigned(HiddenAttribDic) then
+    HiddenAttribDic.Free;
+  inherited;
 end;
 
 end.

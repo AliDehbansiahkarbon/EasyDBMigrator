@@ -41,14 +41,14 @@ implementation
 procedure TForm2.btnAddMigrationsClick(Sender: TObject);
 begin
   Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
-//  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
-//  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
-//
-//  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
-//  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
-//
-//  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
-//  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
+
+  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
+  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
+
+  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
+  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
 end;
 
 procedure TForm2.btnDowngradeDatabaseClick(Sender: TObject);
