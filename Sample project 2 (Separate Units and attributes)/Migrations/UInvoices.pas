@@ -12,14 +12,14 @@ uses
 
 type
 
-  [CustomMigrationAttribute('TbInvoices', 202301010005, 'Created TbInvoices table', 'Alex')]
+  [TCustomMigrationAttribute('TbInvoices', 202301010005, 'Created TbInvoices table', 'Alex')]
   TInvoicesMgr_202301010005 = class(TMigrationEx)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;
   end;
 
-  [CustomMigrationAttribute('TbInvoices', 202301010010, 'Altered TbInvoices table, added NewField1 as varchar(100)', 'Alex')]
+  [TCustomMigrationAttribute('TbInvoices', 202301010010, 'Altered TbInvoices table, added NewField1 as varchar(100)', 'Alex')]
   TInvoicesMgr_202301010010 = class(TMigrationEx)
   public
     procedure Upgrade; override;

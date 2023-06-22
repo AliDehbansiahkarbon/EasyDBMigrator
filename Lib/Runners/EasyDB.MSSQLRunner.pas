@@ -21,7 +21,7 @@ type
     constructor Create(ConnectionParams: TConnectionParams); overload;
     destructor Destroy; override;
 
-    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string); override;
+    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); override;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
 
@@ -61,26 +61,40 @@ begin
     Result := FSQLConnection.OpenAsInteger('Select max(Version) from ' + TB);
 end;
 
-procedure TSQLRunner.UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string);
+procedure TSQLRunner.UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True);
 var
   LvScript: string;
 begin
-  LvScript := IfThen(((not FDbName.IsEmpty) and (not FSchema.IsEmpty)),
-     'INSERT INTO [' + FDbName + '].[' + FSchema + '].[' + TB + '] ' + #10,
-     'INSERT INTO ' + TB + ' ' + #10)
-     + '( ' + #10
-     + '	Version, ' + #10
-     + '	AppliedOn, ' + #10
-     + '	Author, ' + #10
-     + '	[Description] ' + #10
-     + ') ' + #10
-     + 'VALUES ' + #10
-     + '( ' + #10
-     + '	' + ALatestVersion.ToString + ', ' + #10
-     + '	(getdate()), ' + #10
-     + '	' + AAuthor.QuotedString + ', ' + #10
-     + '	' + ADescription.QuotedString + ' ' + #10
-     + ')';
+  if AInsertMode then
+  begin
+    LvScript := IfThen(((not FDbName.IsEmpty) and (not FSchema.IsEmpty)),
+       'INSERT INTO [' + FDbName + '].[' + FSchema + '].[' + TB + '] ' + #10,
+       'INSERT INTO ' + TB + ' ' + #10)
+       + '( ' + #10
+       + '	Version, ' + #10
+       + '	AppliedOn, ' + #10
+       + '	Author, ' + #10
+       + '	[Description] ' + #10
+       + ') ' + #10
+       + 'VALUES ' + #10
+       + '( ' + #10
+       + '	' + ALatestVersion.ToString + ', ' + #10
+       + '	(getdate()), ' + #10
+       + '	' + AAuthor.QuotedString + ', ' + #10
+       + '	' + ADescription.QuotedString + ' ' + #10
+       + ')';
+  end
+  else
+  begin
+    LvScript := IfThen(((not FDbName.IsEmpty) and (not FSchema.IsEmpty)),
+       'UPDATE [' + FDbName + '].[' + FSchema + '].[' + TB + '] ' + #10,
+       'UPDATE ' + TB + ' ' + #10)
+       + 'SET ' + #10
+       + ' AppliedOn = (getdate()) ' + #10
+       + ' ,Author = Author + ' + QuotedStr(' -- ') + ' + ' + AAuthor.QuotedString + #10
+       + ' ,[Description] = [Description] + ' + QuotedStr(' -- ') + ' + ' + ADescription.QuotedString + #10
+       + ' Where Version = ' + ALatestVersion.ToString;
+  end;
 
   FSQLConnection.ExecuteAdHocQuery(LvScript);
 end;

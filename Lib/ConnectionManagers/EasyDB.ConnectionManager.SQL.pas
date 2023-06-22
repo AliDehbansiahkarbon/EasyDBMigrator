@@ -108,7 +108,7 @@ begin
     Result := True;
   except on E: Exception do
     begin
-      Logger.Log(atQueryExecution, E.Message);
+      Logger.Log(atQueryExecution, ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message);
       Result := True;
     end;
   end;
@@ -134,7 +134,7 @@ begin
        + '    	Version Bigint Not null Primary Key, ' + #10
        + '    	AppliedOn Datetime Default(Getdate()), ' + #10
        + '    	Author Nvarchar(100), ' + #10
-       + '    	Description Nvarchar(1024) ' + #10
+       + '    	Description Nvarchar(Max) ' + #10
        + '    	 ' + #10
        + '    )';
 
@@ -150,7 +150,7 @@ begin
   LvSpScript := 'Create Procedure EasyDBInsert ' + #10
        + '	@Version Bigint, ' + #10
        + '	@Author Nvarchar(100), ' + #10
-       + '	@Description Nvarchar(1024) ' + #10
+       + '	@Description Nvarchar(Max) ' + #10
        + 'As ' + #10
        + 'Begin ' + #10
        + '	If Not Exists( ' + #10

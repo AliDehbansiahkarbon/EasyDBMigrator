@@ -12,6 +12,7 @@ uses
 
 begin
   Application.Initialize;
+  ReportMemoryLeaksOnShutdown := True;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TForm2, Form2);
   Application.Run;

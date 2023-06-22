@@ -4,27 +4,24 @@ interface
 
 type
   TCustomMigrationAttribute = class(TCustomAttribute)
-  private
-    FEntityName: string;
-    FVersion: Integer;
-    FDescription: string;
-    FAuthor: string;
   public
-    constructor Create(const AEntityName: string; const AVersion: Integer; const ADescription: string; const AAuthor: string);
-    property Version: Integer read FVersion;
-    property EntityName: string read FEntityName;
+    EntityName: string;
+    Version: Int64;
+    Description: string;
+    Author: string;
+    constructor Create(const AEntityName: string; const AVersion: Int64; const ADescription: string; const AAuthor: string);
   end;
 
 implementation
 
 { CustomMigrationAttribute }
 
-constructor TCustomMigrationAttribute.Create(const AEntityName: string; const AVersion: Integer; const ADescription: string; const AAuthor: string);
+constructor TCustomMigrationAttribute.Create(const AEntityName: string; const AVersion: Int64; const ADescription: string; const AAuthor: string);
 begin
-  FEntityName := AEntityName;
-  FVersion := AVersion;
-  FDescription := ADescription;
-  FAuthor := AAuthor;
+  EntityName := AEntityName;
+  Version := AVersion;
+  Description := ADescription;
+  Author := AAuthor;
 end;
 
 end.

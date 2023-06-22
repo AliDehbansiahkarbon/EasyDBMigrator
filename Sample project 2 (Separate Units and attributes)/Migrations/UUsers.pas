@@ -12,21 +12,21 @@ uses
 
 type
 
-  [CustomMigrationAttribute('TbUsers', 202301010001, 'Created users table', 'Alex')]
+  [TCustomMigrationAttribute('TbUsers', 202301010001, 'Created users table', 'Alex')]
   TUsersMgr_202301010001 = class(TMigrationEx)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;
   end;
 
-  [CustomMigrationAttribute('TbUsers', 202301010002, 'Added newfielad1', 'Alex')]
+  [TCustomMigrationAttribute('TbUsers', 202301010002, 'Added newfielad1', 'Alex')]
   TUsersMgr_202301010002 = class(TMigrationEx)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;
   end;
 
-  [CustomMigrationAttribute('TbUsers', 202301010003, 'Added newfielad2', 'Alex')]
+  [TCustomMigrationAttribute('TbUsers', 202301010003, 'Added newfielad2', 'Alex')]
   TUsersMgr_202301010003 = class(TMigrationEx)
   public
     procedure Upgrade; override;

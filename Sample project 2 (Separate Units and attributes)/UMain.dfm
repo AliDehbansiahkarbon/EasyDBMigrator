@@ -1,6 +1,6 @@
 object Form2: TForm2
-  Left = 0
-  Top = 0
+  Left = 700
+  Top = 414
   BorderStyle = bsToolWindow
   Caption = 'Advance usage with attributes.'
   ClientHeight = 306
@@ -11,7 +11,9 @@ object Form2: TForm2
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Position = poDesigned
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
     Left = 216
@@ -27,6 +29,7 @@ object Form2: TForm2
     Height = 25
     Caption = 'Downgrade Database'
     TabOrder = 0
+    OnClick = btnDowngradeDatabaseClick
   end
   object btnUpgradeDatabase: TButton
     Left = 224
@@ -35,6 +38,7 @@ object Form2: TForm2
     Height = 25
     Caption = 'Upgrade Database'
     TabOrder = 1
+    OnClick = btnUpgradeDatabaseClick
   end
   object btnAddMigrations: TButton
     Left = 64

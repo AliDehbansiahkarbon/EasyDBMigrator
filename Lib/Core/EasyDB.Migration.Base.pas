@@ -5,7 +5,11 @@ uses
   System.SysUtils;
 
 type
-  TMigration = class // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
+  TMigrationBase = class
+  end;
+
+
+  TMigration = class(TMigrationBase) // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
   private
     FUp: TProc;
     FDown: TProc;
@@ -18,10 +22,11 @@ type
     procedure Upgrade; virtual;
     procedure Downgrade; virtual;
 
-    property Version: Int64 read FVersion;
     property Author: string read FAuthor write FAuthor;
     property Description: string read FDescription write FDescription;
     property EntityName: string read FEntityName;
+  published
+    property Version: Int64 read FVersion; // published to be accessible in GetPropValue function.
   end;
 
 implementation

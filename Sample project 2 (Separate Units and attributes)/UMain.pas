@@ -21,6 +21,9 @@ type
     mmoLog: TMemo;
     procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
+    procedure btnUpgradeDatabaseClick(Sender: TObject);
+    procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     Runner: TSQLRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -37,12 +40,31 @@ implementation
 
 procedure TForm2.btnAddMigrationsClick(Sender: TObject);
 begin
-//  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
-//  Runner.MigrationList.Add();
-//  Runner.MigrationList.Add();
-//  Runner.MigrationList.Add();
-//  Runner.MigrationList.Add();
-//  Runner.MigrationList.Add();
+  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+//  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
+//  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
+//
+//  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
+//  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
+//
+//  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
+//  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+end;
+
+procedure TForm2.btnDowngradeDatabaseClick(Sender: TObject);
+begin
+  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
+end;
+
+procedure TForm2.btnUpgradeDatabaseClick(Sender: TObject);
+begin
+  if Runner.MigrationList.Count = 0 then
+  begin
+    ShowMessage('You should add at least one migration object.');
+    Exit;
+  end;
+
+  Runner.UpgradeDatabase;
 end;
 
 procedure TForm2.FormCreate(Sender: TObject);
@@ -59,13 +81,20 @@ begin
     Schema := 'dbo';
   end;
 
-  {Use this line if you need local log}
-  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured befor creating the Runner.
+  {Use this line if you need local log.
+   Logger must be configured befor creating the Runner.
+   Noneed to free Logger, it will be destroyed when Runner destroys}
+  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 
   {Use this line if you don't need local log}
   // TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
+end;
+
+procedure TForm2.FormDestroy(Sender: TObject);
+begin
+  Runner.Free;
 end;
 
 procedure TForm2.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
