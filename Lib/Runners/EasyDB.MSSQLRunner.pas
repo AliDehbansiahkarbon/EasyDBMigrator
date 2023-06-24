@@ -16,14 +16,13 @@ type
     FDbName: string;
     FSchema: string;
     FSQLConnection: TSQLConnection;
-  public
-    constructor Create(ASQLConnection: TSQLConnection = nil); overload;
-    constructor Create(ConnectionParams: TConnectionParams); overload;
-    destructor Destroy; override;
-
     procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); override;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
+  public
+    constructor Create(ASQLConnection: TSQLConnection = nil); overload;
+    constructor Create(ConnectionParams: TConnectionParams; AUseTransaction: Boolean = False); overload;
+    destructor Destroy; override;
 
     property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
     property DbName: string read FDbName write FDbName;
@@ -41,10 +40,11 @@ begin
     FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
 end;
 
-constructor TSQLRunner.Create(ConnectionParams: TConnectionParams);
+constructor TSQLRunner.Create(ConnectionParams: TConnectionParams; AUseTransaction: Boolean = False);
 begin
   inherited Create;
   FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
+  FSQLConnection.UseTransaction := AUseTransaction;
   FDbName := ConnectionParams.DatabaseName;
   FSchema := ConnectionParams.Schema;
 end;
@@ -58,7 +58,9 @@ end;
 function TSQLRunner.GetDatabaseVersion: Int64;
 begin
   if FSQLConnection.IsConnected then
-    Result := FSQLConnection.OpenAsInteger('Select max(Version) from ' + TB);
+    Result := FSQLConnection.OpenAsInteger('Select max(Version) from ' + TB)
+  else
+    Result := -1;
 end;
 
 procedure TSQLRunner.UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True);

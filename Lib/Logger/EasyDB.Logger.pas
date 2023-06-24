@@ -9,7 +9,7 @@ type
   TLogger = class;
 
   TActionTypes = (atUpgrade, atDownGrade, atInitialize, atPreparingMigrations,
-                  atDbConnection, atQueryExecution);
+                  atDbConnection, atQueryExecution, atFileExecution);
 
   TLoggerEventHandler = procedure(AActionType: TActionTypes; AMessage, AEntityName: string; AVersion: Int64) of object;
 

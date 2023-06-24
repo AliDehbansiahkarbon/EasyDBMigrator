@@ -2,7 +2,7 @@ unit EasyDB.Runner;
 
 interface
 uses
-  System.Rtti, System.Generics.Collections, Vcl.Dialogs,
+  System.Rtti, System.Generics.Collections, Vcl.Dialogs, System.Threading,
   System.SysUtils, TypInfo, Contnrs, System.Classes, System.Generics.Defaults,
 
   EasyDB.Logger,
@@ -21,6 +21,10 @@ type
     function FindMigration(AMigrationObj: TMigrationBase): Boolean;
   end;
 
+  TArrayHelper = class helper for TArray
+    class function Add<T>(var Values: TArray<T>; Item: T): integer; static;
+  end;
+
   IRunner = interface
     ['{DECF074C-109F-488F-A97D-4B3C68FB4F35}']
 
@@ -33,7 +37,11 @@ type
   private
     FInternalMigrationList: TMigrationsDic;
     FMigrationList: TMigrations;
+    FOwnerHandle: THandle;
+    FUseThread: Boolean;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationEx): TMigrationEx;
+    procedure DoUpgrade;
+    procedure DoDowngrade(AVersion: Int64);
   public
     constructor Create;
     destructor Destroy; override;
@@ -46,6 +54,7 @@ type
 
     procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); virtual; abstract;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); virtual; abstract;
+    procedure UseInternalThread(AHandle: THandle);
     function GetDatabaseVersion: Int64; virtual; abstract;
 
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
@@ -57,6 +66,9 @@ implementation
 
 constructor TRunner.Create;
 begin
+  FOwnerHandle := 0;
+  FUseThread := False;
+
   FMigrationList := TMigrations.Create;
   FMigrationList.OwnsObjects := True;
   FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
@@ -71,16 +83,7 @@ begin
 end;
 
 destructor TRunner.Destroy;
-var
-  LvKey: string;
 begin
-//  if (FInternalMigrationList.Count > 0) and (FMigrationList.Items[0] is TMigrationEx) then
-//  begin
-//    for LvKey in FInternalMigrationList.Keys do
-//      FreeAndNil(FInternalMigrationList.Items[LvKey]);
-//
-//    FMigrationList.OwnsObjects := False;
-//  end;
   FreeAndNil(FInternalMigrationList);
   FreeAndNil(FMigrationList);
   FreeAndNil(TLogger.Instance);
@@ -152,6 +155,65 @@ begin
 end;
 
 procedure TRunner.UpgradeDatabase;
+begin
+  TTask.Run(DoUpgrade);
+end;
+
+procedure TRunner.UseInternalThread(AHandle: THandle);
+begin
+  FOwnerHandle := AHandle;
+  FUseThread := True;
+end;
+
+procedure TRunner.DoDowngrade(AVersion: Int64);
+var
+  LvDbVer: Int64;
+  LvMigrationList: TMigrations;
+  LvInternalMigration: TMigrationBase;
+
+  LvTempMigration: TMigration;
+  LvTempMigrationEx: TMigrationEx;
+begin
+  if FMigrationList.Count = 0 then
+    Exit;
+
+  LvDbVer := GetDatabaseVersion;
+  if LvDbVer <= AVersion then
+    Exit;
+
+  ArrangeMigrationList(umDESC);
+
+  for LvMigrationList in FInternalMigrationList.Values do
+  begin
+    for LvInternalMigration in LvMigrationList do
+    begin
+      if LvInternalMigration is TMigration then
+      begin
+        LvTempMigration := TMigration(LvInternalMigration);
+        try
+          if LvTempMigration.Version > AVersion then
+            LvTempMigration.Downgrade;
+        except on E: Exception do
+          Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempMigration.Version);
+        end;
+      end
+      else if LvInternalMigration is TMigrationEx then
+      begin
+        LvTempMigrationEx := TMigrationEx(LvInternalMigration);
+        try
+          if LvTempMigrationEx.AttribVersion > AVersion then
+            LvTempMigrationEx.Downgrade;
+        except on E: Exception do
+          Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
+        end;
+      end;
+    end;
+  end;
+
+  DownGradeVersionInfo(AVersion);
+end;
+
+procedure TRunner.DoUpgrade;
 var
   LvDbVer: Int64;
   LvMigrationList: TMigrations;
@@ -175,11 +237,11 @@ begin
     begin
       for LvInternalMigration in LvMigrationList do
       begin
+                  Sleep(1000);
         if LvInternalMigration is TMigration then
         begin
           LvTempMigration := TMigration(LvInternalMigration);
           LvTempVersion :=  LvTempMigration.Version;
-
           if LvTempVersion > LvDbVer then
           begin
             try
@@ -227,51 +289,8 @@ begin
 end;
 
 procedure TRunner.DowngradeDatabase(AVersion: Int64);
-var
-  LvDbVer: Int64;
-  LvMigrationList: TMigrations;
-  LvInternalMigration: TMigrationBase;
-
-  LvTempMigration: TMigration;
-  LvTempMigrationEx: TMigrationEx;
 begin
-  if FMigrationList.Count = 0 then
-    Exit;
-
-  LvDbVer := GetDatabaseVersion;
-  if LvDbVer <= AVersion then
-    Exit;
-
-  ArrangeMigrationList(umDESC);
-
-  for LvMigrationList in FInternalMigrationList.Values do
-  begin
-    for LvInternalMigration in LvMigrationList do
-    begin
-      if LvInternalMigration is TMigration then
-      begin
-        LvTempMigration := TMigration(LvInternalMigration);
-        try
-          if LvTempMigration.Version > AVersion then
-            LvTempMigration.Downgrade;
-        except on E: Exception do
-          Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempMigration.Version);
-        end;
-      end
-      else if LvInternalMigration is TMigrationEx then
-      begin
-        LvTempMigrationEx := TMigrationEx(LvInternalMigration);
-        try
-          if LvTempMigrationEx.AttribVersion > AVersion then
-            LvTempMigrationEx.Downgrade;
-        except on E: Exception do
-          Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
-        end;
-      end;
-    end;
-  end;
-
-  DownGradeVersionInfo(AVersion);
+  DoDowngrade(AVersion);
 end;
 
 procedure TRunner.SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
@@ -338,5 +357,15 @@ begin
     end;
   end;
 end;
+
+{ TArrayHelper }
+
+class function TArrayHelper.Add<T>(var Values: TArray<T>; Item: T): integer;
+begin
+  Result := Length(Values);
+  SetLength(Values, Result + 1);
+  Values[Result] := Item;
+end;
+
 
 end.

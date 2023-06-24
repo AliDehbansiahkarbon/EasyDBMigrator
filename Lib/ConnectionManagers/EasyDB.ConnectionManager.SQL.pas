@@ -3,7 +3,7 @@ unit EasyDB.ConnectionManager.SQL;
 interface
 
 uses
-  System.SysUtils,
+  System.SysUtils, System.Classes,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
@@ -11,7 +11,8 @@ uses
 
   EasyDB.ConnectionManager.Base,
   EasyDB.Logger,
-  EasyDB.Consts;
+  EasyDB.Consts,
+  BufStreamReader;
 type
   TConnectionParams = record
     Server: string;
@@ -32,6 +33,7 @@ type
     FUserName: string;
     FPass: string;
     FConnectionParams: TConnectionParams;
+    FUseTransaction: Boolean;
     Constructor Create;
     class var FInstance: TSQLConnection;
   public
@@ -44,12 +46,17 @@ type
     function ConnectEx: TSQLConnection;
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
-    function ExecuteAdHocQuery(AScript: string): Boolean; override;
-    function OpenAsInteger(AScript: string): Largeint;
     function Logger: TLogger;
 
-    property ConnectionParams: TConnectionParams read FConnectionParams;
+    function ExecuteAdHocQuery(AScript: string): Boolean; override;
+    function ExecuteScriptFile(AScriptPath: string): Boolean; override;
+    function OpenAsInteger(AScript: string): Largeint;
+    procedure BeginTrans;
+    procedure CommitTrans;
+    procedure RollBackTrans;
 
+    property ConnectionParams: TConnectionParams read FConnectionParams;
+    property UseTransaction: Boolean read FUseTransaction write FUseTransaction;
   end;
 
 implementation
@@ -87,6 +94,11 @@ begin
   inherited;
 end;
 
+procedure TSQLConnection.BeginTrans;
+begin
+  FConnection.Transaction.StartTransaction;
+end;
+
 function TSQLConnection.Connect: Boolean;
 begin
   try
@@ -101,16 +113,75 @@ begin
   end;
 end;
 
+procedure TSQLConnection.CommitTrans;
+begin
+  FConnection.Transaction.Commit;
+end;
+
 function TSQLConnection.ExecuteAdHocQuery(AScript: string): Boolean;
 begin
   try
+    if UseTransaction then
+      BeginTrans;
+
     FConnection.ExecSQL(AScript);
+
+    if UseTransaction then
+      CommitTrans;
+
     Result := True;
   except on E: Exception do
     begin
+      if UseTransaction then
+        RollBackTrans;
+
       Logger.Log(atQueryExecution, ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message);
-      Result := True;
+      Result := False;
     end;
+  end;
+end;
+
+function TSQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+var
+  LvFileStream: TFileStream;
+  LvBufferedReader: BufferedStreamReader;
+  LvLine: string;
+  LvStatement: string;
+begin
+  if FileExists(AScriptPath) then
+  begin
+    Result := True;
+    LvFileStream := TFileStream.Create(AScriptPath, fmOpenRead);
+    LvBufferedReader := BufferedStreamReader.Create(LvFileStream, TEncoding.UTF8);
+    LvLine := EmptyStr;
+    LvStatement := EmptyStr;
+
+    try
+      while not LvBufferedReader.EndOfStream do
+      begin
+        LvLine := LvBufferedReader.ReadLine;
+        if not LvLine.Trim.ToLower.Equals('go') then
+          LvStatement := LvStatement + ' ' + LvLine
+        else
+        begin
+          if not LvStatement.Trim.IsEmpty then
+          try
+            ExecuteAdHocQuery(LvStatement);
+          finally
+            LvStatement := EmptyStr;
+          end;
+        end;
+      end;
+    finally
+      LvBufferedReader.Free;
+      LvFileStream.Free;
+    end;
+    Result := True;
+  end
+  else
+  begin
+    Logger.Log(atFileExecution, 'Script file doesn''t exists.');
+    Result := False;
   end;
 end;
 
@@ -214,6 +285,11 @@ begin
     Result := FQuery.Fields[0].AsLargeInt
   else
     Result := -1;
+end;
+
+procedure TSQLConnection.RollBackTrans;
+begin
+  FConnection.Transaction.Rollback;
 end;
 
 function TSQLConnection.SetConnectionParam(AConnectionParams: TConnectionParams): TSQLConnection;

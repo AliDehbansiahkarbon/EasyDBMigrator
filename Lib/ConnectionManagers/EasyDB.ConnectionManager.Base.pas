@@ -14,9 +14,10 @@ type
   public
     function GetConnectionString: string; virtual; abstract;
     function Connect: Boolean; virtual; abstract;
-    function ExecuteAdHocQuery(AScript: string): Boolean; virtual; abstract;
-    function ActivateLog: TConnection; virtual; abstract;
     function Logger: TLogger; virtual; abstract;
+
+    function ExecuteAdHocQuery(AScript: string): Boolean; virtual; abstract;
+    function ExecuteScriptFile(AScriptPath: string): Boolean; virtual; abstract;
   end;
 
 implementation
