@@ -3,8 +3,8 @@ object Form2: TForm2
   Top = 414
   BorderStyle = bsToolWindow
   Caption = 'Advance usage with attributes.'
-  ClientHeight = 306
-  ClientWidth = 456
+  ClientHeight = 496
+  ClientWidth = 492
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,15 +16,15 @@ object Form2: TForm2
   OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
-    Left = 216
-    Top = 67
+    Left = 151
+    Top = 42
     Width = 58
     Height = 15
     Caption = 'to version: '
   end
   object btnDowngradeDatabase: TButton
-    Left = 64
-    Top = 63
+    Left = 8
+    Top = 39
     Width = 137
     Height = 25
     Caption = 'Downgrade Database'
@@ -32,8 +32,8 @@ object Form2: TForm2
     OnClick = btnDowngradeDatabaseClick
   end
   object btnUpgradeDatabase: TButton
-    Left = 224
-    Top = 25
+    Left = 151
+    Top = 8
     Width = 137
     Height = 25
     Caption = 'Upgrade Database'
@@ -41,8 +41,8 @@ object Form2: TForm2
     OnClick = btnUpgradeDatabaseClick
   end
   object btnAddMigrations: TButton
-    Left = 64
-    Top = 25
+    Left = 8
+    Top = 8
     Width = 137
     Height = 25
     Caption = 'Add Migrations'
@@ -50,8 +50,8 @@ object Form2: TForm2
     OnClick = btnAddMigrationsClick
   end
   object edtVersion: TEdit
-    Left = 274
-    Top = 64
+    Left = 209
+    Top = 39
     Width = 82
     Height = 23
     NumbersOnly = True
@@ -59,11 +59,18 @@ object Form2: TForm2
     Text = '202301010001'
   end
   object mmoLog: TMemo
-    Left = 8
-    Top = 104
-    Width = 430
-    Height = 187
+    Left = 16
+    Top = 70
+    Width = 465
+    Height = 403
     ScrollBars = ssVertical
     TabOrder = 4
+  end
+  object pbTotal: TProgressBar
+    Left = 312
+    Top = 8
+    Width = 169
+    Height = 17
+    TabOrder = 5
   end
 end

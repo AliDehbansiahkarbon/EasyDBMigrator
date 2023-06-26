@@ -9,7 +9,7 @@ uses
   EasyDB.ConnectionManager.SQL,
   EasyDB.Migration.Attrib, // Do not use "EasyDB.Migration.Base" here if you prefer Attributes.
   EasyDB.MSSQLRunner,
-  EasyDB.Logger;
+  EasyDB.Logger, Vcl.ComCtrls;
 
 type
   TForm2 = class(TForm)
@@ -19,6 +19,7 @@ type
     btnAddMigrations: TButton;
     edtVersion: TEdit;
     mmoLog: TMemo;
+    pbTotal: TProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
@@ -90,6 +91,9 @@ begin
   // TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner.LogAllExecutions := True;
+  Runner.UseInternalThread := True;
+  Runner.Progressbar := pbTotal;
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);

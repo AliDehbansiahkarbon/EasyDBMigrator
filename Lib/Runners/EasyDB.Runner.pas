@@ -2,7 +2,7 @@ unit EasyDB.Runner;
 
 interface
 uses
-  System.Rtti, System.Generics.Collections, Vcl.Dialogs, System.Threading,
+  System.Rtti, System.Generics.Collections, Vcl.Dialogs, System.Threading, Vcl.ComCtrls,
   System.SysUtils, TypInfo, Contnrs, System.Classes, System.Generics.Defaults,
 
   EasyDB.Logger,
@@ -21,14 +21,10 @@ type
     function FindMigration(AMigrationObj: TMigrationBase): Boolean;
   end;
 
-  TArrayHelper = class helper for TArray
-    class function Add<T>(var Values: TArray<T>; Item: T): integer; static;
-  end;
-
   IRunner = interface
     ['{DECF074C-109F-488F-A97D-4B3C68FB4F35}']
 
-    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True);
+    procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True);
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64);
     function GetDatabaseVersion: Int64;
   end;
@@ -37,11 +33,13 @@ type
   private
     FInternalMigrationList: TMigrationsDic;
     FMigrationList: TMigrations;
-    FOwnerHandle: THandle;
     FUseThread: Boolean;
+    FLogAllExecutions: Boolean;
+    FVersionToDowngrade: Int64;
+    FProgressBar : TProgressBar;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationEx): TMigrationEx;
     procedure DoUpgrade;
-    procedure DoDowngrade(AVersion: Int64);
+    procedure DoDowngrade;
   public
     constructor Create;
     destructor Destroy; override;
@@ -52,12 +50,14 @@ type
     function Logger: TLogger;
     procedure SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
 
-    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); virtual; abstract;
+    procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); virtual; abstract;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); virtual; abstract;
-    procedure UseInternalThread(AHandle: THandle);
     function GetDatabaseVersion: Int64; virtual; abstract;
 
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
+    property UseInternalThread: Boolean read FUseThread write FUseThread;
+    property LogAllExecutions: Boolean read FLogAllExecutions write FLogAllExecutions;
+    property Progressbar: TProgressBar read FProgressBar write FProgressBar;
   end;
 
 implementation
@@ -66,9 +66,10 @@ implementation
 
 constructor TRunner.Create;
 begin
-  FOwnerHandle := 0;
   FUseThread := False;
-
+  FLogAllExecutions := False;
+  FVersionToDowngrade := 0;
+  FProgressBar := nil;
   FMigrationList := TMigrations.Create;
   FMigrationList.OwnsObjects := True;
   FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
@@ -100,6 +101,12 @@ var
   LvTempEntityName: string;
 begin
   try
+    if Assigned(FProgressBar) then
+    begin
+      FProgressBar.Min := 0;
+      FProgressBar.Max := FMigrationList.Count;
+    end;
+
     for LvExternalMigration in FMigrationList do
     begin
       if LvExternalMigration is TMigration then
@@ -156,16 +163,22 @@ end;
 
 procedure TRunner.UpgradeDatabase;
 begin
-  TTask.Run(DoUpgrade);
+  if FUseThread then
+    TTask.Run(DoUpgrade)
+  else
+    DoUpgrade;
 end;
 
-procedure TRunner.UseInternalThread(AHandle: THandle);
+procedure TRunner.DowngradeDatabase(AVersion: Int64);
 begin
-  FOwnerHandle := AHandle;
-  FUseThread := True;
+  FVersionToDowngrade := AVersion;
+  if FUseThread then
+    TTask.Run(DoDowngrade)
+  else
+    DoDowngrade;
 end;
 
-procedure TRunner.DoDowngrade(AVersion: Int64);
+procedure TRunner.DoDowngrade;
 var
   LvDbVer: Int64;
   LvMigrationList: TMigrations;
@@ -178,7 +191,7 @@ begin
     Exit;
 
   LvDbVer := GetDatabaseVersion;
-  if LvDbVer <= AVersion then
+  if LvDbVer <= FVersionToDowngrade then
     Exit;
 
   ArrangeMigrationList(umDESC);
@@ -191,26 +204,43 @@ begin
       begin
         LvTempMigration := TMigration(LvInternalMigration);
         try
-          if LvTempMigration.Version > AVersion then
+          if LvTempMigration.Version > FVersionToDowngrade then
+          begin
             LvTempMigration.Downgrade;
+            if FLogAllExecutions then
+              Logger.DoCallBack(atDownGrade, 'Executed Successfully', LvTempMigration.EntityName, LvTempMigration.Version);
+          end;
         except on E: Exception do
           Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempMigration.Version);
         end;
+
+        if Assigned(FProgressBar) then
+          TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := FProgressBar.Position + 1; end);
       end
       else if LvInternalMigration is TMigrationEx then
       begin
         LvTempMigrationEx := TMigrationEx(LvInternalMigration);
         try
-          if LvTempMigrationEx.AttribVersion > AVersion then
+          if LvTempMigrationEx.AttribVersion > FVersionToDowngrade then
+          begin
             LvTempMigrationEx.Downgrade;
+
+            if FLogAllExecutions then
+              Logger.DoCallBack(atDownGrade, 'Executed Successfully', LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
+          end;
         except on E: Exception do
           Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
         end;
+
+        if Assigned(FProgressBar) then
+          TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := FProgressBar.Position + 1; end);
       end;
     end;
   end;
 
-  DownGradeVersionInfo(AVersion);
+  DownGradeVersionInfo(FVersionToDowngrade);
+  if Assigned(FProgressBar) then
+    TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := 0; end);
 end;
 
 procedure TRunner.DoUpgrade;
@@ -237,7 +267,6 @@ begin
     begin
       for LvInternalMigration in LvMigrationList do
       begin
-                  Sleep(1000);
         if LvInternalMigration is TMigration then
         begin
           LvTempMigration := TMigration(LvInternalMigration);
@@ -245,18 +274,24 @@ begin
           if LvTempVersion > LvDbVer then
           begin
             try
-              LvTempMigration.Upgrade;
+              LvTempMigration.Upgrade
 
               if not LvWrittenVersions.Contains(LvTempVersion) then
               begin
-                UpdateVersionInfo(LvTempVersion, LvTempMigration.Author, LvTempMigration.Description);
+                UpdateVersionInfo(LvTempMigration);
                 LvWrittenVersions.Add(LvTempVersion);
+                if FLogAllExecutions then
+                  Logger.DoCallBack(atUpgrade, 'Executed Successfully', LvTempMigration.EntityName, LvTempMigration.Version);
               end
               else
-                UpdateVersionInfo(LvTempVersion, LvTempMigration.Author, LvTempMigration.Description, False);
+                UpdateVersionInfo(LvTempMigration, False);
+
             except on E: Exception do
               Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempVersion);
             end;
+
+            if Assigned(FProgressBar) then
+              TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := FProgressBar.Position + 1; end);
           end;
         end
         else if LvInternalMigration is TMigrationEx then
@@ -271,26 +306,30 @@ begin
 
               if not LvWrittenVersions.Contains(LvTempVersion) then
               begin
-                UpdateVersionInfo(LvTempVersion, LvTempMigrationEx.AttribAuthor, LvTempMigrationEx.AttribDescription);
+                UpdateVersionInfo(LvTempMigrationEx);
                 LvWrittenVersions.Add(LvTempVersion);
+
+                if FLogAllExecutions then
+                  Logger.DoCallBack(atUpgrade, 'Executed Successfully', LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
               end
               else
-                UpdateVersionInfo(LvTempVersion, LvTempMigrationEx.AttribAuthor, LvTempMigrationEx.AttribDescription, False);
+                UpdateVersionInfo(LvTempMigrationEx, False);
+
             except on E: Exception do
               Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempVersion);
             end;
+
+            if Assigned(FProgressBar) then
+              TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := FProgressBar.Position + 1; end);
           end;
         end;
       end;
     end;
   finally
     LvWrittenVersions.Free;
+    if Assigned(FProgressBar) then
+      TThread.Synchronize(TThread.Current, procedure begin FProgressBar.Position := 0; end);
   end;
-end;
-
-procedure TRunner.DowngradeDatabase(AVersion: Int64);
-begin
-  DoDowngrade(AVersion);
 end;
 
 procedure TRunner.SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
@@ -306,25 +345,6 @@ begin
           Result := CompareText(GetPropValue(L, AFieldName), GetPropValue(R, AFieldName))
         else
           Result := CompareText(GetPropValue(R, AFieldName), GetPropValue(L, AFieldName));
-
-//        if L is TMigration then
-//        begin
-//          if TMigration(L).Version > TMigration(R).Version then
-//            Result := 1
-//          else if TMigration(L).Version < TMigration(R).Version then
-//            Result := -1
-//          else
-//            Result := 0;
-//        end
-//        else if L is TMigrationEx then
-//        begin
-//          if TMigrationEx(L).AttribVersion > TMigrationEx(R).AttribVersion then
-//            Result := 1
-//          else if TMigrationEx(L).AttribVersion < TMigrationEx(R).AttribVersion then
-//            Result := -1
-//          else
-//            Result := 0;
-//        end;
       end
       ));
   end;
@@ -357,15 +377,5 @@ begin
     end;
   end;
 end;
-
-{ TArrayHelper }
-
-class function TArrayHelper.Add<T>(var Values: TArray<T>; Item: T): integer;
-begin
-  Result := Length(Values);
-  SetLength(Values, Result + 1);
-  Values[Result] := Item;
-end;
-
 
 end.

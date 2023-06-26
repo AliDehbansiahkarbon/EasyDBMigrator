@@ -21,6 +21,7 @@ type
     class var FInstance: TLogger;
   public
     procedure Log(AActionType: TActionTypes; AMessage: string; AEntityName: string = ''; AVersion: Int64 = 0);
+    procedure DoCallBack(AActionType: TActionTypes; AMessage: string; AEntityName: string = ''; AVersion: Int64 = 0);
     class function Instance: TLogger;
     class function ConfigLocal(ALocalLog: Boolean; ALocalFilePath: string): TLogger;
 
@@ -38,6 +39,12 @@ begin
   Result := FInstance;
 end;
 
+procedure TLogger.DoCallBack(AActionType: TActionTypes; AMessage, AEntityName: string; AVersion: Int64);
+begin
+  if Assigned(FOnLog) then
+    OnLog(AActionType, AMessage, AEntityName, AVersion);
+end;
+
 class function TLogger.Instance: TLogger;
 begin
   if not Assigned(FInstance) then
@@ -50,8 +57,7 @@ procedure TLogger.Log(AActionType: TActionTypes; AMessage, AEntityName: string; 
 var
   LvLogFile: TextFile;
 begin
-  if Assigned(FOnLog) then
-    FOnLog(AActionType, AMessage, AEntityName, AVersion);
+  DoCallBack(AActionType, AMessage, AEntityName, AVersion);
 
   if (not FLocalLog) or (FLocalFilePath.IsEmpty) then
     Exit;

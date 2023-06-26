@@ -9,7 +9,7 @@ uses
   EasyDB.ConnectionManager.SQL,
   EasyDB.Migration.Base,
   EasyDB.MSSQLRunner,
-  EasyDB.Logger;
+  EasyDB.Logger, Vcl.ComCtrls;
 
 type
   TForm1 = class(TForm)
@@ -19,6 +19,7 @@ type
     edtVersion: TEdit;
     Label1: TLabel;
     mmoLog: TMemo;
+    pbTotal: TProgressBar;
     procedure btnDowngradeDatabaseClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -51,16 +52,16 @@ begin
   end
   ));
 
-  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
-  procedure
-  begin
-    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField2 int');
-  end,
-  procedure
-  begin
-    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField2');
-  end
-  ));
+//  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
+//  procedure
+//  begin
+//    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField2 int');
+//  end,
+//  procedure
+//  begin
+//    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField2');
+//  end
+//  ));
 end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
@@ -100,6 +101,9 @@ begin
   // TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner.LogAllExecutions := True;
+  //Runner.UseInternalThread := True;
+  Runner.Progressbar := pbTotal;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

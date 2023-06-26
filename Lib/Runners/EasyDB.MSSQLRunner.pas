@@ -4,6 +4,8 @@ interface
 
 uses
   System.SysUtils, System.StrUtils,
+  EasyDB.Migration.Base,
+  EasyDB.Migration.Attrib,
   EasyDB.Runner,
   EasyDB.ConnectionManager.SQL,
   EasyDB.Consts,
@@ -16,7 +18,7 @@ type
     FDbName: string;
     FSchema: string;
     FSQLConnection: TSQLConnection;
-    procedure UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True); override;
+    procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
@@ -63,10 +65,26 @@ begin
     Result := -1;
 end;
 
-procedure TSQLRunner.UpdateVersionInfo(ALatestVersion: Int64; AAuthor: string; ADescription: string; AInsertMode: Boolean = True);
+procedure TSQLRunner.UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True);
 var
   LvScript: string;
+  LvLatestVersion: Int64;
+  LvAuthor:string;
+  LvDescription: string;
 begin
+  if AMigration is TMigration then
+  begin
+    LvLatestVersion := TMigration(AMigration).Version;
+    LvAuthor := TMigration(AMigration).Author;
+    LvDescription := TMigration(AMigration).Description;
+  end
+  else if AMigration is TMigrationEx then
+  begin
+    LvLatestVersion := TMigrationEx(AMigration).AttribVersion;
+    LvAuthor := TMigrationEx(AMigration).AttribAuthor;
+    LvDescription := TMigrationEx(AMigration).AttribDescription;
+  end;
+
   if AInsertMode then
   begin
     LvScript := IfThen(((not FDbName.IsEmpty) and (not FSchema.IsEmpty)),
@@ -80,10 +98,10 @@ begin
        + ') ' + #10
        + 'VALUES ' + #10
        + '( ' + #10
-       + '	' + ALatestVersion.ToString + ', ' + #10
+       + '	' + LvLatestVersion.ToString + ', ' + #10
        + '	(getdate()), ' + #10
-       + '	' + AAuthor.QuotedString + ', ' + #10
-       + '	' + ADescription.QuotedString + ' ' + #10
+       + '	' + LvAuthor.QuotedString + ', ' + #10
+       + '	' + LvDescription.QuotedString + ' ' + #10
        + ')';
   end
   else
@@ -93,9 +111,9 @@ begin
        'UPDATE ' + TB + ' ' + #10)
        + 'SET ' + #10
        + ' AppliedOn = (getdate()) ' + #10
-       + ' ,Author = Author + ' + QuotedStr(' -- ') + ' + ' + AAuthor.QuotedString + #10
-       + ' ,[Description] = [Description] + ' + QuotedStr(' -- ') + ' + ' + ADescription.QuotedString + #10
-       + ' Where Version = ' + ALatestVersion.ToString;
+       + ' ,Author = Author + ' + QuotedStr(' -- ') + ' + ' + LvAuthor.QuotedString + #10
+       + ' ,[Description] = [Description] + ' + QuotedStr(' -- ') + ' + ' + LvDescription.QuotedString + #10
+       + ' Where Version = ' + LvLatestVersion.ToString;
   end;
 
   FSQLConnection.ExecuteAdHocQuery(LvScript);
