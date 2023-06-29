@@ -4,12 +4,13 @@ interface
 
 uses
   System.SysUtils, System.StrUtils,
-  EasyDB.Migration.Base,
-  EasyDB.Migration.Attrib,
+  EasyDB.Migration,
+  EasyDB.MigrationX,
   EasyDB.Runner,
   EasyDB.ConnectionManager.SQL,
   EasyDB.Consts,
-  EasyDB.Logger;
+  EasyDB.Logger,
+  EasyDB.Core;
 
 type
 
@@ -18,12 +19,13 @@ type
     FDbName: string;
     FSchema: string;
     FSQLConnection: TSQLConnection;
+
     procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
     constructor Create(ASQLConnection: TSQLConnection = nil); overload;
-    constructor Create(ConnectionParams: TConnectionParams; AUseTransaction: Boolean = False); overload;
+    constructor Create(ConnectionParams: TConnectionParams); overload;
     destructor Destroy; override;
 
     property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
@@ -42,11 +44,10 @@ begin
     FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
 end;
 
-constructor TSQLRunner.Create(ConnectionParams: TConnectionParams; AUseTransaction: Boolean = False);
+constructor TSQLRunner.Create(ConnectionParams: TConnectionParams);
 begin
   inherited Create;
   FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
-  FSQLConnection.UseTransaction := AUseTransaction;
   FDbName := ConnectionParams.DatabaseName;
   FSchema := ConnectionParams.Schema;
 end;
@@ -78,11 +79,11 @@ begin
     LvAuthor := TMigration(AMigration).Author;
     LvDescription := TMigration(AMigration).Description;
   end
-  else if AMigration is TMigrationEx then
+  else if AMigration is TMigrationX then
   begin
-    LvLatestVersion := TMigrationEx(AMigration).AttribVersion;
-    LvAuthor := TMigrationEx(AMigration).AttribAuthor;
-    LvDescription := TMigrationEx(AMigration).AttribDescription;
+    LvLatestVersion := TMigrationX(AMigration).AttribVersion;
+    LvAuthor := TMigrationX(AMigration).AttribAuthor;
+    LvDescription := TMigrationX(AMigration).AttribDescription;
   end;
 
   if AInsertMode then

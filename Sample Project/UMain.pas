@@ -4,12 +4,12 @@ interface
 
 uses
   System.StrUtils, System.SysUtils, Vcl.Forms, Vcl.Dialogs, System.TypInfo,
-  System.Classes, Vcl.StdCtrls, Vcl.Controls,
+  System.Classes, Vcl.StdCtrls, Vcl.Controls, Vcl.ComCtrls,
 
-  EasyDB.ConnectionManager.SQL,
-  EasyDB.Migration.Base,
+  EasyDB.Core,
+  EasyDB.Migration,
   EasyDB.MSSQLRunner,
-  EasyDB.Logger, Vcl.ComCtrls;
+  EasyDB.Logger;
 
 type
   TForm1 = class(TForm)
@@ -41,27 +41,69 @@ implementation
 
 procedure TForm1.btnAddMigrationsClick(Sender: TObject);
 begin
-  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Task number #2701',
+  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
+  var sql: string;
   begin
-    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField varchar(50)');
+    sql := 'If Not Exists( Select * From sysobjects Where Name = ''TbUsers'' And xtype = ''U'') ' + #10
+     + '    Create Table TbUsers( ' + #10
+     + '    	ID Int Primary key Identity(1, 1) Not null, ' + #10
+     + '    	UserName Nvarchar(100), ' + #10
+     + '    	Pass Nvarchar(50) ' + #10
+     + '    );';
+
+    Runner.SQLConnection.ExecuteAdHocQuery(sql);
   end,
   procedure
   begin
-    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField');
+    Runner.SQLConnection.ExecuteAdHocQuery('DROP TABLE TbUsers');
   end
   ));
 
-//  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
-//  procedure
-//  begin
-//    Runner.SQLConnection.ExecuteAdHocQuery('Alter table users add NewField2 int');
-//  end,
-//  procedure
-//  begin
-//    Runner.SQLConnection.ExecuteAdHocQuery('Alter table Users drop column NewField2');
-//  end
-//  ));
+  //============================================
+  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
+  end,
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
+  end
+  ));
+
+  //============================================
+
+  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
+  end,
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
+  end
+  ));
+
+  //============================================
+
+  Runner.MigrationList.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
+  procedure
+  var sql: string;
+  begin
+    sql := 'If Not Exists( Select * From sysobjects Where Name = ''TbCustomers'' And xtype = ''U'') ' + #10
+     + '    Create Table TbCustomers( ' + #10
+     + '    	ID Int Primary key Identity(1, 1) Not null, ' + #10
+     + '    	Name Nvarchar(100), ' + #10
+     + '    	Family Nvarchar(50) ' + #10
+     + '    );';
+    Runner.SQLConnection.ExecuteAdHocQuery(sql);
+  end,
+  procedure
+  begin
+    Runner.SQLConnection.ExecuteAdHocQuery('DROP TABLE TbCustomers');
+  end
+  ));
 end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
@@ -101,9 +143,7 @@ begin
   // TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.LogAllExecutions := True;
-  //Runner.UseInternalThread := True;
-  Runner.Progressbar := pbTotal;
+  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);

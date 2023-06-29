@@ -10,30 +10,19 @@ uses
   FireDAC.Comp.DataSet,{==MSSQL==} FireDAC.Phys.MSSQLDef, FireDAC.Phys.ODBCBase, FireDAC.Phys.MSSQL,{==MSSQL==}
 
   EasyDB.ConnectionManager.Base,
+  EasyDB.Core,
   EasyDB.Logger,
   EasyDB.Consts,
   BufStreamReader;
-type
-  TConnectionParams = record
-    Server: string;
-    LoginTimeout: Integer;
-    UserName: string;
-    Pass: string;
-    DatabaseName: string;
-    Schema: string;
-  end;
 
+type
 
   TSQLConnection = class(TConnection) // Singletone
   private
     FConnection: TFDConnection;
     FMSSQLDriver: TFDPhysMSSQLDriverLink;
     FQuery: TFDQuery;
-    FServer: string;
-    FUserName: string;
-    FPass: string;
     FConnectionParams: TConnectionParams;
-    FUseTransaction: Boolean;
     Constructor Create;
     class var FInstance: TSQLConnection;
   public
@@ -46,17 +35,18 @@ type
     function ConnectEx: TSQLConnection;
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
-    function Logger: TLogger;
+    function Logger: TLogger; override;
 
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
+    function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
     function ExecuteScriptFile(AScriptPath: string): Boolean; override;
     function OpenAsInteger(AScript: string): Largeint;
+
     procedure BeginTrans;
     procedure CommitTrans;
     procedure RollBackTrans;
 
     property ConnectionParams: TConnectionParams read FConnectionParams;
-    property UseTransaction: Boolean read FUseTransaction write FUseTransaction;
   end;
 
 implementation
@@ -121,22 +111,30 @@ end;
 function TSQLConnection.ExecuteAdHocQuery(AScript: string): Boolean;
 begin
   try
-    if UseTransaction then
-      BeginTrans;
-
     FConnection.ExecSQL(AScript);
-
-    if UseTransaction then
-      CommitTrans;
-
     Result := True;
   except on E: Exception do
     begin
-      if UseTransaction then
-        RollBackTrans;
-
-      Logger.Log(atQueryExecution, ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message);
+      E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
       Result := False;
+      raise;
+    end;
+  end;
+end;
+
+function TSQLConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+begin
+  try
+    BeginTrans;
+    FConnection.ExecSQL(AScript);
+    CommitTrans;
+    Result := True;
+  except on E: Exception do
+    begin
+      RollBackTrans;
+      E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
+      Result := False;
+      raise;
     end;
   end;
 end;

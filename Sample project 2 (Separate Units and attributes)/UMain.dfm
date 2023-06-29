@@ -3,8 +3,8 @@ object Form2: TForm2
   Top = 414
   BorderStyle = bsToolWindow
   Caption = 'Advance usage with attributes.'
-  ClientHeight = 496
-  ClientWidth = 492
+  ClientHeight = 484
+  ClientWidth = 484
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

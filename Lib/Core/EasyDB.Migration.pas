@@ -1,18 +1,11 @@
-unit EasyDB.Migration.Base;
+unit EasyDB.Migration;
 
 interface
 uses
-  System.SysUtils, System.Generics.Collections;
+  System.SysUtils, System.Generics.Collections,
+  EasyDB.Core;
 
 type
-  TMigrationBase = class
-  public
-    HiddenAttribDic: TDictionary<string, Variant>;
-    HasAttribDic: Boolean;
-    procedure CreateHiddenAttribDic(AEntityName: string; AVersion: int64; AAuthor: string; ADescription: string);
-    destructor Destroy; override;
-  end;
-
 
   TMigration = class(TMigrationBase) // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
   private
@@ -58,24 +51,6 @@ procedure TMigration.Upgrade;
 begin
   if Assigned(FUp) then
     FUp;
-end;
-
-{ TMigrationBase }
-
-procedure TMigrationBase.CreateHiddenAttribDic(AEntityName: string; AVersion: int64; AAuthor: string; ADescription: string);
-begin
-  HiddenAttribDic := TDictionary<string, Variant>.Create;
-  HiddenAttribDic.Add('EntityName', AEntityName);
-  HiddenAttribDic.Add('Version', AVersion);
-  HiddenAttribDic.Add('Author', AAuthor);
-  HiddenAttribDic.Add('Description', ADescription);
-end;
-
-destructor TMigrationBase.Destroy;
-begin
-  if Assigned(HiddenAttribDic) then
-    HiddenAttribDic.Free;
-  inherited;
 end;
 
 end.

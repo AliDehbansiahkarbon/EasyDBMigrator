@@ -1,16 +1,17 @@
-unit EasyDB.Migration.Attrib;
+unit EasyDB.MigrationX;
 
 interface
 uses
   System.SysUtils, System.Rtti, Vcl.Dialogs, System.Generics.Collections,
+  EasyDB.Core,
   EasyDB.Attribute,
-  EasyDB.Migration.Base,
+  EasyDB.Migration,
   EasyDB.Logger;
 
 type
   {$M+}
   {$RTTI EXPLICIT PROPERTIES([vcPrivate, vcPublic, vcProtected, vcPublished])}
-  TMigrationEx = class(TMigrationBase) // You must use class level attributes with this type and you should implement Upgrade and Downgrade procedures manually;
+  TMigrationX = class(TMigrationBase) // You must use class level attributes with this type and you should implement Upgrade and Downgrade procedures manually;
   private
     FUp: TProc;
     FDown: TProc;
@@ -36,18 +37,18 @@ implementation
 
 { TMigrationEx }
 
-constructor TMigrationEx.Create(AUp, ADown: TProc);
+constructor TMigrationX.Create(AUp, ADown: TProc);
 begin
   FUp := AUp;
   FDown := ADown;
 end;
 
-constructor TMigrationEx.Create;
+constructor TMigrationX.Create;
 begin
   inherited;
 end;
 
-function TMigrationEx.GetAttribEntityName: string;
+function TMigrationX.GetAttribEntityName: string;
 var
   LvContext: TRttiContext;
   LvType: TRttiType;
@@ -71,7 +72,7 @@ begin
   end;
 end;
 
-function TMigrationEx.GetAttribVersion: Int64;
+function TMigrationX.GetAttribVersion: Int64;
 var
   LvContext: TRttiContext;
   LvType: TRttiType;
@@ -97,7 +98,7 @@ begin
   end;
 end;
 
-function TMigrationEx.GetAttribAuthor: string;
+function TMigrationX.GetAttribAuthor: string;
 var
   LvContext: TRttiContext;
   LvType: TRttiType;
@@ -121,7 +122,7 @@ begin
   end;
 end;
 
-function TMigrationEx.GetAttribDescription: string;
+function TMigrationX.GetAttribDescription: string;
 var
   LvContext: TRttiContext;
   LvType: TRttiType;
@@ -145,18 +146,18 @@ begin
   end;
 end;
 
-function TMigrationEx.Logger: TLogger;
+function TMigrationX.Logger: TLogger;
 begin
   Result := TLogger.Instance;
 end;
 
-procedure TMigrationEx.Upgrade;
+procedure TMigrationX.Upgrade;
 begin
   if Assigned(FUp) then
     FUp;
 end;
 
-procedure TMigrationEx.Downgrade;
+procedure TMigrationX.Downgrade;
 begin
   if Assigned(FDown) then
     FDown;

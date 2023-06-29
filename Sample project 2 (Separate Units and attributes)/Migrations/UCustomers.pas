@@ -4,7 +4,7 @@ interface
 uses
   System.SysUtils,
 
-  EasyDB.Migration.Attrib,
+  EasyDB.MigrationX,
   EasyDB.ConnectionManager.SQL,
   EasyDB.Logger,
   EasyDB.Attribute,
@@ -13,14 +13,14 @@ uses
 type
 
   [TCustomMigrationAttribute('TbCustomers', 202301010005, 'Created Customers table', 'Alex')]
-  TCustomersMgr_202301010005 = class(TMigrationEx)
+  TCustomersMgr_202301010005 = class(TMigrationX)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;
   end;
 
   [TCustomMigrationAttribute('TbCustomers', 202301010010, 'Altered TbCustomers , added NewField1 as varchar(100)', 'Alex')]
-  TCustomersMgr_202301010010 = class(TMigrationEx)
+  TCustomersMgr_202301010010 = class(TMigrationX)
   public
     procedure Upgrade; override;
     procedure Downgrade; override;

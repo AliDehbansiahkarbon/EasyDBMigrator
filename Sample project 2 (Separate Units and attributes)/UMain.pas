@@ -4,12 +4,12 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.TypInfo,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.StrUtils, UCustomers, UUsers, UInvoices,
-
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, UCustomers, UUsers, UInvoices,
+  EasyDB.Core,
   EasyDB.ConnectionManager.SQL,
-  EasyDB.Migration.Attrib, // Do not use "EasyDB.Migration.Base" here if you prefer Attributes.
+  EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer Attributes.
   EasyDB.MSSQLRunner,
-  EasyDB.Logger, Vcl.ComCtrls;
+  EasyDB.Logger;
 
 type
   TForm2 = class(TForm)
@@ -91,9 +91,7 @@ begin
   // TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.LogAllExecutions := True;
-  Runner.UseInternalThread := True;
-  Runner.Progressbar := pbTotal;
+  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal);
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);
