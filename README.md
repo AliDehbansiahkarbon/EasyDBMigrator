@@ -1,7 +1,7 @@
 # $\textcolor{Cyan}{EasyDbMigrator}$
 
-EasyDb Migrator is a migration library for Delphi similar to Fluent migrator for .Net
-Migrations are a structured way to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved. Migrations solve the problem of evolving a database schema for multiple databases (for example, the developer's local database, the test database, and the production database). Database schema changes are described in classes written in Delphi that can be checked into a version control system.
+## EasyDb Migrator is a database migration library for Delphi, built to streamline database evolution.
+## Migrations are a structured way to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved. Migrations solve the problem of evolving a database schema for multiple databases (for example, the developer's local database, the test database, and the production database). Database schema changes are described in classes written in Delphi that can be checked into a version control system.
 
 # Prerequisites
 
