@@ -36,7 +36,7 @@ var
   ConnectionParams: TConnectionParams;
 begin
 
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
+  with LvConnectionParams do // Could be loaded from ini, registry, or somewhere else.
   begin
     Server := '127.0.0.1'; // SQL Server address
     LoginTimeout := 30000;
