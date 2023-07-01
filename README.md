@@ -16,10 +16,11 @@ It's a library, so you just need to use the units in your projects.
 # How to use EasyDbMigrator?
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
+
 ## Simple way(Using on-demand classes with anonymous methods)
 <details>
   <summary>
-   Click me 
+   🟥 SQL SERVER Sample 
   </summary>
 
 ### Initializing
@@ -55,7 +56,6 @@ begin
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
 end
 ```
-
 
 ### Add migrations
 ```delphi
@@ -130,13 +130,15 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
 
 ```
 
-### Run the Migrator - Upgrade the database to the latest version
+### Run the Migrator
+- 🟩 Upgrade the database to the latest version
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
 ```
-### Run the Migrator - Downgrade the database to the latest version
+- 🟩 Downgrade the database to the latest version
 ```delphi
-  Runner.DowngradeDatabase(202301010001); // Do downgrade to a specefici version.
+  Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
+  //This version and lower versions of database will remain and any version above this will be restored.
 ```  
 </details>
 
