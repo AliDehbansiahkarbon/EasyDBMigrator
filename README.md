@@ -17,7 +17,7 @@ It's a library, so you just need to use the units in your projects, add migratio
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
 
-# $\textcolor{Cyan}{Simple\ way\ (Using\ on-demand\ classes\ with\ anonymous\ methods)}$
+# $\textcolor{Cyan}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
 
 <details>
 <summary>
