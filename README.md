@@ -11,17 +11,18 @@ Migrations are a structured way to alter your database schema and are an alterna
 
 
 # How it works?
-It's a library, so you just need to use the units in your projects.
+It's a library, so you just need to use the units in your projects, add migrations and run the migrator.
 
-# How to use EasyDbMigrator?
+# How to use it?
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
 
-## Simple way(Using on-demand classes with anonymous methods)
+# $\textcolor{Cyan}{Simple\ way\ (Using\ on-demand\ classes\ with\ anonymous\ methods)}$
+
 <details>
-  <summary>
-   🟥 SQL SERVER Sample 
-  </summary>
+<summary>
+  🟥 SQL SERVER Sample   
+</summary>
 
 ### Initializing
 ```delphi
@@ -142,10 +143,22 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
 ```  
 </details>
 
-## Advanced way (using versioned classes with attributes)
+<details>
+<summary>
+  🟦 MySQL Sample   
+</summary>
+</details>
+
+# $\textcolor{Cyan}{Advanced\ way\ (using\ versioned\ classes\ with\ attributes)}$
 
 <details>
   <summary>
-   Click me 
+   🟥 SQL SERVER Sample 
+  </summary>
+</details>
+
+<details>
+  <summary>
+   🟦 MySQL Sample   
   </summary>
 </details>
