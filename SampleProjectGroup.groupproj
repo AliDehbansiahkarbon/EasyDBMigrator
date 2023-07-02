@@ -9,6 +9,9 @@
         <Projects Include="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="EasyDBMigration_Advance_SQLServer:Make">
         <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDBMigration_Simple_MySQL">
+        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj"/>
+    </Target>
+    <Target Name="EasyDBMigration_Simple_MySQL:Clean">
+        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDBMigration_Simple_MySQL:Make">
+        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer;EasyDBMigration_Simple_MySQL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean;EasyDBMigration_Simple_MySQL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make;EasyDBMigration_Simple_MySQL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

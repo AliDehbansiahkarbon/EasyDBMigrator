@@ -13,12 +13,21 @@ type
   TActionTypes = (atUpgrade, atDownGrade, atInitialize, atPreparingMigrations,
                   atDbConnection, atQueryExecution, atFileExecution);
 
-  TConnectionParams = record
+  TSqlConnectionParams = record
     Server: string;
     LoginTimeout: Integer;
     UserName: string;
     Pass: string;
     DatabaseName: string;
+    Schema: string;
+  end;
+
+  TMySqlConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
     Schema: string;
   end;
 

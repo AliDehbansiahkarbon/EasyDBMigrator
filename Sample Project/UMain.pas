@@ -124,7 +124,7 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  LvConnectionParams: TConnectionParams;
+  LvConnectionParams: TSqlConnectionParams;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin

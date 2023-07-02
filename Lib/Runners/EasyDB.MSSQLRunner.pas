@@ -25,7 +25,7 @@ type
     function GetDatabaseVersion: Int64; override;
   public
     constructor Create(ASQLConnection: TSQLConnection = nil); overload;
-    constructor Create(ConnectionParams: TConnectionParams); overload;
+    constructor Create(AConnectionParams: TSqlConnectionParams); overload;
     destructor Destroy; override;
 
     property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
@@ -44,12 +44,12 @@ begin
     FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
 end;
 
-constructor TSQLRunner.Create(ConnectionParams: TConnectionParams);
+constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams);
 begin
   inherited Create;
-  FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(ConnectionParams).ConnectEx;
-  FDbName := ConnectionParams.DatabaseName;
-  FSchema := ConnectionParams.Schema;
+  FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  FDbName := AConnectionParams.DatabaseName;
+  FSchema := AConnectionParams.Schema;
 end;
 
 destructor TSQLRunner.Destroy;

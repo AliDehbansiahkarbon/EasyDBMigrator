@@ -22,7 +22,7 @@ type
     FConnection: TFDConnection;
     FMSSQLDriver: TFDPhysMSSQLDriverLink;
     FQuery: TFDQuery;
-    FConnectionParams: TConnectionParams;
+    FConnectionParams: TSqlConnectionParams;
     Constructor Create;
     class var FInstance: TSQLConnection;
   public
@@ -30,7 +30,7 @@ type
     Destructor Destroy; override;
 
     function GetConnectionString: string; override;
-    function SetConnectionParam(AConnectionParams: TConnectionParams): TSQLConnection;
+    function SetConnectionParam(AConnectionParams: TSqlConnectionParams): TSQLConnection;
     function Connect: Boolean; override;
     function ConnectEx: TSQLConnection;
     function IsConnected: Boolean;
@@ -46,7 +46,7 @@ type
     procedure CommitTrans;
     procedure RollBackTrans;
 
-    property ConnectionParams: TConnectionParams read FConnectionParams;
+    property ConnectionParams: TSqlConnectionParams read FConnectionParams;
   end;
 
 implementation
@@ -290,7 +290,7 @@ begin
   FConnection.Transaction.Rollback;
 end;
 
-function TSQLConnection.SetConnectionParam(AConnectionParams: TConnectionParams): TSQLConnection;
+function TSQLConnection.SetConnectionParam(AConnectionParams: TSqlConnectionParams): TSQLConnection;
 begin
   FConnectionParams := AConnectionParams;
   with FConnection.Params, FConnectionParams do
