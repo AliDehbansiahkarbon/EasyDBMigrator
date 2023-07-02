@@ -17,7 +17,7 @@ It's a library, so you just need to use the units in your projects, add migratio
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
 
-# $\textcolor{Cyan}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
+# $\textcolor{MidnightBlue}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
 
 <details>
 <summary>
@@ -149,12 +149,117 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
 </summary>
 </details>
 
-# $\textcolor{Cyan}{Advanced\ way\ (using\ versioned\ classes\ with\ attributes)}$
+# $\textcolor{MidnightBlue}{Advanced\ way\ (using\ versioned\ classes\ with\ attributes)}$
 
 <details>
   <summary>
    🟥 SQL SERVER Sample 
   </summary>
+
+### Initializing is the exactly same as simple mode.
+
+### Add migrations
+Instead of creation of some on-demand classes you can create one unit per database entity and implement versioned classes like the following code:
+```delphi
+type
+
+  [TCustomMigrationAttribute('TbUsers', 202301010001, 'Created users table', 'Alex')]
+  TUsersMgr_202301010001 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+  [TCustomMigrationAttribute('TbUsers', 202301010002, 'Added newfielad1', 'Alex')]
+  TUsersMgr_202301010002 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+  [TCustomMigrationAttribute('TbUsers', 202301010003, 'Added newfielad2', 'Alex')]
+  TUsersMgr_202301010003 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+implementation
+
+{ TUsersMgr_202301010001 }
+procedure TUsersMgr_202301010001.Downgrade;
+begin
+  try
+    SQL.ExecuteAdHocQuery('Drop Table TbUsers');
+  except on E: Exception do
+    Logger.Log(atDowngrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010001.Upgrade;
+var
+  LvScript: string;
+begin
+  LvScript := 'If Not Exists( Select * From sysobjects Where Name = ''TbUsers'' And xtype = ''U'') ' + #10
+            + ' Create Table TbUsers( ' + #10
+            + ' ID Int Primary key Identity(1, 1) Not null, ' + #10
+            + ' UserName Nvarchar(100), ' + #10
+            + ' Pass Nvarchar(50) ' + #10
+            + ' );';
+  try
+    SQL.ExecuteAdHocQuery(LvScript);
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+{ TUsersMgr_202301010002 }
+procedure TUsersMgr_202301010002.Downgrade;
+var
+  LvScript: string;
+begin
+  try
+    SQL.ExecuteAdHocQuery('Alter table TbUsers Drop Column CreatedDate');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010002.Upgrade;
+begin
+  try
+    SQL.ExecuteAdHocQuery('Alter table TbUsers Add CreatedDate Datetime');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+{ TUsersMgr_202301010003 }
+
+procedure TUsersMgr_202301010003.Downgrade;
+begin
+  try
+    SQL.ExecuteAdHocQuery('Alter table TbUsers Drop Column ImageLink');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010003.Upgrade;
+begin
+  try
+    SQL.ExecuteAdHocQuery('Alter table TbUsers Add ImageLink Varchar(500)');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+```
+### Run the Migrator exactly like the simple mode.
+```delphi
+  Runner.UpgradeDatabase; // Do upgrade
+  // or
+  Runner.DowngradeDatabase(202301010001);
+```
 </details>
 
 <details>
