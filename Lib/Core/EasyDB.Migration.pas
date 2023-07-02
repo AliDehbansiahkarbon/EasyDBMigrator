@@ -6,7 +6,7 @@ uses
   EasyDB.Core;
 
 type
-
+  {$M+}
   TMigration = class(TMigrationBase) // You don't need class level attribute and you can use anonymouse method to define Upgrade and Downgrade procedures.
   private
     FUp: TProc;

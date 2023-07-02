@@ -137,7 +137,7 @@ begin
   end;
 
   {Use this line if you need local log}
-  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured befor creating the Runner.
+  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured before creating the Runner.
 
   {Use this line if you don't need local log}
   // TLogger.Instance.OnLog := OnLog;

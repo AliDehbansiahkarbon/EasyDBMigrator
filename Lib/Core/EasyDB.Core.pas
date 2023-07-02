@@ -10,6 +10,9 @@ type
   TMigrations = TObjectList<TMigrationBase>;
   TMigrationsDic = TObjectDictionary<string, TMigrations>;
 
+  TActionTypes = (atUpgrade, atDownGrade, atInitialize, atPreparingMigrations,
+                  atDbConnection, atQueryExecution, atFileExecution);
+
   TConnectionParams = record
     Server: string;
     LoginTimeout: Integer;

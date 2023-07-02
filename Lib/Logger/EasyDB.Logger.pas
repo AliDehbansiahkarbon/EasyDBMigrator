@@ -3,13 +3,11 @@ unit EasyDB.Logger;
 interface
 
 uses
-  System.SysUtils, System.TypInfo, System.StrUtils;
+  System.SysUtils, System.TypInfo, System.StrUtils,
+  EasyDB.Core;
 
 type
   TLogger = class;
-
-  TActionTypes = (atUpgrade, atDownGrade, atInitialize, atPreparingMigrations,
-                  atDbConnection, atQueryExecution, atFileExecution);
 
   TLoggerEventHandler = procedure(AActionType: TActionTypes; AMessage, AEntityName: string; AVersion: Int64) of object;
 

@@ -1,4 +1,4 @@
-program EasyDBMigration_Using_Attributes;
+program EasyDBMigration_Advance_SQLServer;
 
 uses
   Vcl.Forms,

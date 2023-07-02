@@ -1,4 +1,4 @@
-program EasyDBMigration_Simple;
+program EasyDBMigration_Simple_SQLServer;
 
 uses
   Vcl.Forms,

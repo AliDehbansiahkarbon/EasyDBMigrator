@@ -4,9 +4,8 @@ interface
 uses
   System.SysUtils,
 
+  EasyDB.Core,
   EasyDB.MigrationX,
-  EasyDB.ConnectionManager.SQL,
-  EasyDB.Logger,
   EasyDB.Attribute,
   UHelper;
 
