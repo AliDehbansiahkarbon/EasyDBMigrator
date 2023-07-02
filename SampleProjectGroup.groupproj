@@ -6,7 +6,7 @@
         <Projects Include="Sample Project\EasyDBMigration_Simple_SQLServer.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Using_Attributes.dproj">
+        <Projects Include="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -26,23 +26,23 @@
     <Target Name="EasyDBMigration_Simple_SQLServer:Make">
         <MSBuild Projects="Sample Project\EasyDBMigration_Simple_SQLServer.dproj" Targets="Make"/>
     </Target>
-    <Target Name="EasyDBMigration_Using_Attributes">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Using_Attributes.dproj"/>
+    <Target Name="EasyDBMigration_Advance_SQLServer">
+        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj"/>
     </Target>
-    <Target Name="EasyDBMigration_Using_Attributes:Clean">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Using_Attributes.dproj" Targets="Clean"/>
+    <Target Name="EasyDBMigration_Advance_SQLServer:Clean">
+        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="EasyDBMigration_Using_Attributes:Make">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Using_Attributes.dproj" Targets="Make"/>
+    <Target Name="EasyDBMigration_Advance_SQLServer:Make">
+        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Using_Attributes"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Using_Attributes:Clean"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Using_Attributes:Make"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
