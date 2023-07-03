@@ -3,13 +3,16 @@
         <ProjectGuid>{7A6D1B14-9727-4DD7-B4E0-287608EAF446}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="Sample Project\EasyDBMigration_Simple_SQLServer.dproj">
+        <Projects Include="Sample projects\SQL SERVER\Simple\EasyDBMigration_Simple_SQLServer.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj">
+        <Projects Include="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj">
+        <Projects Include="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -21,40 +24,75 @@
         </BorlandProject>
     </ProjectExtensions>
     <Target Name="EasyDBMigration_Simple_SQLServer">
-        <MSBuild Projects="Sample Project\EasyDBMigration_Simple_SQLServer.dproj"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple\EasyDBMigration_Simple_SQLServer.dproj"/>
     </Target>
     <Target Name="EasyDBMigration_Simple_SQLServer:Clean">
-        <MSBuild Projects="Sample Project\EasyDBMigration_Simple_SQLServer.dproj" Targets="Clean"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple\EasyDBMigration_Simple_SQLServer.dproj" Targets="Clean"/>
     </Target>
     <Target Name="EasyDBMigration_Simple_SQLServer:Make">
-        <MSBuild Projects="Sample Project\EasyDBMigration_Simple_SQLServer.dproj" Targets="Make"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple\EasyDBMigration_Simple_SQLServer.dproj" Targets="Make"/>
     </Target>
     <Target Name="EasyDBMigration_Advance_SQLServer">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj"/>
     </Target>
     <Target Name="EasyDBMigration_Advance_SQLServer:Clean">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj" Targets="Clean"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj" Targets="Clean"/>
     </Target>
     <Target Name="EasyDBMigration_Advance_SQLServer:Make">
-        <MSBuild Projects="Sample project 2 (Separate Units and attributes)\EasyDBMigration_Advance_SQLServer.dproj" Targets="Make"/>
+        <MSBuild Projects="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj" Targets="Make"/>
     </Target>
     <Target Name="EasyDBMigration_Simple_MySQL">
-        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj"/>
+        <MSBuild Projects="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj"/>
     </Target>
     <Target Name="EasyDBMigration_Simple_MySQL:Clean">
-        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj" Targets="Clean"/>
+        <MSBuild Projects="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj" Targets="Clean"/>
     </Target>
     <Target Name="EasyDBMigration_Simple_MySQL:Make">
-        <MSBuild Projects="Simple_MySQL\EasyDBMigration_Simple_MySQL.dproj" Targets="Make"/>
+        <MSBuild Projects="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="EasyDBMigration_Advance_MySQL">
+        <MSBuild Projects="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj"/>
+    </Target>
+    <Target Name="EasyDBMigration_Advance_MySQL:Clean">
+        <MSBuild Projects="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDBMigration_Advance_MySQL:Make">
+        <MSBuild Projects="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer;EasyDBMigration_Simple_MySQL"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer;EasyDBMigration_Simple_MySQL;EasyDBMigration_Advance_MySQL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean;EasyDBMigration_Simple_MySQL:Clean"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean;EasyDBMigration_Simple_MySQL:Clean;EasyDBMigration_Advance_MySQL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make;EasyDBMigration_Simple_MySQL:Make"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make;EasyDBMigration_Simple_MySQL:Make;EasyDBMigration_Advance_MySQL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+    <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
+        <BuildGroupProject Include="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj">
+            <ProjectGuid>{08DA3CF1-7454-4706-9449-A056DAD59E1D}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj">
+            <ProjectGuid>{B86CF368-A84A-47A2-A4E4-FE19AFDF65D9}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj">
+            <ProjectGuid>{F62E9656-5DE9-46CD-94CF-71EA2ACCD537}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple\EasyDBMigration_Simple_SQLServer.dproj">
+            <ProjectGuid>{388CC30A-3A33-475D-89BC-47BDE9DD75C4}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>True</Enabled>
+        </BuildGroupProject>
+    </ItemGroup>
 </Project>

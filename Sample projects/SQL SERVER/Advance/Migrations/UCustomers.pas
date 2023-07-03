@@ -18,7 +18,7 @@ type
     procedure Downgrade; override;
   end;
 
-  [TCustomMigrationAttribute('TbCustomers', 202301010010, 'Altered TbCustomers , added NewField1 as varchar(100)', 'Alex')]
+  [TCustomMigrationAttribute('TbCustomers', 202301010010, 'Altered TbCustomers , added Phone as varchar(10)', 'Alex')]
   TCustomersMgr_202301010010 = class(TMigrationX)
   public
     procedure Upgrade; override;
@@ -30,8 +30,6 @@ implementation
 { TCustomersMgr_202301010005 }
 
 procedure TCustomersMgr_202301010005.Downgrade;
-var
-  LvScript: string;
 begin
   try
     SQL.ExecuteAdHocQuery('Drop Table TbCustomers');
@@ -61,8 +59,6 @@ end;
 { TCustomersMgr_202301010010 }
 
 procedure TCustomersMgr_202301010010.Downgrade;
-var
-  LvScript: string;
 begin
   try
     SQL.ExecuteAdHocQuery('Alter table TbCustomers Drop Column Phone');
@@ -72,8 +68,6 @@ begin
 end;
 
 procedure TCustomersMgr_202301010010.Upgrade;
-var
-  LvScript: string;
 begin
   try
     SQL.ExecuteAdHocQuery('Alter table TbCustomers Add Phone Varchar(10)');

@@ -1,16 +1,19 @@
-object Form3: TForm3
-  Left = 0
-  Top = 0
-  Caption = 'Form3'
-  ClientHeight = 493
-  ClientWidth = 500
+object Form2: TForm2
+  Left = 700
+  Top = 414
+  BorderStyle = bsToolWindow
+  Caption = 'Advance usage with attributes.'
+  ClientHeight = 472
+  ClientWidth = 476
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  Position = poDesigned
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
     Left = 151
@@ -57,7 +60,7 @@ object Form3: TForm3
   end
   object mmoLog: TMemo
     Left = 16
-    Top = 74
+    Top = 70
     Width = 465
     Height = 403
     ScrollBars = ssVertical

@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, System.TypInfo,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls, UCustomers, UUsers, UInvoices,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.StrUtils, Vcl.ComCtrls,
+  UCustomers, UUsers, UInvoices,
   EasyDB.Core,
   EasyDB.ConnectionManager.SQL,
   EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer Attributes.
@@ -70,7 +71,7 @@ end;
 
 procedure TForm2.FormCreate(Sender: TObject);
 var
-  LvConnectionParams: TConnectionParams;
+  LvConnectionParams: TSqlConnectionParams;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin

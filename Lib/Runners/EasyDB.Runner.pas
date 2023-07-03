@@ -22,7 +22,6 @@ type
 
     procedure DoUpgrade;
     procedure DoDowngrade;
-    procedure DoProgress;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationX): TMigrationX;
   protected
@@ -239,11 +238,6 @@ begin
 
   if Assigned(FConfig.ProgressBar) then
     TThread.Synchronize(TThread.Current, procedure begin FConfig.ProgressBar.Position := 0; end);
-end;
-
-procedure TRunner.DoProgress;
-begin
-
 end;
 
 procedure TRunner.DoUpgrade;

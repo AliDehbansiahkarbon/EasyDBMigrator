@@ -63,8 +63,6 @@ end;
 
 { TUsersMgr_202301010002 }
 procedure TUsersMgr_202301010002.Downgrade;
-var
-  LvScript: string;
 begin
   try
     SQL.ExecuteAdHocQuery('Alter table TbUsers Drop Column CreatedDate');

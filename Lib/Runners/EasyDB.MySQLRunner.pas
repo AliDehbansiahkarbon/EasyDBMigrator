@@ -105,18 +105,17 @@ begin
     + '	' +  LvAuthor.QuotedString + ',' + #10
     + '	' + LvDescription.QuotedString + ' ' + #10
     + ');';
-
   end
   else
   begin
     LvScript :=
     'UPDATE `' + FSchema + '`.`' + TB + '`' + #10
     + 'SET' + #10
-    + '`Version` = ' + LvLatestVersion.ToString + ',' + #10
-    + '`AppliedOn` = CURRENT_TIMESTAMP,' + #10
-    + '`Author` = ' + LvAuthor.QuotedString + ',' + #10
-    + '`Description` = ' + LvDescription.QuotedString + #10
-    + 'WHERE `Version` = 1;';
+    + '`Version` = ' + LvLatestVersion.ToString + #10
+    + ',`AppliedOn` = CURRENT_TIMESTAMP' + #10
+    + ',`Author` = CONCAT(`Author`,' + QuotedStr(' -- ') + ', ' + LvAuthor.QuotedString + ')' + #10
+    + ',`Description` = CONCAT(`Description`,' + QuotedStr(' -- ') + ', ' + LvDescription.QuotedString + ')' + #10
+    + 'WHERE `Version` = ' + LvLatestVersion.ToString + ';';
   end;
 
   FMySQLConnection.ExecuteAdHocQuery(LvScript);

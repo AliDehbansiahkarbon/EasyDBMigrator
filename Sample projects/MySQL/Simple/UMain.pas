@@ -24,6 +24,7 @@ type
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     Runner: TMySQLRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -135,6 +136,11 @@ begin
 
   Runner := TMySQLRunner.Create(LvConnectionParams);
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
+end;
+
+procedure TForm3.FormDestroy(Sender: TObject);
+begin
+  Runner.Free;
 end;
 
 procedure TForm3.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
