@@ -101,7 +101,7 @@ end;
 
 procedure TForm2.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
 begin
-  // This method will run anyway if yo u assigne it and ignores LocalLog parameter.
+  // This method will run anyway if you assigne it and ignores LocalLog parameter.
   //...
   //...
   // ShowMessage(AException);
