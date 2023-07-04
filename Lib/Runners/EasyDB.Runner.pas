@@ -17,6 +17,7 @@ type
     FInternalMigrationList: TMigrationsDic;
     FMigrationList: TMigrations;
     FConfig: TConfig;
+    FLogger: TLogger;
     FVersionToDowngrade: Int64;
 
     function GetLogger: TLogger;
@@ -37,6 +38,7 @@ type
     function AddLogger: TLogger;
     function AddConfig: TConfig;
     function Add(AMigrationBase: TMigrationBase): TRunner;
+    function Clear: TRunner;
 
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
@@ -51,6 +53,12 @@ type
 implementation
 
 { TRunner }
+
+function TRunner.Clear: TRunner;
+begin
+  FMigrationList.Clear;
+  Result := Self;
+end;
 
 constructor TRunner.Create;
 begin
@@ -80,7 +88,7 @@ destructor TRunner.Destroy;
 begin
   FreeAndNil(FInternalMigrationList);
   FreeAndNil(FMigrationList);
-  FreeAndNil(TLogger.Instance);
+  FreeAndNil(FLogger);
 
   if Assigned(FConfig) then
     FConfig.Free;
@@ -102,7 +110,8 @@ end;
 
 function TRunner.AddLogger: TLogger;
 begin
-  Result := TLogger.Instance;
+  FLogger := TLogger.Instance;
+  Result := FLogger;
 end;
 
 procedure TRunner.ArrangeMigrationList(AArrangeMode: TArrangeMode);

@@ -99,11 +99,11 @@ var
   I: Integer;
 begin
   Result := False;
-  for I := 0 to Pred(Count) do
+  for I := 0 to Pred(Self.Count) do
   begin
     if AMigrationObj is TMigration then
     begin
-      if TMigration(AMigrationObj).Version = TMigration(Items[I]).Version then
+      if TMigration(AMigrationObj).Version = TMigration(Self.Items[I]).Version then
       begin
         Result := True;
         Break;
@@ -111,7 +111,7 @@ begin
     end
     else if AMigrationObj is TMigrationX then
     begin
-      if TMigrationX(AMigrationObj).AttribVersion = TMigrationX(Items[I]).AttribVersion then
+      if TMigrationX(AMigrationObj).AttribVersion = TMigrationX(Self.Items[I]).AttribVersion then
       begin
         Result := True;
         Break;
