@@ -237,62 +237,22 @@ var
   LvTbScript, LvDropScript, LvSpScript: string;
 begin
   LvTbScript := 'If Not Exists ( ' + #10
-       + '       Select * ' + #10
-       + '       From   sysobjects ' + #10
-       + '       Where  Name          = ' + TB.QuotedString + ' ' + #10
-       + '              And xtype     = ''U'' ' + #10
-       + '   ) ' + #10
-       + '    Create Table ' + TB + ' ' + #10
-       + '    ( ' + #10
-       + '    	Version Bigint Not null Primary Key, ' + #10
-       + '    	AppliedOn Datetime Default(Getdate()), ' + #10
-       + '    	Author Nvarchar(100), ' + #10
-       + '    	Description Nvarchar(Max) ' + #10
-       + '    	 ' + #10
-       + '    )';
-
-  LvDropScript := 'If Exists ( ' + #10  //TODO this should convert to script
-       + '       Select type_desc, ' + #10
-       + '              Type ' + #10
-       + '       From   sys.procedures With(Nolock) ' + #10
-       + '       Where  Name = ''EasyDBInsert'' ' + #10
-       + '              And Type = ''P'' ' + #10
-       + '   ) ' + #10
-       + '    Drop Procedure EasyDBInsert ';
-
-  LvSpScript := 'Create Procedure EasyDBInsert ' + #10
-       + '	@Version Bigint, ' + #10
-       + '	@Author Nvarchar(100), ' + #10
-       + '	@Description Nvarchar(Max) ' + #10
-       + 'As ' + #10
-       + 'Begin ' + #10
-       + '	If Not Exists( ' + #10
-       + '	       Select 1 ' + #10
-       + '	       From  ' + TB + ' ' + #10
-       + '	       Where  Version = @Version ' + #10
-       + '	   ) ' + #10
-       + '	Begin ' + #10
-       + '	    Insert Into ' + TB + ' ' + #10
-       + '	      ( ' + #10
-       + '	        Version, ' + #10
-       + '	        AppliedOn, ' + #10
-       + '	        Author, ' + #10
-       + '	        [Description] ' + #10
-       + '	      ) ' + #10
-       + '	    Values ' + #10
-       + '	      ( ' + #10
-       + '	        @Version, ' + #10
-       + '	        (Getdate()), ' + #10
-       + '	        Null, ' + #10
-       + '	        Null ' + #10
-       + '	      ) ' + #10
-       + '	End ' + #10
-       + 'End; ';
+    + '       Select * ' + #10
+    + '       From   sysobjects ' + #10
+    + '       Where  Name          = ' + TB.QuotedString + ' ' + #10
+    + '              And xtype     = ''U'' ' + #10
+    + '   ) ' + #10
+    + '    Create Table ' + TB + ' ' + #10
+    + '    ( ' + #10
+    + '    	Version Bigint Not null Primary Key, ' + #10
+    + '    	AppliedOn Datetime Default(Getdate()), ' + #10
+    + '    	Author Nvarchar(100), ' + #10
+    + '    	Description Nvarchar(Max) ' + #10
+    + '    	 ' + #10
+    + '    )';
 
   try
     ExecuteAdHocQuery(LvTbScript);
-    ExecuteAdHocQuery(LvDropScript);
-    ExecuteAdHocQuery(LvSpScript);
     Result := True;
   except on E: Exception do
     begin

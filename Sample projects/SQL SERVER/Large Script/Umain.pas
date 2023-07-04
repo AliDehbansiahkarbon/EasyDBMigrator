@@ -5,6 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls,System.StrUtils,
+
   EasyDB.Core,
   EasyDB.Logger,
   EasyDB.MSSQLRunner;
@@ -66,7 +67,7 @@ begin
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.AddConfig.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
   pbTotal.Style := pbstMarquee;
-  Runner.SQLConnection.ExecuteScriptFile('..\..\Script\script4.sql');
+  Runner.SQLConnection.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
 end;
 
 procedure TfrmMain.Done(var Msg: TMessage);
@@ -86,7 +87,6 @@ begin
 
   RichEdit1.Lines.BeginUpdate;
   RichEdit1.Lines.Add('========== ' + DateTimeToStr(Now) + ' ==========');
-//  mmoLog.Lines.Add('Action Type: ' + GetEnumName(TypeInfo(TActionTypes), Ord(AActionType)));
   if LeftStr(AException, 5) = 'Error' then
   begin
     RichEdit1.AddColored('Exception:');
@@ -94,8 +94,6 @@ begin
   end
   else
     RichEdit1.Lines.Add('Message: ' + AException);
-//  mmoLog.Lines.Add('Class Name: ' + IfThen(AClassName.IsEmpty, 'N/A', AClassName));
-//  mmoLog.Lines.Add('Version: ' + IfThen(AVersion = 0, 'N/A', IntToStr(AVersion)));
 
   RichEdit1.Lines.EndUpdate;
   RichEdit1.Lines.Add('');

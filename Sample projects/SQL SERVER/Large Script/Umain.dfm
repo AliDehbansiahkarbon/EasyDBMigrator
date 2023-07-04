@@ -10,6 +10,9 @@ object frmMain: TfrmMain
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
+  DesignSize = (
+    944
+    595)
   TextHeight = 15
   object btnUpgradeDatabase: TButton
     Left = 8
@@ -32,6 +35,7 @@ object frmMain: TfrmMain
     Top = 64
     Width = 928
     Height = 521
+    Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
