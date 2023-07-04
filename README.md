@@ -9,12 +9,14 @@ It's a library, so you just need to use the units in your projects, add migratio
 # $\textcolor{Cyan}{How\ to\ use\ it?}$
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
-# $\textcolor{MidnightBlue}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
+# $\textcolor{Cyan}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
 
 <details>
 <summary>
-  🟥 SQL SERVER Sample   
+  🟥 SQL SERVER Sample 
 </summary>
+
+### Sample project name : EasyDBMigration_Simple_SQLServer
 
 ### Initializing
 ```delphi
@@ -131,27 +133,43 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
 - 🟩 Downgrade the database to the latest version
 ```delphi
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
-  //This version and lower versions of database will remain and any version above this will be restored.
+  //This version and lower versions of the database will remain and any version above this will be restored.
 ```  
 </details>
 
 <details>
 <summary>
-  🟦 MySQL Sample   
+  🟦 MySQL Sample
 </summary>
+  
+  ### Sample project name : EasyDBMigration_Simple_MySQL 
+  
+  ### It's the same as the SQL Server sample but some different units should be used.
+ 
+```delphi
+  uses
+    EasyDB.Core,
+    EasyDB.Logger,
+    EasyDB.Migration,
+    EasyDB.MySQLRunner;
+ ```
+ ### *** same initialization, same run method. (see the sample project, EasyDBMigration_Simple_MySQL) ***
+ 
 </details>
 
-# $\textcolor{MidnightBlue}{Advanced\ way\ (using\ versioned\ classes\ with\ attributes)}$
+# $\textcolor{Cyan}{Advanced\ way\ (using\ versioned\ classes\ with\ attributes)}$
 
 <details>
   <summary>
-   🟥 SQL SERVER Sample 
+   🟥 SQL SERVER Sample
   </summary>
+  
+### Sample project name : EasyDBMigration_Advance_SQLServer
 
 ### Initializing is the exactly same as simple mode.
 
-### Add migrations
-Instead of creation of some on-demand classes you can create one unit per database entity and implement versioned classes like the following code:
+### Define migrations
+Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes like the following code:
 ```delphi
 type
 
@@ -246,6 +264,20 @@ begin
   end;
 end;
 ```
+
+### Add migrations
+```delphi
+  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
+
+  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
+  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
+
+  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
+  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+```
+
 ### Run the Migrator exactly like the simple mode.
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
@@ -256,6 +288,21 @@ end;
 
 <details>
   <summary>
-   🟦 MySQL Sample   
+   🟦 MySQL Sample
   </summary>
+  
+### Sample project name : EasyDBMigration_Advance_MySQL
+  
+### It's the same as the SQL Server sample but some different units should be used.
+ 
+```delphi
+  uses
+    EasyDB.Core,
+    EasyDB.ConnectionManager.MySQL,
+    EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you are going to use class-level Attributes.
+    EasyDB.MySQLRunner,
+    EasyDB.Logger;
+ ```
+
+ ### *** same initialization, same run method. (see the sample project, EasyDBMigration_Advance_MySQL) ***
 </details>
