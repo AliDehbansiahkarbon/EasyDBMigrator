@@ -9,14 +9,15 @@ It's a library, so you just need to use the units in your projects, add migratio
 # $\textcolor{Cyan}{How\ to\ use\ it?}$
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
 
-# $\textcolor{Cyan}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
+## $\textcolor{Cyan}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
+## Suitable for small projects!
 
 <details>
 <summary>
   🟥 SQL SERVER Sample 
 </summary>
 
-### Sample project name : EasyDBMigration_Simple_SQLServer
+### Sample project name: EasyDBMigration_Simple_SQLServer
 
 ### Initializing
 ```delphi
@@ -142,8 +143,8 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
   🟦 MySQL Sample
 </summary>
   
-  ### Sample project name : EasyDBMigration_Simple_MySQL 
-  
+  ### Sample project name: EasyDBMigration_Simple_MySQL 
+  ## Suitable for small projects!
   ### It's the same as the SQL Server sample but some different units should be used.
  
 ```delphi
