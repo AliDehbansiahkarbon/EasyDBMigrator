@@ -3,19 +3,11 @@
 ## EasyDb Migrator is a database migration library for Delphi, built to streamline database evolution.
 ## Migrations are a structured way to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved. Migrations solve the problem of evolving a database schema for multiple databases (for example, the developer's local database, the test database, and the production database). Database schema changes are described in classes written in Delphi that can be checked into a version control system.
 
-# Prerequisites
+# $\textcolor{Cyan}{How\ it\ works?}$
+It's a library, so you just need to use the units in your projects, add migrations and run the migratory.
 
-| Tool/Library          | Consequences when not installed | Is it included in the source? | Where to find? |
-|-----------------------|---------------------------------|-------------------------------|----------------|
-| BufferedStreamReader  | You can not run large scripts   | Yes.                          | https://github.com/lordcrc/BufferedStreamReader
-
-
-# How it works?
-It's a library, so you just need to use the units in your projects, add migrations and run the migrator.
-
-# How to use it?
+# $\textcolor{Cyan}{How\ to\ use\ it?}$
 There are two samples that demonstrate the usage with extra details but have a look at the following codes for a quick start:
-
 
 # $\textcolor{MidnightBlue}{Simple\ way\ (using\ on-demand\ classes\ with\ anonymous\ methods)}$
 
