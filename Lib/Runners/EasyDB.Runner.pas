@@ -35,6 +35,7 @@ type
 
     function Logger: TLogger;
     function AddConfig: TConfig;
+    function Add(AMigrationBase: TMigrationBase): TRunner;
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
     procedure ArrangeMigrationList(AArrangeMode: TArrangeMode);
@@ -82,6 +83,12 @@ begin
     FConfig.Free;
 
   inherited;
+end;
+
+function TRunner.Add(AMigrationBase: TMigrationBase): TRunner;
+begin
+  FMigrationList.Add(AMigrationBase);
+  Result := Self;
 end;
 
 function TRunner.AddConfig: TConfig;

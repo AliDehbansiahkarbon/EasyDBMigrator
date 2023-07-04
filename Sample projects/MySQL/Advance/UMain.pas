@@ -44,7 +44,18 @@ implementation
 
 procedure TForm4.btnAddMigrationsClick(Sender: TObject);
 begin
-  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+  //Modern way
+  Runner
+  .Add(TUsersMgr_202301010001.Create)
+  .Add(TUsersMgr_202301010002.Create)
+  .Add(TUsersMgr_202301010003.Create)
+  .Add(TCustomersMgr_202301010005.Create)
+  .Add(TCustomersMgr_202301010010.Create)
+  .Add(TInvoicesMgr_202301010005.Create)
+  .Add(TInvoicesMgr_202301010010.Create);
+
+  // Classic Way
+{ Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
   Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
   Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
 
@@ -53,6 +64,7 @@ begin
 
   Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
   Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+}
 end;
 
 procedure TForm4.btnDowngradeDatabaseClick(Sender: TObject);
@@ -110,11 +122,13 @@ begin
   // ShowMessage(AException);
   // Do anything you need here with the log data, log on Graylog, Terlegram, email, etc...
 
+  mmoLog.Lines.BeginUpdate;
   mmoLog.Lines.Add('========== ' + DateTimeToStr(Now) + ' ==========');
   mmoLog.Lines.Add('Action Type: ' + GetEnumName(TypeInfo(TActionTypes), Ord(AActionType)));
   mmoLog.Lines.Add('Exception: ' + AException);
   mmoLog.Lines.Add('Class Name: ' + IfThen(AClassName.IsEmpty, 'N/A', AClassName));
   mmoLog.Lines.Add('Version: ' + IfThen(AVersion = 0, 'N/A', IntToStr(AVersion)));
+  mmoLog.Lines.EndUpdate;
   mmoLog.Lines.Add('');
 end;
 

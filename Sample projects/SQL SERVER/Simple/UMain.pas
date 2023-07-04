@@ -159,11 +159,13 @@ begin
   // ShowMessage(AException);
   // Do anything you need here with the log data, log on Graylog, Terlegram, email, etc...
 
+  mmoLog.Lines.BeginUpdate;
   mmoLog.Lines.Add('========== ' + DateTimeToStr(Now) + ' ==========');
   mmoLog.Lines.Add('Action Type: ' + GetEnumName(TypeInfo(TActionTypes), Ord(AActionType)));
   mmoLog.Lines.Add('Exception: ' + AException);
   mmoLog.Lines.Add('Class Name: ' + IfThen(AClassName.IsEmpty, 'N/A', AClassName));
   mmoLog.Lines.Add('Version: ' + IfThen(AVersion = 0, 'N/A', IntToStr(AVersion)));
+  mmoLog.Lines.EndUpdate;
   mmoLog.Lines.Add('');
 end;
 
