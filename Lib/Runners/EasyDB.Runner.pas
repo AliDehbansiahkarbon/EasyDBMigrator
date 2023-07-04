@@ -19,6 +19,7 @@ type
     FConfig: TConfig;
     FVersionToDowngrade: Int64;
 
+    function GetLogger: TLogger;
     procedure DoUpgrade;
     procedure DoDowngrade;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
@@ -33,9 +34,10 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function Logger: TLogger;
+    function AddLogger: TLogger;
     function AddConfig: TConfig;
     function Add(AMigrationBase: TMigrationBase): TRunner;
+
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
     procedure ArrangeMigrationList(AArrangeMode: TArrangeMode);
@@ -43,6 +45,7 @@ type
 
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
     property Config: TConfig read FConfig;
+    property Logger: TLogger read GetLogger;
   end;
 
 implementation
@@ -95,6 +98,11 @@ function TRunner.AddConfig: TConfig;
 begin
   FConfig := TConfig.Create;
   Result := FConfig;
+end;
+
+function TRunner.AddLogger: TLogger;
+begin
+  Result := TLogger.Instance;
 end;
 
 procedure TRunner.ArrangeMigrationList(AArrangeMode: TArrangeMode);
@@ -176,9 +184,9 @@ begin
     DoDowngrade;
 end;
 
-function TRunner.Logger: TLogger;
+function TRunner.GetLogger: TLogger;
 begin
-  Logger := TLogger.Instance;
+  Result := TLogger.Instance;
 end;
 
 procedure TRunner.DoDowngrade;

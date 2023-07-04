@@ -51,11 +51,11 @@ begin
      + '    Pass NVARCHAR(100) ' + #10
      + '    );';
 
-    Runner.MySQLConnection.ExecuteAdHocQuery(sql);
+    Runner.MySQL.ExecuteAdHocQuery(sql);
   end,
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('DROP TABLE TbUsers');
+    Runner.MySQL.ExecuteAdHocQuery('DROP TABLE TbUsers');
   end
   ));
 
@@ -63,11 +63,11 @@ begin
   Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
+    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
   end,
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
+    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
   end
   ));
 
@@ -76,11 +76,11 @@ begin
   Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
+    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
   end,
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
+    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
   end
   ));
 
@@ -95,11 +95,11 @@ begin
      + '    Name NVARCHAR(100), ' + #10
      + '    Family NVARCHAR(100) ' + #10
      + '    );';
-    Runner.MySQLConnection.ExecuteAdHocQuery(sql);
+    Runner.MySQL.ExecuteAdHocQuery(sql);
   end,
   procedure
   begin
-    Runner.MySQLConnection.ExecuteAdHocQuery('DROP TABLE TbCustomers');
+    Runner.MySQL.ExecuteAdHocQuery('DROP TABLE TbCustomers');
   end
   ));
 end;
@@ -128,20 +128,14 @@ begin
     Schema := 'Library';
   end;
 
-  {
-   Logger must be configured befor creating the Runner.
-   No need to free Logger, it will be destroyed when Runner destroys.
-  }
+  Runner := TMySQLRunner.Create(LvConnectionParams);
+  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
-  TLogger.Instance.OnLog := OnLog;
+  Runner.AddLogger.OnLog := OnLog;
 
   {Use this line if you need local log}
-  //TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
-
-
-  Runner := TMySQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
+  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

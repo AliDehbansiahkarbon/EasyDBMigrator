@@ -26,7 +26,7 @@ type
     constructor Create(AConnectionParams: TMySqlConnectionParams); overload;
     destructor Destroy; override;
 
-    property MySQLConnection: TMySQLConnection read FMySQLConnection write FMySQLConnection;
+    property MySQL: TMySQLConnection read FMySQLConnection write FMySQLConnection;
     property Schema: string read FSchema write FSchema;
   end;
 

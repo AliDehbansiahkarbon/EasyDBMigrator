@@ -67,7 +67,7 @@ begin
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.AddConfig.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
   pbTotal.Style := pbstMarquee;
-  Runner.SQLConnection.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
+  Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
 end;
 
 procedure TfrmMain.Done(var Msg: TMessage);

@@ -59,20 +59,15 @@ type
     FLogAllExecutions: Boolean;
     FUseInternalThread: Boolean;
     FProgressBar: TProgressBar;
-    FRollBackAllByAnyError: Boolean;
   public
     constructor Create;
     function LogAllExecutions(AValue: Boolean): TConfig;
     function UseInternalThread(AValue: Boolean): TConfig;
     function SetProgressbar(AProgressbar: TProgressBar): TConfig;
-    /// <summary> This option is just for SQL SERVER transactions.
-    /// </summary>
-    function RollBackAllByAnyError(AValue: Boolean): TConfig;
 
     property ProgressBar: TProgressBar read FProgressBar;
     property UseThreadStat: Boolean read FUseInternalThread;
     property LogAllExecutionsStat: Boolean read FLogAllExecutions;
-    property RollBackAllByAnyErrorStat: Boolean read FRollBackAllByAnyError;
   end;
 
 implementation
@@ -137,12 +132,6 @@ end;
 function TConfig.LogAllExecutions(AValue: Boolean): TConfig;
 begin
   FLogAllExecutions := AValue;
-  Result := Self;
-end;
-
-function TConfig.RollBackAllByAnyError(AValue: Boolean): TConfig;
-begin
-  FRollBackAllByAnyError := AValue;
   Result := Self;
 end;
 

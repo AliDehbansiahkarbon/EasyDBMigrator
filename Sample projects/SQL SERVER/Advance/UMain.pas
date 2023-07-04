@@ -95,19 +95,14 @@ begin
     Schema := 'dbo';
   end;
 
-  {
-   Logger must be configured befor creating the Runner.
-   No need to free Logger, it will be destroyed when Runner destroys.
-  }
+  Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
-  TLogger.Instance.OnLog := OnLog;
+  Runner.AddLogger.OnLog := OnLog;
 
   {Use this line if you need local log}
-  //TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
-
-  Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal);
+  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

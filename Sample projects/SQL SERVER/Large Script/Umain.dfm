@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   Caption = 'Large Script Execution'
-  ClientHeight = 595
-  ClientWidth = 944
+  ClientHeight = 594
+  ClientWidth = 940
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,8 +11,8 @@ object frmMain: TfrmMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   DesignSize = (
-    944
-    595)
+    940
+    594)
   TextHeight = 15
   object btnUpgradeDatabase: TButton
     Left = 8
@@ -32,8 +32,8 @@ object frmMain: TfrmMain
   end
   object RichEdit1: TRichEdit
     Left = 8
-    Top = 64
-    Width = 920
+    Top = 63
+    Width = 912
     Height = 521
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET

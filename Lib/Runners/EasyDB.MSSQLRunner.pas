@@ -28,7 +28,7 @@ type
     constructor Create(AConnectionParams: TSqlConnectionParams); overload;
     destructor Destroy; override;
 
-    property SQLConnection: TSQLConnection read FSQLConnection write FSQLConnection;
+    property SQL: TSQLConnection read FSQLConnection write FSQLConnection;
     property DbName: string read FDbName write FDbName;
     property Schema: string read FSchema write FSchema;
   end;
