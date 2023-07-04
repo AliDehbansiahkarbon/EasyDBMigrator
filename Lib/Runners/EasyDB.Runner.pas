@@ -9,8 +9,7 @@ uses
   EasyDB.Logger,
   EasyDB.Migration,
   EasyDB.MigrationX,
-  EasyDB.Attribute,
-  EasyDB.ConnectionManager.SQL;
+  EasyDB.Attribute;
 
 type
   TRunner = class(TInterfacedObject, IRunner)
@@ -42,6 +41,7 @@ type
     procedure SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
 
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
+    property Config: TConfig read FConfig;
   end;
 
 implementation

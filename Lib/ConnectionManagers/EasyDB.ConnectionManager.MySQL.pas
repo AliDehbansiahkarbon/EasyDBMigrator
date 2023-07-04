@@ -12,8 +12,7 @@ uses
   EasyDB.ConnectionManager.Base,
   EasyDB.Core,
   EasyDB.Logger,
-  EasyDB.Consts,
-  BufStreamReader;
+  EasyDB.Consts;
 
  type
 
@@ -144,23 +143,21 @@ end;
 
 function TMySQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
 var
-  LvFileStream: TFileStream;
-  LvBufferedReader: BufferedStreamReader;
+  LvStreamReader: TStreamReader;
   LvLine: string;
   LvStatement: string;
 begin
   if FileExists(AScriptPath) then
   begin
     Result := True;
-    LvFileStream := TFileStream.Create(AScriptPath, fmOpenRead);
-    LvBufferedReader := BufferedStreamReader.Create(LvFileStream, TEncoding.UTF8);
+    LvStreamReader := TStreamReader.Create(AScriptPath, TEncoding.UTF8);
     LvLine := EmptyStr;
     LvStatement := EmptyStr;
 
     try
-      while not LvBufferedReader.EndOfStream do
+      while not LvStreamReader.EndOfStream do
       begin
-        LvLine := LvBufferedReader.ReadLine;
+        LvLine := LvStreamReader.ReadLine;
         if not LvLine.Trim.ToLower.Equals('go') then
           LvStatement := LvStatement + ' ' + LvLine
         else
@@ -174,8 +171,7 @@ begin
         end;
       end;
     finally
-      LvBufferedReader.Free;
-      LvFileStream.Free;
+      LvStreamReader.Free;
     end;
     Result := True;
   end

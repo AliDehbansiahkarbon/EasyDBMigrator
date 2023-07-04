@@ -18,6 +18,7 @@ type
     class var FLocalFilePath: string;
     class var FInstance: TLogger;
   public
+    destructor Destroy; override;
     procedure Log(AActionType: TActionTypes; AMessage: string; AEntityName: string = ''; AVersion: Int64 = 0);
     procedure DoCallBack(AActionType: TActionTypes; AMessage: string; AEntityName: string = ''; AVersion: Int64 = 0);
     class function Instance: TLogger;
@@ -35,6 +36,12 @@ begin
   FLocalFilePath := ALocalFilePath;
   FLocalLog := ALocalLog;
   Result := FInstance;
+end;
+
+destructor TLogger.Destroy;
+begin
+  FInstance := nil;
+  inherited;
 end;
 
 procedure TLogger.DoCallBack(AActionType: TActionTypes; AMessage, AEntityName: string; AVersion: Int64);

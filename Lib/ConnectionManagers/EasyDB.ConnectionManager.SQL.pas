@@ -3,7 +3,7 @@ unit EasyDB.ConnectionManager.SQL;
 interface
 
 uses
-  System.SysUtils, System.Classes,
+  System.SysUtils, System.Classes, System.Threading, System.StrUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
@@ -13,7 +13,7 @@ uses
   EasyDB.Core,
   EasyDB.Logger,
   EasyDB.Consts,
-  BufStreamReader;
+  EasyDB.Runner;
 
 type
 
@@ -23,6 +23,7 @@ type
     FMSSQLDriver: TFDPhysMSSQLDriverLink;
     FQuery: TFDQuery;
     FConnectionParams: TSqlConnectionParams;
+    FParentRunner: TRunner;
     Constructor Create;
     class var FInstance: TSQLConnection;
   public
@@ -40,6 +41,7 @@ type
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
     function ExecuteScriptFile(AScriptPath: string): Boolean; override;
+    function RemoveCommentFromTSQL(const ASQLLine: string): string;
     function OpenAsInteger(AScript: string): Largeint;
 
     procedure BeginTrans;
@@ -47,6 +49,7 @@ type
     procedure RollBackTrans;
 
     property ConnectionParams: TSqlConnectionParams read FConnectionParams;
+    property ParentRunner: TRunner read FParentRunner write FParentRunner;
   end;
 
 implementation
@@ -71,6 +74,8 @@ begin
 
   FQuery := TFDQuery.Create(nil);
   FQuery.Connection := FConnection;
+
+  FParentRunner := nil;
 end;
 
 destructor TSQLConnection.Destroy;
@@ -81,6 +86,8 @@ begin
 
   FConnection.Close;
   FConnection.Free;
+
+  FInstance := nil;
   inherited;
 end;
 
@@ -141,46 +148,83 @@ end;
 
 function TSQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
 var
-  LvFileStream: TFileStream;
-  LvBufferedReader: BufferedStreamReader;
+  LvStreamReader: TStreamReader;
   LvLine: string;
   LvStatement: string;
+  LvResult: Boolean;
+  LvLineNumber: Integer;
+  LvTask: ITask;
+  LvLogExecutions: Boolean;
 begin
+  LvResult := False;
+  if Assigned(FParentRunner) and Assigned(FParentRunner.Config) then
+    LvLogExecutions := FParentRunner.Config.LogAllExecutionsStat
+  else
+    LvLogExecutions := False;
+
   if FileExists(AScriptPath) then
   begin
-    Result := True;
-    LvFileStream := TFileStream.Create(AScriptPath, fmOpenRead);
-    LvBufferedReader := BufferedStreamReader.Create(LvFileStream, TEncoding.UTF8);
-    LvLine := EmptyStr;
-    LvStatement := EmptyStr;
-
-    try
-      while not LvBufferedReader.EndOfStream do
-      begin
-        LvLine := LvBufferedReader.ReadLine;
-        if not LvLine.Trim.ToLower.Equals('go') then
-          LvStatement := LvStatement + ' ' + LvLine
-        else
+    LvTask := TTask.Run(
+    procedure
+    begin
+      LvLineNumber := 1;
+      LvStreamReader := TStreamReader.Create(AScriptPath, TEncoding.UTF8);
+      LvLine := EmptyStr;
+      LvStatement := EmptyStr;
+      try
+        while not LvStreamReader.EndOfStream do
         begin
-          if not LvStatement.Trim.IsEmpty then
-          try
-            ExecuteAdHocQuery(LvStatement);
-          finally
-            LvStatement := EmptyStr;
+          LvLine := LvStreamReader.ReadLine;
+          if not LvLine.Trim.ToLower.Equals('go') then
+          begin
+            if not ((LeftStr(LvLine.Trim, 2) = '/*') or (RightStr(LvLine.Trim, 2) = '*/') or (LeftStr(LvLine.Trim, 2) = '--')) then
+              LvStatement := LvStatement + ' ' + RemoveCommentFromTSQL(LvLine)
+          end
+          else
+          begin
+            if not LvStatement.Trim.IsEmpty then
+            begin
+              try
+                try
+                  if LvLogExecutions then
+                    Logger.Log(atFileExecution, 'Line: ' + LvLineNumber.ToString + ' successfully executed');
+
+                  ExecuteAdHocQuery(LvStatement);
+                except on E: Exception  do
+                  Logger.Log(atFileExecution, 'Error on Line: ' + LvLineNumber.ToString + #13 + E.Message);
+                end;
+              finally
+                LvStatement := EmptyStr;
+              end;
+            end;
           end;
+          Inc(LvLineNumber);
         end;
+        Logger.Log(atFileExecution, 'Done!');
+      finally
+        LvStreamReader.Free;
       end;
-    finally
-      LvBufferedReader.Free;
-      LvFileStream.Free;
-    end;
-    Result := True;
+
+      LvResult := True;
+    end);
+    Result := LvResult;
   end
   else
   begin
     Logger.Log(atFileExecution, 'Script file doesn''t exists.');
     Result := False;
   end;
+end;
+
+function TSQLConnection.RemoveCommentFromTSQL(const ASQLLine: string): string;
+var
+  LvCommentIndex: Integer;
+begin
+  LvCommentIndex := Pos('--', ASQLLine);
+  if LvCommentIndex > 0 then
+    Result := Trim(Copy(ASQLLine, 1, LvCommentIndex - 1))
+  else
+    Result := ASQLLine;
 end;
 
 function TSQLConnection.GetConnectionString: string;

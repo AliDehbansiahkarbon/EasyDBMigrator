@@ -48,6 +48,7 @@ constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams);
 begin
   inherited Create;
   FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  FSQLConnection.ParentRunner := Self;
   FDbName := AConnectionParams.DatabaseName;
   FSchema := AConnectionParams.Schema;
 end;
@@ -55,6 +56,7 @@ end;
 destructor TSQLRunner.Destroy;
 begin
   FSQLConnection.Free;
+  FSQLConnection := nil;
   inherited;
 end;
 

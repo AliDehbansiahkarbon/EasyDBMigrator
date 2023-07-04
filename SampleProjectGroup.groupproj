@@ -9,6 +9,9 @@
         <Projects Include="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Sample projects\SQL SERVER\Large Script\EasyDBMigration_LargeScript_SQLServer.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj">
             <Dependencies/>
         </Projects>
@@ -41,6 +44,15 @@
     <Target Name="EasyDBMigration_Advance_SQLServer:Make">
         <MSBuild Projects="Sample projects\SQL SERVER\Advance\EasyDBMigration_Advance_SQLServer.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDBMigration_LargeScript_SQLServer">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDBMigration_LargeScript_SQLServer.dproj"/>
+    </Target>
+    <Target Name="EasyDBMigration_LargeScript_SQLServer:Clean">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDBMigration_LargeScript_SQLServer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDBMigration_LargeScript_SQLServer:Make">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDBMigration_LargeScript_SQLServer.dproj" Targets="Make"/>
+    </Target>
     <Target Name="EasyDBMigration_Simple_MySQL">
         <MSBuild Projects="Sample projects\MySQL\Simple\EasyDBMigration_Simple_MySQL.dproj"/>
     </Target>
@@ -60,13 +72,13 @@
         <MSBuild Projects="Sample projects\MySQL\Advance\EasyDBMigration_Advance_MySQL.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer;EasyDBMigration_Simple_MySQL;EasyDBMigration_Advance_MySQL"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer;EasyDBMigration_Advance_SQLServer;EasyDBMigration_LargeScript_SQLServer;EasyDBMigration_Simple_MySQL;EasyDBMigration_Advance_MySQL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean;EasyDBMigration_Simple_MySQL:Clean;EasyDBMigration_Advance_MySQL:Clean"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Clean;EasyDBMigration_Advance_SQLServer:Clean;EasyDBMigration_LargeScript_SQLServer:Clean;EasyDBMigration_Simple_MySQL:Clean;EasyDBMigration_Advance_MySQL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make;EasyDBMigration_Simple_MySQL:Make;EasyDBMigration_Advance_MySQL:Make"/>
+        <CallTarget Targets="EasyDBMigration_Simple_SQLServer:Make;EasyDBMigration_Advance_SQLServer:Make;EasyDBMigration_LargeScript_SQLServer:Make;EasyDBMigration_Simple_MySQL:Make;EasyDBMigration_Advance_MySQL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
@@ -93,6 +105,12 @@
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Large Script\EasyDBMigration_LargeScript_SQLServer.dproj">
+            <ProjectGuid>{6D9DA672-0086-4CEF-B751-70B71CF316E2}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
         </BuildGroupProject>
     </ItemGroup>
 </Project>
