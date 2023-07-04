@@ -2,13 +2,13 @@ program EasyDBMigration_Simple_SQLServer;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {Form1};
+  UMain in 'UMain.pas' {frmMain};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TfrmMain, frmMain);
   ReportMemoryLeaksOnShutdown := True;
   Application.MainFormOnTaskbar := True;
   Application.Run;

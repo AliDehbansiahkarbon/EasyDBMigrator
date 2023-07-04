@@ -104,7 +104,7 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="UMain.pas">
-            <Form>Form3</Form>
+            <Form>frmMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Base">

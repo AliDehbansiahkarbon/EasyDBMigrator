@@ -1,8 +1,8 @@
-object Form2: TForm2
+object frmMain: TfrmMain
   Left = 700
   Top = 414
   BorderStyle = bsToolWindow
-  Caption = 'Advance usage with attributes.'
+  Caption = 'Advance_SQL Server'
   ClientHeight = 487
   ClientWidth = 495
   Color = clBtnFace

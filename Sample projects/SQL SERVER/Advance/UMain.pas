@@ -13,7 +13,7 @@ uses
   EasyDB.Logger;
 
 type
-  TForm2 = class(TForm)
+  TfrmMain = class(TForm)
     Label1: TLabel;
     btnDowngradeDatabase: TButton;
     btnUpgradeDatabase: TButton;
@@ -34,13 +34,13 @@ type
   end;
 
 var
-  Form2: TForm2;
+  frmMain: TfrmMain;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm2.btnAddMigrationsClick(Sender: TObject);
+procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
   //Modern way
   Runner
@@ -65,12 +65,12 @@ begin
 }
 end;
 
-procedure TForm2.btnDowngradeDatabaseClick(Sender: TObject);
+procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);
 begin
   Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
 end;
 
-procedure TForm2.btnUpgradeDatabaseClick(Sender: TObject);
+procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 begin
   if Runner.MigrationList.Count = 0 then
   begin
@@ -81,7 +81,7 @@ begin
   Runner.UpgradeDatabase;
 end;
 
-procedure TForm2.FormCreate(Sender: TObject);
+procedure TfrmMain.FormCreate(Sender: TObject);
 var
   LvConnectionParams: TSqlConnectionParams;
 begin
@@ -95,24 +95,27 @@ begin
     Schema := 'dbo';
   end;
 
-  {Use this line if you need local log.
+  {
    Logger must be configured befor creating the Runner.
-   Noneed to free Logger, it will be destroyed when Runner destroys}
-  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+   No need to free Logger, it will be destroyed when Runner destroys.
+  }
 
   {Use this line if you don't need local log}
-  // TLogger.Instance.OnLog := OnLog;
+  TLogger.Instance.OnLog := OnLog;
+
+  {Use this line if you need local log}
+  //TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal);
 end;
 
-procedure TForm2.FormDestroy(Sender: TObject);
+procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   Runner.Free;
 end;
 
-procedure TForm2.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
+procedure TfrmMain.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
 begin
   // This method will run anyway if you assigne it and ignores LocalLog parameter.
   //...

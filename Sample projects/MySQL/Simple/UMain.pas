@@ -12,7 +12,7 @@ uses
   EasyDB.MySQLRunner;
 
 type
-  TForm3 = class(TForm)
+  TfrmMain = class(TForm)
     Label1: TLabel;
     btnDowngradeDatabase: TButton;
     btnUpgradeDatabase: TButton;
@@ -33,13 +33,13 @@ type
   end;
 
 var
-  Form3: TForm3;
+  frmMain: TfrmMain;
 
 implementation
 
 {$R *.dfm}
 
-procedure TForm3.btnAddMigrationsClick(Sender: TObject);
+procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
   Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
@@ -104,17 +104,17 @@ begin
   ));
 end;
 
-procedure TForm3.btnDowngradeDatabaseClick(Sender: TObject);
+procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);
 begin
   Runner.DowngradeDatabase(StrToInt64Def(edtVersion.Text, 0));
 end;
 
-procedure TForm3.btnUpgradeDatabaseClick(Sender: TObject);
+procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 begin
   Runner.UpgradeDatabase;
 end;
 
-procedure TForm3.FormCreate(Sender: TObject);
+procedure TfrmMain.FormCreate(Sender: TObject);
 var
   LvConnectionParams: TMySqlConnectionParams;
 begin
@@ -128,22 +128,28 @@ begin
     Schema := 'Library';
   end;
 
-  {Use this line if you need local log}
-  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured before creating the Runner.
+  {
+   Logger must be configured befor creating the Runner.
+   No need to free Logger, it will be destroyed when Runner destroys.
+  }
 
   {Use this line if you don't need local log}
-  // TLogger.Instance.OnLog := OnLog;
+  TLogger.Instance.OnLog := OnLog;
+
+  {Use this line if you need local log}
+  //TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+
 
   Runner := TMySQLRunner.Create(LvConnectionParams);
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
 end;
 
-procedure TForm3.FormDestroy(Sender: TObject);
+procedure TfrmMain.FormDestroy(Sender: TObject);
 begin
   Runner.Free;
 end;
 
-procedure TForm3.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
+procedure TfrmMain.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
 begin
   // This method will run anyway if you assigne it and ignores LocalLog parameter.
   //...

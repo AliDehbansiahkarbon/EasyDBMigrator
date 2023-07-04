@@ -2,7 +2,7 @@ program EasyDBMigration_Advance_MySQL;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {Form4},
+  UMain in 'UMain.pas' {frmMain},
   UCustomers in 'Migrations\UCustomers.pas',
   UInvoices in 'Migrations\UInvoices.pas',
   UUsers in 'Migrations\UUsers.pas',
@@ -13,7 +13,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.CreateForm(TForm4, Form4);
+  Application.CreateForm(TfrmMain, frmMain);
   ReportMemoryLeaksOnShutdown := True;
   Application.Run;
 end.

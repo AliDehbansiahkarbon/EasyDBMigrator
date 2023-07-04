@@ -1,8 +1,8 @@
-object Form1: TForm1
+object frmMain: TfrmMain
   Left = 613
   Top = 332
   BorderStyle = bsToolWindow
-  Caption = 'Fast and simple usage.'
+  Caption = 'Simple_SQL Server'
   ClientHeight = 310
   ClientWidth = 461
   Color = clBtnFace

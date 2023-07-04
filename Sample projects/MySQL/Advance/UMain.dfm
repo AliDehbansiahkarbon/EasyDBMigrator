@@ -1,8 +1,8 @@
-object Form4: TForm4
+object frmMain: TfrmMain
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'Form4'
+  Caption = 'Advance_MySQL'
   ClientHeight = 486
   ClientWidth = 491
   Color = clBtnFace

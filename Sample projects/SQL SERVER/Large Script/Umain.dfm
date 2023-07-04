@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
-  Caption = 'frmMain'
+  Caption = 'Large Script Execution'
   ClientHeight = 595
   ClientWidth = 944
   Color = clBtnFace
@@ -33,7 +33,7 @@ object frmMain: TfrmMain
   object RichEdit1: TRichEdit
     Left = 8
     Top = 64
-    Width = 928
+    Width = 920
     Height = 521
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET

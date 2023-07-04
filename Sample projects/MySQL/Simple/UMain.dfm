@@ -1,8 +1,8 @@
-object Form3: TForm3
+object frmMain: TfrmMain
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'Form3'
+  Caption = 'Simple_MySQL'
   ClientHeight = 491
   ClientWidth = 495
   Color = clBtnFace
