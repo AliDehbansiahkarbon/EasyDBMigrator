@@ -43,7 +43,7 @@ implementation
 procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
   //Modern way
-  Runner
+  Runner.Clear
   .Add(TUsersMgr_202301010001.Create)
   .Add(TUsersMgr_202301010002.Create)
   .Add(TUsersMgr_202301010003.Create)
@@ -53,7 +53,9 @@ begin
   .Add(TInvoicesMgr_202301010010.Create);
 
   // Classic Way
-{ Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+{
+  Runner.Clear;
+  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
   Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
   Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
 

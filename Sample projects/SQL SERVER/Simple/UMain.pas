@@ -41,7 +41,8 @@ implementation
 
 procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
-  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
+  Runner.Clear;
+  Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
   var sql: string;
   begin
@@ -59,9 +60,8 @@ begin
     Runner.SQL.ExecuteAdHocQuery('DROP TABLE TbUsers');
   end
   ));
-
   //============================================
-  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
+  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
   procedure
   begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
@@ -71,10 +71,8 @@ begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
   end
   ));
-
   //============================================
-
-  Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
   procedure
   begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
@@ -84,10 +82,8 @@ begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
   end
   ));
-
   //============================================
-
-  Runner.MigrationList.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
   procedure
   var sql: string;
   begin
