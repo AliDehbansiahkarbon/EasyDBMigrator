@@ -113,7 +113,7 @@ end;
 
 procedure TfrmMain.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
 begin
-  // This method will run anyway if you assigne it and ignores LocalLog parameter.
+  // This method will run anyway even if you ignore the Local Log file.
   //...
   //...
   // ShowMessage(AException);
