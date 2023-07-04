@@ -306,3 +306,19 @@ end;
 
  ### *** same initialization, same run method. (see the sample project, EasyDBMigration_Advance_MySQL) ***
 </details>
+
+## More Information
+
+### $\textcolor{Cyan}{OnLog\ callback\ event}$
+There is a simple logger internally inside the library that is able to write log data in a text file but it has a useful event 
+that will fire with each logging activity.
+Using his event you can use your desired logging method like [QuickLogger](https://github.com/exilon/QuickLogger) or anything else and target any destination like GrayLog, Telegram, Email, etc...
+
+### $\textcolor{Cyan}{Large\ existing\ database\ DDL\ script\ (SQL\ Server\ only)}$
+If you already have a large script that's not a problem you can keep it as it is and continue with this library from now on.
+To execute the existing script with any size refer to the related sample project(EasyDBMigration_LargeScript_SQLServer).
+## Note:
+### $\textcolor{Apricot}{For\ large\ scripts\ execution\ with\ this\ library\ you\ must\ separate\ each\ statement\ with\ the\ SQL\ Server-specific\ keyword\ "GO",\ this\ is\ mandatory!}$
+
+
+
