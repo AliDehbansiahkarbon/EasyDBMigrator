@@ -107,6 +107,7 @@
             <Form>frmMain</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\..\..\Lib\ORM\EasyDB.ORM.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
