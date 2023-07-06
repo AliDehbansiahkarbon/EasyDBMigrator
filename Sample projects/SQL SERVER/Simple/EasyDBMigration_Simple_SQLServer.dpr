@@ -2,8 +2,7 @@ program EasyDBMigration_Simple_SQLServer;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {frmMain},
-  EasyDB.ORM in '..\..\..\Lib\ORM\EasyDB.ORM.pas';
+  UMain in 'UMain.pas' {frmMain};
 
 {$R *.res}
 
