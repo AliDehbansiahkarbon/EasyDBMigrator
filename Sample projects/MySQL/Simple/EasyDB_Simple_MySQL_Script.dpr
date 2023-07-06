@@ -1,4 +1,4 @@
-program EasyDBMigration_Simple_SQLServer;
+program EasyDB_Simple_MySQL_Script;
 
 uses
   Vcl.Forms,
@@ -8,8 +8,8 @@ uses
 
 begin
   Application.Initialize;
+  Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmMain, frmMain);
   ReportMemoryLeaksOnShutdown := True;
-  Application.MainFormOnTaskbar := True;
   Application.Run;
 end.

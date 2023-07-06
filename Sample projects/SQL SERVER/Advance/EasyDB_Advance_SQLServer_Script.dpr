@@ -1,4 +1,4 @@
-program EasyDBMigration_Advance_SQLServer;
+program EasyDB_Advance_SQLServer_Script;
 
 uses
   Vcl.Forms,

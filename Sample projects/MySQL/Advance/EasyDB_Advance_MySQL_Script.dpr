@@ -1,4 +1,4 @@
-program EasyDBMigration_Advance_MySQL;
+program EasyDB_Advance_MySQL_Script;
 
 uses
   Vcl.Forms,
