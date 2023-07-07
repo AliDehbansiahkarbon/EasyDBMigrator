@@ -1,23 +1,21 @@
-object frmMain: TfrmMain
-  Left = 613
-  Top = 332
+object Form1: TForm1
+  Left = 0
+  Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'Simple_SQL Server'
-  ClientHeight = 448
-  ClientWidth = 461
+  Caption = 'Form1'
+  ClientHeight = 486
+  ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
-  Position = poDesigned
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
-    Left = 155
-    Top = 43
+    Left = 151
+    Top = 42
     Width = 58
     Height = 15
     Caption = 'to version: '
@@ -34,7 +32,7 @@ object frmMain: TfrmMain
   object btnUpgradeDatabase: TButton
     Left = 151
     Top = 8
-    Width = 140
+    Width = 137
     Height = 25
     Caption = 'Upgrade Database'
     TabOrder = 1
@@ -50,26 +48,26 @@ object frmMain: TfrmMain
     OnClick = btnAddMigrationsClick
   end
   object edtVersion: TEdit
-    Left = 211
+    Left = 209
     Top = 39
-    Width = 80
+    Width = 82
     Height = 23
     NumbersOnly = True
     TabOrder = 3
     Text = '202301010001'
   end
   object mmoLog: TMemo
-    Left = 8
-    Top = 80
-    Width = 445
-    Height = 360
+    Left = 16
+    Top = 70
+    Width = 465
+    Height = 403
     ScrollBars = ssVertical
     TabOrder = 4
   end
   object pbTotal: TProgressBar
-    Left = 303
+    Left = 312
     Top = 8
-    Width = 150
+    Width = 169
     Height = 17
     TabOrder = 5
   end

@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{F62E9656-5DE9-46CD-94CF-71EA2ACCD537}</ProjectGuid>
+        <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
         <ProjectVersion>19.5</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
@@ -8,7 +8,7 @@
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
-        <MainSource>EasyDB_Advance_SQLServer_Script.dpr</MainSource>
+        <MainSource>EasyDB_Simple_SQLServer_ORM.dpr</MainSource>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -57,8 +57,8 @@
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
-        <SanitizedProjectName>EasyDB_Advance_SQLServer_Script</SanitizedProjectName>
-        <DCC_UnitSearchPath>..\..\..\lib\Logger;..\..\..\lib\ConnectionManagers;..\..\..\lib\Core;..\..\..\lib\Runners;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <SanitizedProjectName>EasyDB_Simple_SQLServer_ORM</SanitizedProjectName>
+        <DCC_UnitSearchPath>..\..\..\lib\Logger;..\..\..\lib\ConnectionManagers;..\..\..\lib\Core;..\..\..\lib\Runners;..\..\..\lib\ORM;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -88,7 +88,7 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Hints>false</DCC_Hints>
+        <VerInfo_Locale>1033</VerInfo_Locale>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -104,13 +104,11 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="UMain.pas">
-            <Form>frmMain</Form>
+            <Form>Form1</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Migrations\UCustomers.pas"/>
-        <DCCReference Include="Migrations\UInvoices.pas"/>
-        <DCCReference Include="Migrations\UUsers.pas"/>
-        <DCCReference Include="UHelper.pas"/>
+        <DCCReference Include="..\..\..\Lib\ORM\EasyDB.ORM.Builder.pas"/>
+        <DCCReference Include="..\..\..\Lib\ORM\EasyDB.ORM.Core.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -129,7 +127,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">EasyDB_Advance_SQLServer_Script.dpr</Source>
+                    <Source Name="MainSource">EasyDB_Simple_SQLServer_ORM.dpr</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k280.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
@@ -139,9 +137,9 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="4">
-                <DeployFile LocalName="Win32\Debug\EasyDB_Advance_SQLServer_Script.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\EasyDB_Simple_SQLServer_ORM.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>EasyDB_Advance_SQLServer_Script.exe</RemoteName>
+                        <RemoteName>EasyDB_Simple_SQLServer_ORM.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
