@@ -3,13 +3,14 @@ unit EasyDB.Runner;
 interface
 uses
   System.Rtti, System.Generics.Collections, Vcl.Dialogs, System.Threading, Vcl.ComCtrls,
-  System.SysUtils, TypInfo, Contnrs, System.Classes, System.Generics.Defaults,
+  System.SysUtils, TypInfo, Contnrs, System.Classes, System.Generics.Defaults, System.StrUtils,
 
   EasyDB.Core,
   EasyDB.Logger,
   EasyDB.Migration,
   EasyDB.MigrationX,
-  EasyDB.Attribute;
+  EasyDB.Attribute,
+  EasyDB.ORM;
 
 type
   TRunner = class(TInterfacedObject, IRunner)
@@ -19,12 +20,14 @@ type
     FConfig: TConfig;
     FLogger: TLogger;
     FVersionToDowngrade: Int64;
+    FORM: TORM;
 
     function GetLogger: TLogger;
     procedure DoUpgrade;
     procedure DoDowngrade;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationX): TMigrationX;
+    procedure SortArrayDesc(AArray: TArray<Int64>);
   protected
     FRollBackAllByAnyError: Boolean;
 
@@ -43,11 +46,12 @@ type
     procedure UpgradeDatabase;
     procedure DowngradeDatabase(AVersion: Int64);
     procedure ArrangeMigrationList(AArrangeMode: TArrangeMode);
-    procedure SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
+    procedure SortDictionaryByField(ADict: TMigrationsDic; AArrangeMode: TArrangeMode; AIsMigrationX: Boolean);
 
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
     property Config: TConfig read FConfig;
     property Logger: TLogger read GetLogger;
+    property ORM: TORM read FORM write FORM;
   end;
 
 implementation
@@ -63,6 +67,7 @@ end;
 constructor TRunner.Create;
 begin
   FConfig := nil;
+  FORM := nil;
   FVersionToDowngrade := 0;
   FMigrationList := TMigrations.Create;
   FMigrationList.OwnsObjects := True;
@@ -121,9 +126,12 @@ var
 
   LvTempMigration: TMigration;
   LvTempMigrationEx: TMigrationX;
-  LvTempEntityName: string;
+  Lvkey: Int64;
+
+  LvIsMigrationX: Boolean;
 begin
   try
+    LvIsMigrationX := False;
     if Assigned(FConfig.ProgressBar) then
     begin
       FConfig.ProgressBar.Min := 0;
@@ -135,42 +143,41 @@ begin
       if LvExternalMigration is TMigration then
       begin
         LvTempMigration := TMigration(LvExternalMigration);
-        LvTempEntityName := LvTempMigration.EntityName;
+        Lvkey := LvTempMigration.Version;
 
-        if FInternalMigrationList.ContainsKey(LvTempEntityName) then
+        if FInternalMigrationList.ContainsKey(Lvkey) then
         begin
-          if not FInternalMigrationList.Items[LvTempEntityName].FindMigration(LvTempMigration) then
-            FInternalMigrationList.Items[LvTempEntityName].Add(CreateInternalMigration(LvTempMigration));
+          if not FInternalMigrationList.Items[Lvkey].FindMigration(LvTempMigration) then
+            FInternalMigrationList.Items[Lvkey].Add(CreateInternalMigration(LvTempMigration));
         end
         else
         begin
           LvNewInternalList := TMigrations.Create;
           LvNewInternalList.Add(CreateInternalMigration(LvTempMigration));
-          FInternalMigrationList.Add(LvTempEntityName, LvNewInternalList);
+          FInternalMigrationList.Add(Lvkey, LvNewInternalList);
         end;
-
-        SortDictionaryByField(FInternalMigrationList, 'Version', AArrangeMode);
       end
       else if LvExternalMigration is TMigrationX then
       begin
+        LvIsMigrationX := True;
         LvTempMigrationEx := TMigrationX(LvExternalMigration);
-        LvTempEntityName := LvTempMigrationEx.AttribEntityName;
+        Lvkey := LvTempMigrationEx.AttribVersion;
 
-        if FInternalMigrationList.ContainsKey(LvTempEntityName) then
+        if FInternalMigrationList.ContainsKey(Lvkey) then
         begin
-          if not FInternalMigrationList.Items[LvTempEntityName].FindMigration(LvTempMigrationEx) then
-            FInternalMigrationList.Items[LvTempEntityName].Add(CreateInternalMigrationEx(LvTempMigrationEx));
+          if not FInternalMigrationList.Items[Lvkey].FindMigration(LvTempMigrationEx) then
+            FInternalMigrationList.Items[Lvkey].Add(CreateInternalMigrationEx(LvTempMigrationEx));
         end
         else
         begin
           LvNewInternalList := TMigrations.Create;
           LvNewInternalList.Add(CreateInternalMigrationEx(LvTempMigrationEx));
-          FInternalMigrationList.Add(LvTempEntityName, LvNewInternalList);
+          FInternalMigrationList.Add(Lvkey, LvNewInternalList);
         end;
-
-        SortDictionaryByField(FInternalMigrationList, 'AttribVersion', AArrangeMode);
       end;
     end;
+
+    SortDictionaryByField(FInternalMigrationList, AArrangeMode, LvIsMigrationX);
   except on E: Exception do
     Logger.Log(atPreparingMigrations, E.Message);
   end;
@@ -206,6 +213,9 @@ var
 
   LvTempMigration: TMigration;
   LvTempMigrationEx: TMigrationX;
+
+  LvKey: Int64;
+  LvArray : TArray<Int64>;
 begin
   if FMigrationList.Count = 0 then
     Exit;
@@ -215,9 +225,17 @@ begin
     Exit;
 
   ArrangeMigrationList(umDESC);
+  LvKey := 0;
+  LvArray := FInternalMigrationList.Keys.ToArray;
+  SortArrayDesc(LvArray);
 
-  for LvMigrationList in FInternalMigrationList.Values do
+  for LvKey in LvArray do
   begin
+    if LvKey > LvDbVer then
+      Continue;
+
+    LvMigrationList := FInternalMigrationList.Items[LvKey];
+
     for LvInternalMigration in LvMigrationList do
     begin
       if LvInternalMigration is TMigration then
@@ -272,8 +290,12 @@ var
   LvWrittenVersions: TList<Int64>;
 
   LvTempVersion: Int64;
+  LvKey: Int64;
+
   LvTempMigration: TMigration;
   LvTempMigrationEx: TMigrationX;
+
+  LvArray : TArray<Int64>;
 begin
   if FMigrationList.Count = 0 then
     Exit;
@@ -284,8 +306,13 @@ begin
     LvDbVer := GetDatabaseVersion;
     ArrangeMigrationList(umASC);
 
-    for LvMigrationList in FInternalMigrationList.Values do
+    LvArray := FInternalMigrationList.Keys.ToArray;
+    TArray.Sort<Int64>(LvArray);
+
+    for LvKey in LvArray do
     begin
+      LvMigrationList := FInternalMigrationList.Items[LvKey];
+
       for LvInternalMigration in LvMigrationList do
       begin
         if LvInternalMigration is TMigration then
@@ -296,13 +323,13 @@ begin
           begin
             try
               LvTempMigration.Upgrade;
+              if FConfig.LogAllExecutionsStat then
+                Logger.DoCallBack(atUpgrade, 'Executed Successfully', LvTempMigration.EntityName, LvTempMigration.Version);
 
               if not LvWrittenVersions.Contains(LvTempVersion) then
               begin
                 UpdateVersionInfo(LvTempMigration);
                 LvWrittenVersions.Add(LvTempVersion);
-                if FConfig.LogAllExecutionsStat then
-                  Logger.DoCallBack(atUpgrade, 'Executed Successfully', LvTempMigration.EntityName, LvTempMigration.Version);
               end
               else
                 UpdateVersionInfo(LvTempMigration, False);
@@ -352,19 +379,37 @@ begin
   end;
 end;
 
-procedure TRunner.SortDictionaryByField(ADict: TObjectDictionary<string, TMigrations>; AFieldName: string; AArrangeMode: TArrangeMode);
+procedure TRunner.SortArrayDesc(AArray: TArray<Int64>);
+begin
+  TArray.Sort<Int64>(AArray,
+  TComparer<Int64>.Construct(
+    function(const Left, Right: Int64): Integer
+    begin
+      if Left = Right then
+        Result := 0
+      else if Left < Right then
+        Result := 1
+      else
+        Result := -1;
+    end)); // Desc sort
+end;
+
+procedure TRunner.SortDictionaryByField(ADict: TMigrationsDic; AArrangeMode: TArrangeMode; AIsMigrationX: Boolean);
 var
   LvValue: TMigrations;
+  LvFieldName: string;
 begin
+  LvFieldName := IfThen(AIsMigrationX, 'AttribVersion', 'Version');
+
   for LvValue in ADict.Values do
   begin
     LvValue.Sort(TComparer<TMigrationBase>.Construct(
       function (const L,R: TMigrationBase): integer
       begin
         if AArrangeMode = umASC then
-          Result := CompareText(GetPropValue(L, AFieldName), GetPropValue(R, AFieldName))
+          Result := CompareText(GetPropValue(L, LvFieldName), GetPropValue(R, LvFieldName))
         else
-          Result := CompareText(GetPropValue(R, AFieldName), GetPropValue(L, AFieldName));
+          Result := CompareText(GetPropValue(R, LvFieldName), GetPropValue(L, LvFieldName));
       end
       ));
   end;

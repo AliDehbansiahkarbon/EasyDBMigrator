@@ -8,10 +8,10 @@ type
   TMigrationBase = class;
   TArrangeMode = (umASC, umDESC);
   TMigrations = TObjectList<TMigrationBase>;
-  TMigrationsDic = TObjectDictionary<string, TMigrations>;
+  TMigrationsDic = TObjectDictionary<Int64, TMigrations>;
 
   TActionTypes = (atUpgrade, atDownGrade, atInitialize, atPreparingMigrations,
-                  atDbConnection, atQueryExecution, atFileExecution);
+                  atDbConnection, atQueryExecution, atFileExecution, atCallBackEvent);
 
   TSqlConnectionParams = record
     Server: string;
@@ -97,13 +97,17 @@ end;
 function TObjListHelper.FindMigration(AMigrationObj: TMigrationBase): Boolean;
 var
   I: Integer;
+  LvTempMigration: TMigration;
+  LvTempMigrationX: TMigrationX;
 begin
   Result := False;
   for I := 0 to Pred(Self.Count) do
   begin
     if AMigrationObj is TMigration then
     begin
-      if TMigration(AMigrationObj).Version = TMigration(Self.Items[I]).Version then
+      LvTempMigration := TMigration(AMigrationObj);
+      if (LvTempMigration.Version = TMigration(Self.Items[I]).Version) and
+         (LvTempMigration.EntityName = TMigration(Self.Items[I]).EntityName) then
       begin
         Result := True;
         Break;
@@ -111,7 +115,9 @@ begin
     end
     else if AMigrationObj is TMigrationX then
     begin
-      if TMigrationX(AMigrationObj).AttribVersion = TMigrationX(Self.Items[I]).AttribVersion then
+      LvTempMigrationX := TMigrationX(AMigrationObj);
+      if (LvTempMigrationX.AttribVersion = TMigrationX(Self.Items[I]).AttribVersion) and
+         (LvTempMigrationX.AttribEntityName = TMigrationX(Self.Items[I]).AttribEntityName) then
       begin
         Result := True;
         Break;

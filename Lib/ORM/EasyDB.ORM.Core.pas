@@ -10,12 +10,12 @@ type
               ctChar, ctVarchar, ctVarcharMmax, ctText, ctNchar, ctNvarchar, ctNtext, ctBinary, ctVarbinary,
               ctImage, ctNone);
 
-  TAlterMode = (amAdd, amDrop, amEdit, amNone);
+  TAlterMode = (amAdd, amDrop, amEdit, amRename, amNone);
 
   TTargetType = (ttSQLServer, ttMySQL, ttNone);
 
-//  TBaseTable = class
-//  end;
+  TObjectType = (otTable, otView, otStoredProcedure, otFunction, orNone);
+
 implementation
 
 end.

@@ -13,12 +13,13 @@ type
 
   TBuilder = class
   private
-    FORM: TORM;
+    FOrm: TORM;
     FFinalScript: TStringList;
     procedure GenerateSQLScript;
     procedure GenerateMySQLScript;
     function GetColType(ACol: TColumn): string;
     function GetOtherSwithches(ACol: TColumn): string;
+    function GetObjectType(ADelObject: TDelete): string;
   public
     constructor Create(AORM: TORM);
     destructor Destroy; override;
@@ -32,7 +33,7 @@ implementation
 constructor TBuilder.Create(AORM: TORM);
 begin
   FFinalScript := TStringList.Create;
-  FORM := AORM;
+  FOrm := AORM;
 end;
 
 destructor TBuilder.Destroy;
@@ -50,6 +51,11 @@ procedure TBuilder.GenerateSQLScript;
 var
   LvCreate: TCreate;
   LvTable: TTable;
+
+  LvAlter: TAlter;
+  LvAlterTable: TAlterTable;
+  LvDelete: TDelete;
+
   LvCol: TColumn;
   LvStatement: string;
 
@@ -61,7 +67,9 @@ var
      LvStatement := LvStatement + #10 + ANewLine + #10;
   end;
 begin
-  for LvCreate in FORM.GetCreateList do
+  LvStatement := EmptyStr;
+
+  for LvCreate in FOrm.GetCreateList do
   begin
     LvTable := LvCreate.GetTable;
     LvStatement := 'If Not Exists( Select 1 From sysobjects Where Name = ' +  LvTable.TableName.QuotedString + ' And xtype = ''U'')';
@@ -82,39 +90,73 @@ begin
 
     FFinalScript.Add(LvStatement);
   end;
+  FOrm.GetCreateList.Clear;
+
+  LvStatement := EmptyStr;
+  for LvAlter in FOrm.GetAlterList do
+  begin
+    LvAlterTable := LvAlter.GetTable;
+    LvStatement := 'ALTER TABLE ' + LvAlterTable.TableName;
+    case LvAlterTable.AlterMode of
+      amAdd: ConCat(' ADD ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column));
+      amDrop: ConCat(' DROP COLUMN ' + LvAlterTable.ColName);
+      amEdit: ConCat(' ALTER COLUMN ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column));
+      amRename: ConCat(' RENAME COLUMN ' + LvAlterTable.ColName + ' ' +  LvAlterTable.NewColName);
+    end;
+    FFinalScript.Add(LvStatement);
+  end;
+  FOrm.GetAlterList.Clear;
+
+  LvStatement := EmptyStr;
+  for LvDelete in FOrm.GetDeletes do
+  begin
+    Concat('DROP' + GetObjectType(LvDelete) + LvDelete.ObjectName);
+    FFinalScript.Add(LvStatement);
+  end;
+  FOrm.GetDeletes.Clear;
 end;
 
 function TBuilder.GetColType(ACol: TColumn): string;
 begin
   case ACol.DataType.ColType of
-    ctBigInt: Result := 'BigInt';
-    ctInt: Result := 'Int';
-    ctSmallInt: Result := 'SmallInt';
-    ctTinyInt: Result := 'TinyInt';
-    ctBit: Result := 'Bit';
-    ctDecimal: Result := 'Decimal(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
-    ctNumeric: Result := 'Numeric(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
-    ctMoney: Result := 'Money';
-    ctSmallMoney: Result := 'SmallMoney';
-    ctFloat: Result := 'Float';
-    ctReal: Result := 'Real';
-    ctDateTime: Result := 'DateTime';
-    ctSmallDateTime: Result := 'SmallDateTime';
-    ctDate: Result := 'Date';
-    ctTime: Result := 'Time';
-    ctDateTimeOffset: Result := 'DateTimeOffset';
-    ctDatetime2: Result := 'Datetime2';
-    ctChar: Result := 'Char(' + ACol.DataType.ColSize.ToString + ')';
-    ctVarchar: Result := 'Varchar(' + ACol.DataType.ColSize.ToString + ')';
-    ctVarcharMmax: Result := 'Varchar(Max)';
-    ctText: Result := 'Text';
-    ctNchar: Result := 'Nchar(' + ACol.DataType.ColSize.ToString + ')';
-    ctNvarchar: Result := 'Nvarchar(' + ACol.DataType.ColSize.ToString + ')';
-    ctNtext: Result := 'Ntext';
-    ctBinary: Result := 'Binary(' + ACol.DataType.ColSize.ToString + ')';
-    ctVarbinary: Result := 'Varbinary(' + ACol.DataType.ColSize.ToString + ')';
-    ctImage: Result := 'Image';
+    ctBigInt: Result := ' BigInt';
+    ctInt: Result := ' Int';
+    ctSmallInt: Result := ' SmallInt';
+    ctTinyInt: Result := ' TinyInt';
+    ctBit: Result := ' Bit';
+    ctDecimal: Result := ' Decimal(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
+    ctNumeric: Result := ' Numeric(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
+    ctMoney: Result := ' Money';
+    ctSmallMoney: Result := ' SmallMoney';
+    ctFloat: Result := ' Float';
+    ctReal: Result := ' Real';
+    ctDateTime: Result := ' DateTime';
+    ctSmallDateTime: Result := ' SmallDateTime';
+    ctDate: Result := ' Date';
+    ctTime: Result := ' Time';
+    ctDateTimeOffset: Result := ' DateTimeOffset';
+    ctDatetime2: Result := ' Datetime2';
+    ctChar: Result := ' Char(' + ACol.DataType.ColSize.ToString + ')';
+    ctVarchar: Result := ' Varchar(' + ACol.DataType.ColSize.ToString + ')';
+    ctVarcharMmax: Result := ' Varchar(Max)';
+    ctText: Result := ' Text';
+    ctNchar: Result := ' Nchar(' + ACol.DataType.ColSize.ToString + ')';
+    ctNvarchar: Result := ' Nvarchar(' + ACol.DataType.ColSize.ToString + ')';
+    ctNtext: Result := ' Ntext';
+    ctBinary: Result := ' Binary(' + ACol.DataType.ColSize.ToString + ')';
+    ctVarbinary: Result := ' Varbinary(' + ACol.DataType.ColSize.ToString + ')';
+    ctImage: Result := ' Image';
     ctNone: Result := '';
+  end;
+end;
+
+function TBuilder.GetObjectType(ADelObject: TDelete): string;
+begin
+  case ADelObject.ObjectType of
+    otTable: Result := ' TABLE ';
+    otView: Result := ' VIEW ';
+    otStoredProcedure: Result := ' PROCEDURE ';
+    otFunction: Result := ' FUNCTION ';
   end;
 end;
 
@@ -139,7 +181,7 @@ procedure TBuilder.Submit;
 var
   I: Integer;
 begin
-  case FORM.GetTarget of
+  case FOrm.GetTarget of
     ttSQLServer:
     begin
       GenerateSQLScript;

@@ -46,8 +46,12 @@ end;
 
 procedure TLogger.DoCallBack(AActionType: TActionTypes; AMessage, AEntityName: string; AVersion: Int64);
 begin
-  if Assigned(FOnLog) then
-    OnLog(AActionType, AMessage, AEntityName, AVersion);
+  try
+    if Assigned(FOnLog) then
+      OnLog(AActionType, AMessage, AEntityName, AVersion);
+  except on E: Exception do
+    Log(atCallBackEvent, E.Message, AEntityName, AVersion);
+  end;
 end;
 
 class function TLogger.Instance: TLogger;
