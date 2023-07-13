@@ -9,53 +9,62 @@ type
   TTable = class;
   TAlterTable = class;
 
-  TDataType = class
+  TBaseDataType = class
   private
-    FParentTable: TTable;
-    FColType: TColType;
-    FColSize: Integer;
+    FType: TColType;
+    FSize: Integer;
     FPrecision: Byte;
     FScale: Byte;
+    FName: string;
+  public
+    constructor Create(AType: TColType); overload;
+    constructor Create(AType: TColType; ASize: Integer); overload;
+    constructor Create(AName: string; AType: TColType; ASize: Integer; APrecision: Byte; AScale: Byte); overload;
+
+    property ColType: TColType read FType;
+    property ColSize: Integer read FSize;
+    property Precision: Byte read FPrecision;
+    property Scale: Byte read FScale;
+  end;
+
+  TDataType = class(TBaseDataType)
+  private
+    FParentTable: TTable;
     FIsNullable: Boolean;
     FIsPrimary: Boolean;
     FAutoIdentity: Boolean;
     FAutoIdentityStart: Int64;
     FAutoIdentityStep: Int64;
+    constructor Create; overload;
+    constructor Create(AParentTable: TTable);overload;
+    constructor Create(AParentTable: TTable; AColType: TColType);overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; AColSize: Integer);overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; APrecision: Byte; AScale: Byte);overload;
   public
-    constructor Create(AParentTable: TTable);
     function NotNullable: TTable;
     function Nullable: TTable;
-
     function PrimaryKey: TDataType;
     function AutoIdentity(AStart, AStep: Int64): TDataType;
 
-    property ColType: TColType read FColType write FColType;
-    property ColSize: Integer read FColSize write FColSize;
-    property Precision: Byte read FPrecision write FPrecision;
-    property Scale: Byte read FScale write FScale;
-
     /// <summary cref="readonly">readonly</summary>
     property IsAutoIdentity: Boolean read FAutoIdentity;
-
     /// <summary cref="readonly">readonly</summary>
     property AutoIdentityStart: Int64 read FAutoIdentityStart;
-
     /// <summary cref="readonly">readonly</summary>
     property AutoIdentityStep: Int64 read FAutoIdentityStep;
-
     /// <summary cref="readonly">readonly</summary>
     property IsNullable: Boolean read FIsNullable;
-
     /// <summary cref="readonly">readonly</summary>
     property IsPrimary: Boolean read FIsPrimary;
   end;
 
   TColumn = class
+  private
     FParentTable: TTable;
     FColName: string;
     FDataType: TDataType;
-  public
     constructor Create(AColName: string; AParentTable: TTable);
+  public
     function AsBigInt: TDataType;
     function AsInt: TDataType;
     function AsSmallInt: TDataType;
@@ -86,12 +95,14 @@ type
 
     /// <summary cref="readonly">readonly</summary>
     property DataType: TDataType read FDataType;
-
     /// <summary cref="readonly">readonly</summary>
     property ColName: string read FColName;
   end;
 
-  TTable = class
+  TDbBaseObject = class
+  end;
+
+  TTable = class(TDbBaseObject)
   private
     FTableName: string;
     FHasAutoID: Boolean;
@@ -104,33 +115,52 @@ type
 
     /// <summary cref="readonly">readonly</summary>
     property TableName: string read FTableName;
-
     /// <summary cref="readonly">readonly</summary>
     property HasAutoID: Boolean read FHasAutoID;
-
     /// <summary cref="readonly">Readonly</summary>
     property ColumnList: TObjectList<TColumn> read FColumnList;
   end;
 
-  TProcedure = class
+  TProcedure = class(TDbBaseObject)
   private
     FName: string;
-    FParams: TDictionary<string, TColType>;
+    FBody: string;
+    FParams: TDictionary<string, TDataType>;
     constructor Create(AName: string);
   public
     destructor Destroy; override;
-    function AddParam(AName: string; ADataType: TColType): TProcedure;
-    property Params: TDictionary<string, TColType> read FParams write FParams;
+    function AddParam(AName: string; ADataType: TDataType): TProcedure;
+    procedure AddBody(ABody: string);
+
+    /// <summary cref="readonly">Readonly</summary>
+    property Params: TDictionary<string, TDataType> read FParams;
+    /// <summary cref="readonly">Readonly</summary>
+    property Name: string read FName;
+    /// <summary cref="readonly">Readonly</summary>
+    property Body: string read FBody;
   end;
 
-  TFunction = class
+  TFunction = class(TDbBaseObject)
   private
     FName: string;
-    FParams: TDictionary<string, TColType>;
+    FBody: string;
+    FParams: TDictionary<string, TDataType>;
+    FReturnType: TDataType;
   public
     constructor Create(AName: string);
-    property Name: string read FName write FName;
-    property Params: TDictionary<string, TColType> read FParams write FParams;
+    destructor Destroy; override;
+    function AddParam(AName: string; ADataType: TDataType): TFunction;
+    function AddReturnType(AType: TDataType): TFunction;
+    procedure AddBody(ABody: string);
+
+    /// <summary cref="readonly">Readonly</summary>
+    property Params: TDictionary<string, TDataType> read FParams;
+    /// <summary cref="readonly">Readonly</summary>
+    property Name: string read FName;
+    /// <summary cref="readonly">Readonly</summary>
+    property ReturnType: TDataType read FReturnType;
+    /// <summary cref="readonly">Readonly</summary>
+    property Body: string read FBody;
   end;
 
   TCreate = class
@@ -145,7 +175,7 @@ type
     function Table(ATableName: string): TTable;
     function StoredProc(AProcedureName: string): TProcedure;
     function StoredFunction(AFunctionName: string): TFunction;
-    function GetTable: TTable;
+    function GetObject: TDbBaseObject;
   end;
 
   TAlterTable = class
@@ -322,9 +352,14 @@ begin
   inherited;
 end;
 
-function TCreate.GetTable: TTable;
+function TCreate.GetObject: TDbBaseObject;
 begin
-  Result := FTable;
+  if Assigned(FTable) then
+    Result := FTable
+  else if Assigned(FProcedure) then
+    Result := FProcedure
+  else if Assigned(FFunction) then
+    Result := FFunction;
 end;
 
 function TCreate.StoredFunction(AFunctionName: string): TFunction;
@@ -335,6 +370,7 @@ end;
 function TCreate.StoredProc(AProcedureName: string): TProcedure;
 begin
   FProcedure := TProcedure.Create(AProcedureName);
+  Result := FProcedure;
 end;
 
 function TCreate.Table(ATableName: string): TTable;
@@ -382,200 +418,163 @@ end;
 
 function TColumn.AsBigInt: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctBigInt;
+  FDataType := TDataType.Create(FParentTable, ctBigInt);
   Result := FDataType;
 end;
 
 function TColumn.AsBinary(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctBinary;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctBinary, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsBit: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctBit;
+  FDataType := TDataType.Create(FParentTable, ctBit);
   Result := FDataType;
 end;
 
 function TColumn.AsChar(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctChar;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctChar, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsDate: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctDate;
+  FDataType := TDataType.Create(FParentTable, ctDate);
   Result := FDataType;
 end;
 
 function TColumn.AsDateTime: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctDateTime;
+  FDataType := TDataType.Create(FParentTable, ctDateTime);
   Result := FDataType;
 end;
 
 function TColumn.AsDatetime2: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctDatetime2;
+  FDataType := TDataType.Create(FParentTable, ctDatetime2);
   Result := FDataType;
 end;
 
 function TColumn.AsDateTimeOffset: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctDateTimeOffset;
+  FDataType := TDataType.Create(FParentTable, ctDateTimeOffset);
   Result := FDataType;
 end;
 
 function TColumn.AsDecimal(APrecision, AScale: Byte): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctDecimal;
-  FDataType.Precision := APrecision;
-  FDataType.Scale := AScale;
+  FDataType := TDataType.Create(FParentTable, ctDecimal, APrecision, AScale);
   Result := FDataType;
 end;
 
 function TColumn.AsFloat: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctFloat;
+  FDataType := TDataType.Create(FParentTable, ctFloat);
   Result := FDataType;
 end;
 
 function TColumn.AsImage: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctImage;
+  FDataType := TDataType.Create(FParentTable, ctImage);
   Result := FDataType;
 end;
 
 function TColumn.AsInt: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctInt;
+  FDataType := TDataType.Create(FParentTable, ctInt);
   Result := FDataType;
 end;
 
 function TColumn.AsMoney: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctMoney;
+  FDataType := TDataType.Create(FParentTable, ctMoney);
   Result := FDataType;
 end;
 
 function TColumn.AsNchar(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctNchar;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctNchar, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsNtext: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctNtext;
+  FDataType := TDataType.Create(FParentTable, ctNtext);
   Result := FDataType;
 end;
 
 function TColumn.AsNumeric(APrecision, AScale: Byte): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctNumeric;
-  FDataType.Precision := APrecision;
-  FDataType.Scale := AScale;
+  FDataType := TDataType.Create(FParentTable, ctNumeric, APrecision, AScale);
   Result := FDataType;
 end;
 
 function TColumn.AsNvarchar(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctNvarchar;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctNvarchar, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsReal: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctReal;
+  FDataType := TDataType.Create(FParentTable, ctReal);
   Result := FDataType;
 end;
 
 function TColumn.AsSmallDateTime: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctSmallDateTime;
+  FDataType := TDataType.Create(FParentTable, ctSmallDateTime);
   Result := FDataType;
 end;
 
 function TColumn.AsSmallInt: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctSmallInt;
+  FDataType := TDataType.Create(FParentTable, ctSmallInt);
   Result := FDataType;
 end;
 
 function TColumn.AsSmallMoney: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctSmallMoney;
+  FDataType := TDataType.Create(FParentTable, ctSmallMoney);
   Result := FDataType;
 end;
 
 function TColumn.AsText: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctText;
+  FDataType := TDataType.Create(FParentTable, ctText);
   Result := FDataType;
 end;
 
 function TColumn.AsTime: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctTime;
+  FDataType := TDataType.Create(FParentTable, ctTime);
   Result := FDataType;
 end;
 
 function TColumn.AsTinyInt: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctTinyInt;
+  FDataType := TDataType.Create(FParentTable, ctTinyInt);
   Result := FDataType;
 end;
 
 function TColumn.AsVarbinary(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctVarbinary;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctVarbinary, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsVarchar(ASize: Integer): TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctVarchar;
-  FDataType.ColSize := ASize;
+  FDataType := TDataType.Create(FParentTable, ctVarchar, ASize);
   Result := FDataType;
 end;
 
 function TColumn.AsVarcharMmax: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable);
-  FDataType.ColType := ctVarcharMmax;
+  FDataType := TDataType.Create(FParentTable, ctVarcharMmax);
   Result := FDataType;
 end;
 
@@ -597,8 +596,27 @@ end;
 
 constructor TDataType.Create(AParentTable: TTable);
 begin
-  FColType := ctNone;
-  FColSize := 0;
+  Create;
+  FParentTable := AParentTable;
+end;
+
+function TDataType.PrimaryKey: TDataType;
+begin
+  FIsPrimary := True;
+  Result := Self;
+end;
+
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+end;
+
+constructor TDataType.Create;
+begin
+  FType := ctNone;
+  FSize := 0;
   FPrecision := 0;
   FPrecision := 0;
   FScale := 0;
@@ -607,13 +625,6 @@ begin
   FIsNullable := True;
   FIsPrimary := False;
   FAutoIdentity := False;
-  FParentTable := AParentTable;
-end;
-
-function TDataType.PrimaryKey: TDataType;
-begin
-  FIsPrimary := True;
-  Result := Self;
 end;
 
 function TDataType.NotNullable: TTable;
@@ -626,6 +637,23 @@ function TDataType.Nullable: TTable;
 begin
   FIsNullable := True;
   Result := FParentTable;
+end;
+
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AColSize: Integer);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+  FSize := AColSize;
+end;
+
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType; APrecision, AScale: Byte);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+  FPrecision := APrecision;
+  FScale := AScale;
 end;
 
 { TDelete }
@@ -696,28 +724,78 @@ end;
 
 { TFunction }
 
+procedure TFunction.AddBody(ABody: string);
+begin
+  FBody := ABody;
+end;
+
+function TFunction.AddParam(AName: string; ADataType: TDataType): TFunction;
+begin
+  FParams.Add(AName, ADataType);
+end;
+
+function TFunction.AddReturnType(AType: TDataType): TFunction;
+begin
+  FReturnType := AType;
+end;
+
 constructor TFunction.Create(AName: string);
 begin
   FName := AName;
+  FParams := TDictionary<string, TDataType>.Create;
+end;
+
+destructor TFunction.Destroy;
+begin
+  FParams.Free;
+  inherited;
 end;
 
 { TProcedure }
 
-function TProcedure.AddParam(AName: string; ADataType: TColType): TProcedure;
+procedure TProcedure.AddBody(ABody: string);
+begin
+  FBody := ABody;
+end;
+
+function TProcedure.AddParam(AName: string; ADataType: TDataType): TProcedure;
 begin
   FParams.Add(AName, ADataType);
+  Result := Self;
 end;
 
 constructor TProcedure.Create(AName: string);
 begin
   FName := AName;
-  FParams := TDictionary<string, TColType>.Create;
+  FParams := TDictionary<string, TDataType>.Create;
 end;
 
 destructor TProcedure.Destroy;
 begin
   FParams.Free;
   inherited;
+end;
+
+{ TBaseDataType }
+
+constructor TBaseDataType.Create(AName: string; AType: TColType; ASize: Integer; APrecision, AScale: Byte);
+begin
+  FName := AName;
+  FType := AType;
+  FSize := ASize;
+  FPrecision := APrecision;
+  FScale := AScale;
+end;
+
+constructor TBaseDataType.Create(AType: TColType; ASize: Integer);
+begin
+  FType := AType;
+  FSize := ASize;
+end;
+
+constructor TBaseDataType.Create(AType: TColType);
+begin
+  FType := AType;
 end;
 
 end.

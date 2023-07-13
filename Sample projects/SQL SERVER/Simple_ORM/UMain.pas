@@ -26,6 +26,7 @@ type
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     Runner: TSQLRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -98,9 +99,15 @@ begin
   begin
     with ORM do
     begin
-      Create.Table('TbCustomers').WithIdColumn
+      Create.Table('TbCustomers')
       .WithColumn('Name').AsNvarchar(100).Nullable
       .WithColumn('Family').AsNvarchar(50).Nullable;
+
+      Create.Table('TbInvoices').WithIdColumn
+      .WithColumn('InvoiceNumber').AsBigInt.Nullable
+      .WithColumn('InvoiceDate').AsDateTime.Nullable
+      .WithColumn('MarketCode').AsInt.Nullable
+      .WithColumn('TotalAmount').AsMoney.Nullable;
 
       SubmitChanges;
     end;
@@ -108,19 +115,24 @@ begin
   procedure
   begin
     ORM.Delete.Table('TbCustomers');
+    ORM.Delete.Table('TbInvoices');
     ORM.SubmitChanges;
   end
   ));
 
   //============================================
-  Runner.Add(TMigration.Create('TbCustomers', 202301010004, 'Alexander', 'Task number #2900',
+  Runner.Add(TMigration.Create('SelectTopTenCustomers', 202301010004, 'Alexander', 'Task number #2900',
   procedure
+  var LvBody: string;
   begin
+    LvBody := 'Select * from TbInvoices where TotalAmount > @TotalAmount and MarketCode = @MarketCode and InvoiceDate = @ReportData';
     with ORM do
     begin
       Create.StoredProc('SelectTopTenCustomers')
-      .AddParam('ReportData', ctDateTime)
-      .AddParam('MarketCode', ctInt);
+      .AddParam('TotalAmount', TDataType.Create(ctMoney))
+      .AddParam('ReportData', TDataType.Create(ctDateTime))
+      .AddParam('MarketCode', TDataType.Create(ctInt))
+      .AddBody(LvBody);
 
       SubmitChanges;
     end;
@@ -165,6 +177,11 @@ begin
 
   {Use this line if you need local log}
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  Runner.Free;
 end;
 
 procedure TForm1.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);

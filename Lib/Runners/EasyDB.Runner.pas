@@ -98,6 +98,9 @@ begin
   if Assigned(FConfig) then
     FConfig.Free;
 
+  if Assigned(FORM) then
+    FORM.Free;
+
   inherited;
 end;
 

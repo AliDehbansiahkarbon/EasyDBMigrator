@@ -17,7 +17,7 @@ type
     FFinalScript: TStringList;
     procedure GenerateSQLScript;
     procedure GenerateMySQLScript;
-    function GetColType(ACol: TColumn): string;
+    function GetColType(ADataType: TDataType): string;
     function GetOtherSwithches(ACol: TColumn): string;
     function GetObjectType(ADelObject: TDelete): string;
   public
@@ -50,7 +50,12 @@ end;
 procedure TBuilder.GenerateSQLScript;
 var
   LvCreate: TCreate;
+  LvDbObject: TDbBaseObject;
+
   LvTable: TTable;
+  LvProcedure: TProcedure;
+  LvFunction: TFunction;
+  Param: string;
 
   LvAlter: TAlter;
   LvAlterTable: TAlterTable;
@@ -62,7 +67,7 @@ var
   procedure ConCat(ANewLine: string; AIsLatest: Boolean = False);
   begin
     if AIsLatest then
-      LvStatement := LeftStr(LvStatement.Trim, Length(LvStatement) - 1) + #10 + ANewLine
+      LvStatement := LeftStr(LvStatement.Trim, Length(LvStatement.Trim) - 1) + #10 + ANewLine + #10
     else
      LvStatement := LvStatement + #10 + ANewLine + #10;
   end;
@@ -71,22 +76,64 @@ begin
 
   for LvCreate in FOrm.GetCreateList do
   begin
-    LvTable := LvCreate.GetTable;
-    LvStatement := 'If Not Exists( Select 1 From sysobjects Where Name = ' +  LvTable.TableName.QuotedString + ' And xtype = ''U'')';
-    ConCat('Create Table ' + LvTable.TableName + '(');
+    LvDbObject := LvCreate.GetObject;
 
-    if LvTable.HasAutoID then
-      ConCat(' ID Int Primary key Identity(1, 1) Not null, ');
-
-    for LvCol in LvTable.ColumnList do
+    if LvDbObject is TTable then
     begin
-      if (LvCol.ColName = 'ID') and (LvTable.HasAutoID) then
-        Continue;
+      LvTable :=  TTable(LvCreate.GetObject);
+      LvStatement := 'If Not Exists( Select 1 From sysobjects Where Name = ' +  LvTable.TableName.QuotedString + ' And xtype = ''U'')';
+      ConCat('Create Table ' + LvTable.TableName + '(');
 
-      ConCat(LvCol.ColName + ' ' + GetColType(LvCol) + GetOtherSwithches(LvCol) + ',');
+      if LvTable.HasAutoID then
+        ConCat(' ID Int Primary key Identity(1, 1) Not null, ');
+
+      for LvCol in LvTable.ColumnList do
+      begin
+        if (LvCol.ColName = 'ID') and (LvTable.HasAutoID) then
+          Continue;
+
+        ConCat(LvCol.ColName + ' ' + GetColType(LvCol.DataType) + GetOtherSwithches(LvCol) + ',');
+      end;
+
+      ConCat(');', True);
+    end
+    else if LvDbObject is TProcedure then
+    begin
+      LvProcedure := TProcedure(LvCreate.GetObject);
+      LvStatement := 'If Exists (Select 1 From sys.objects Where Object_id = Object_id(N' + LvProcedure.Name.QuotedString + ') And Type In (N''P'', N''PC''))'
+                     + #10 + 'Drop Procedure [' + LvProcedure.Name + ']' + #10;
+
+      FFinalScript.Add(LvStatement);
+      LvStatement := EmptyStr;
+
+      ConCat('Create Procedure ' + LvProcedure.Name);
+      for Param in LvProcedure.Params.Keys do
+        ConCat('@' + Param + ' ' + GetColType(LvProcedure.Params.Items[Param]) + ',');
+
+      ConCat('As', True);
+      ConCat('Begin');
+      ConCat(LvProcedure.Body);
+      ConCat('End');
+    end
+    else if LvDbObject is TFunction then
+    begin
+      LvFunction := TFunction(LvCreate.GetObject);
+      LvStatement := 'If Exists (Select * From   sysobjects Where  id = Object_id(N' + LvFunction.Name.QuotedString + ') And xtype In (N''FN'', N''IF'', N''TF'')'
+                     + #10 + 'Drop Function [' + LvProcedure.Name + ']' + #10;
+
+      FFinalScript.Add(LvStatement);
+      LvStatement := EmptyStr;
+
+      ConCat('Create Function ' + LvFunction.Name);
+      ConCat('(');
+      for Param in LvProcedure.Params.Keys do
+        ConCat('@' + Param + ' ' + GetColType(LvFunction.Params.Items[Param]) + ',');
+      ConCat(')');
+      ConCat('Returns ' + GetColType(LvFunction.ReturnType));
+      ConCat('Begin');
+      ConCat(LvFunction.Body);
+      ConCat('End');
     end;
-
-    ConCat(');', True);
 
     FFinalScript.Add(LvStatement);
   end;
@@ -98,9 +145,9 @@ begin
     LvAlterTable := LvAlter.GetTable;
     LvStatement := 'ALTER TABLE ' + LvAlterTable.TableName;
     case LvAlterTable.AlterMode of
-      amAdd: ConCat(' ADD ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column));
+      amAdd: ConCat(' ADD ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column.DataType));
       amDrop: ConCat(' DROP COLUMN ' + LvAlterTable.ColName);
-      amEdit: ConCat(' ALTER COLUMN ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column));
+      amEdit: ConCat(' ALTER COLUMN ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column.DataType));
       amRename: ConCat(' RENAME COLUMN ' + LvAlterTable.ColName + ' ' +  LvAlterTable.NewColName);
     end;
     FFinalScript.Add(LvStatement);
@@ -109,23 +156,21 @@ begin
 
   LvStatement := EmptyStr;
   for LvDelete in FOrm.GetDeletes do
-  begin
-    Concat('DROP' + GetObjectType(LvDelete) + LvDelete.ObjectName);
-    FFinalScript.Add(LvStatement);
-  end;
+    FFinalScript.Add('DROP ' + GetObjectType(LvDelete) + LvDelete.ObjectName);
+
   FOrm.GetDeletes.Clear;
 end;
 
-function TBuilder.GetColType(ACol: TColumn): string;
+function TBuilder.GetColType(ADataType: TDataType): string;
 begin
-  case ACol.DataType.ColType of
+  case ADataType.ColType of
     ctBigInt: Result := ' BigInt';
     ctInt: Result := ' Int';
     ctSmallInt: Result := ' SmallInt';
     ctTinyInt: Result := ' TinyInt';
     ctBit: Result := ' Bit';
-    ctDecimal: Result := ' Decimal(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
-    ctNumeric: Result := ' Numeric(' + ACol.DataType.Precision.ToString + ', ' + ACol.DataType.Scale.ToString + ')';
+    ctDecimal: Result := ' Decimal(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
+    ctNumeric: Result := ' Numeric(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
     ctMoney: Result := ' Money';
     ctSmallMoney: Result := ' SmallMoney';
     ctFloat: Result := ' Float';
@@ -136,15 +181,15 @@ begin
     ctTime: Result := ' Time';
     ctDateTimeOffset: Result := ' DateTimeOffset';
     ctDatetime2: Result := ' Datetime2';
-    ctChar: Result := ' Char(' + ACol.DataType.ColSize.ToString + ')';
-    ctVarchar: Result := ' Varchar(' + ACol.DataType.ColSize.ToString + ')';
+    ctChar: Result := ' Char(' + ADataType.ColSize.ToString + ')';
+    ctVarchar: Result := ' Varchar(' + ADataType.ColSize.ToString + ')';
     ctVarcharMmax: Result := ' Varchar(Max)';
     ctText: Result := ' Text';
-    ctNchar: Result := ' Nchar(' + ACol.DataType.ColSize.ToString + ')';
-    ctNvarchar: Result := ' Nvarchar(' + ACol.DataType.ColSize.ToString + ')';
+    ctNchar: Result := ' Nchar(' + ADataType.ColSize.ToString + ')';
+    ctNvarchar: Result := ' Nvarchar(' + ADataType.ColSize.ToString + ')';
     ctNtext: Result := ' Ntext';
-    ctBinary: Result := ' Binary(' + ACol.DataType.ColSize.ToString + ')';
-    ctVarbinary: Result := ' Varbinary(' + ACol.DataType.ColSize.ToString + ')';
+    ctBinary: Result := ' Binary(' + ADataType.ColSize.ToString + ')';
+    ctVarbinary: Result := ' Varbinary(' + ADataType.ColSize.ToString + ')';
     ctImage: Result := ' Image';
     ctNone: Result := '';
   end;
