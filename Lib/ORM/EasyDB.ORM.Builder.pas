@@ -101,7 +101,7 @@ begin
     begin
       LvProcedure := TProcedure(LvCreate.GetObject);
       LvStatement := 'If Exists (Select 1 From sys.objects Where Object_id = Object_id(N' + LvProcedure.Name.QuotedString + ') And Type In (N''P'', N''PC''))'
-                     + #10 + 'Drop Procedure [' + LvProcedure.Name + ']' + #10;
+                     + #10 + ' Drop Procedure ' + LvProcedure.Name + #10;
 
       FFinalScript.Add(LvStatement);
       LvStatement := EmptyStr;
@@ -118,18 +118,19 @@ begin
     else if LvDbObject is TFunction then
     begin
       LvFunction := TFunction(LvCreate.GetObject);
-      LvStatement := 'If Exists (Select * From   sysobjects Where  id = Object_id(N' + LvFunction.Name.QuotedString + ') And xtype In (N''FN'', N''IF'', N''TF'')'
-                     + #10 + 'Drop Function [' + LvProcedure.Name + ']' + #10;
+      LvStatement := 'If Exists (Select * From   sysobjects Where  id = Object_id(N' + LvFunction.Name.QuotedString + ') And xtype In (N''FN'', N''IF'', N''TF''))'
+                     + #10 + ' Drop Function ' + LvFunction.Name + #10;
 
       FFinalScript.Add(LvStatement);
       LvStatement := EmptyStr;
 
       ConCat('Create Function ' + LvFunction.Name);
       ConCat('(');
-      for Param in LvProcedure.Params.Keys do
+      for Param in LvFunction.Params.Keys do
         ConCat('@' + Param + ' ' + GetColType(LvFunction.Params.Items[Param]) + ',');
-      ConCat(')');
-      ConCat('Returns ' + GetColType(LvFunction.ReturnType));
+
+      ConCat(')', True);
+      ConCat('Returns ' + GetColType(LvFunction.GetReturnType));
       ConCat('Begin');
       ConCat(LvFunction.Body);
       ConCat('End');
@@ -156,7 +157,10 @@ begin
 
   LvStatement := EmptyStr;
   for LvDelete in FOrm.GetDeletes do
-    FFinalScript.Add('DROP ' + GetObjectType(LvDelete) + LvDelete.ObjectName);
+  begin
+    if Assigned(LvDelete) then
+      FFinalScript.Add('DROP ' + GetObjectType(LvDelete) + LvDelete.ObjectName);
+  end;
 
   FOrm.GetDeletes.Clear;
 end;

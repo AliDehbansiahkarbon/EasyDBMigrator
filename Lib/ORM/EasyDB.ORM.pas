@@ -65,6 +65,8 @@ type
     FDataType: TDataType;
     constructor Create(AColName: string; AParentTable: TTable);
   public
+    destructor Destroy; override;
+
     function AsBigInt: TDataType;
     function AsInt: TDataType;
     function AsSmallInt: TDataType;
@@ -125,7 +127,7 @@ type
   private
     FName: string;
     FBody: string;
-    FParams: TDictionary<string, TDataType>;
+    FParams: TObjectDictionary<string, TDataType>;
     constructor Create(AName: string);
   public
     destructor Destroy; override;
@@ -133,7 +135,7 @@ type
     procedure AddBody(ABody: string);
 
     /// <summary cref="readonly">Readonly</summary>
-    property Params: TDictionary<string, TDataType> read FParams;
+    property Params: TObjectDictionary<string, TDataType> read FParams;
     /// <summary cref="readonly">Readonly</summary>
     property Name: string read FName;
     /// <summary cref="readonly">Readonly</summary>
@@ -144,21 +146,20 @@ type
   private
     FName: string;
     FBody: string;
-    FParams: TDictionary<string, TDataType>;
+    FParams: TObjectDictionary<string, TDataType>;
     FReturnType: TDataType;
-  public
     constructor Create(AName: string);
+  public
     destructor Destroy; override;
     function AddParam(AName: string; ADataType: TDataType): TFunction;
-    function AddReturnType(AType: TDataType): TFunction;
+    function ReturnType(AType: TDataType): TFunction;
     procedure AddBody(ABody: string);
+    function GetReturnType: TDataType;
 
     /// <summary cref="readonly">Readonly</summary>
-    property Params: TDictionary<string, TDataType> read FParams;
+    property Params: TObjectDictionary<string, TDataType> read FParams;
     /// <summary cref="readonly">Readonly</summary>
     property Name: string read FName;
-    /// <summary cref="readonly">Readonly</summary>
-    property ReturnType: TDataType read FReturnType;
     /// <summary cref="readonly">Readonly</summary>
     property Body: string read FBody;
   end;
@@ -188,6 +189,8 @@ type
     FTableName: string;
   public
     constructor Create(ATableName: string);
+    destructor Destroy; override;
+
     procedure DropColumn(AColName: string);
     function AddColumn(AColName: string): TColumn;
     function AlterColumn(AColName: string): TColumn;
@@ -208,6 +211,8 @@ type
   private
     FTable: TAlterTable;
   public
+    constructor Create;
+    destructor Destroy; override;
     function Table(ATableName: string): TAlterTable;
     function GetTable: TAlterTable;
   end;
@@ -219,7 +224,7 @@ type
   public
     procedure Table(ATableName: string);
     procedure StoredProc(AProcedureName: string);
-    procedure StoredFunction(AFunction: string);
+    procedure StoredFunc(AFunction: string);
     procedure View(AViewName: string);
 
     /// <summary> readonly </summary>
@@ -365,6 +370,7 @@ end;
 function TCreate.StoredFunction(AFunctionName: string): TFunction;
 begin
   FFunction := TFunction.Create(AFunctionName);
+  Result := FFunction;
 end;
 
 function TCreate.StoredProc(AProcedureName: string): TProcedure;
@@ -584,6 +590,12 @@ begin
   FParentTable := AParentTable;
 end;
 
+destructor TColumn.Destroy;
+begin
+  FDataType.Free;
+  inherited;
+end;
+
 { TDataType }
 
 function TDataType.AutoIdentity(AStart, AStep: Int64): TDataType;
@@ -657,7 +669,7 @@ begin
 end;
 
 { TDelete }
-procedure TDelete.StoredFunction(AFunction: string);
+procedure TDelete.StoredFunc(AFunction: string);
 begin
   FObjectType := otFunction;
   FObjectName := AFunction;
@@ -682,6 +694,18 @@ begin
 end;
 
 { TAlter }
+
+constructor TAlter.Create;
+begin
+  FTable := nil;
+end;
+
+destructor TAlter.Destroy;
+begin
+  if Assigned(FTable) then
+    FTable.Free;
+  inherited;
+end;
 
 function TAlter.GetTable: TAlterTable;
 begin
@@ -716,6 +740,14 @@ begin
   FColumn := nil;
 end;
 
+destructor TAlterTable.Destroy;
+begin
+  if Assigned(FColumn) then
+    FColumn.Free;
+
+  inherited;
+end;
+
 procedure TAlterTable.DropColumn(AColName: string);
 begin
   FColName := AColName;
@@ -732,23 +764,30 @@ end;
 function TFunction.AddParam(AName: string; ADataType: TDataType): TFunction;
 begin
   FParams.Add(AName, ADataType);
+  Result := Self;
 end;
 
-function TFunction.AddReturnType(AType: TDataType): TFunction;
+function TFunction.ReturnType(AType: TDataType): TFunction;
 begin
   FReturnType := AType;
+  Result := Self;
 end;
 
 constructor TFunction.Create(AName: string);
 begin
   FName := AName;
-  FParams := TDictionary<string, TDataType>.Create;
+  FParams := TObjectDictionary<string, TDataType>.Create([doOwnsValues]);
 end;
 
 destructor TFunction.Destroy;
 begin
   FParams.Free;
   inherited;
+end;
+
+function TFunction.GetReturnType: TDataType;
+begin
+  Result := FReturnType;
 end;
 
 { TProcedure }
@@ -767,7 +806,7 @@ end;
 constructor TProcedure.Create(AName: string);
 begin
   FName := AName;
-  FParams := TDictionary<string, TDataType>.Create;
+  FParams := TObjectDictionary<string, TDataType>.Create([doOwnsValues]);
 end;
 
 destructor TProcedure.Destroy;

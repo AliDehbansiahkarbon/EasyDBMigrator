@@ -49,7 +49,7 @@ begin
   ORM := TORM.GetInstance(ttSQLServer);
   Runner.ORM := ORM;
 
-  Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
+  Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Created table Users(#2701)',
   procedure
   begin
     with ORM do
@@ -68,7 +68,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
+  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Added NewField2 to table Tbusers(#2702)',
   procedure
   begin
     ORM.Alter.Table('TbUsers').AddColumn('NewField2').AsVarchar(50).Nullable;
@@ -81,7 +81,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Added NewField3 to table Tbusers(#2703)',
   procedure
   begin
     ORM.Alter.Table('TbUsers').AddColumn('NewField3').AsInt.Nullable;
@@ -94,7 +94,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Created Table TbCustomers and table TbInvoices(#2703)',
   procedure
   begin
     with ORM do
@@ -121,17 +121,28 @@ begin
   ));
 
   //============================================
-  Runner.Add(TMigration.Create('SelectTopTenCustomers', 202301010004, 'Alexander', 'Task number #2900',
+  Runner.Add(TMigration.Create('SelectTopTenCustomers', 202301010004, 'Alexander', 'Added SP and function(Task number #2704)',
   procedure
   var LvBody: string;
   begin
-    LvBody := 'Select * from TbInvoices where TotalAmount > @TotalAmount and MarketCode = @MarketCode and InvoiceDate = @ReportData';
     with ORM do
     begin
+      LvBody := 'Select * from TbInvoices where TotalAmount > @TotalAmount and MarketCode = @MarketCode and InvoiceDate = @ReportData';
+
       Create.StoredProc('SelectTopTenCustomers')
       .AddParam('TotalAmount', TDataType.Create(ctMoney))
       .AddParam('ReportData', TDataType.Create(ctDateTime))
       .AddParam('MarketCode', TDataType.Create(ctInt))
+      .AddBody(LvBody);
+
+
+      LvBody := 'Declare @Result Money '+ #10 +
+                'Select Sum(TotalAmount) From TbInvoices where InvoiceDate <= @ReportData' + #10 +
+                'Return @Result';
+
+      Create.StoredFunction('GetTotalSum')
+      .AddParam('ReportData', TDataType.Create(ctDateTime))
+      .ReturnType(TDataType.Create(ctMoney))
       .AddBody(LvBody);
 
       SubmitChanges;
@@ -140,6 +151,7 @@ begin
   procedure
   begin
     ORM.Delete.StoredProc('SelectTopTenCustomers');
+    ORM.Delete.StoredFunc('GetTotalSum');
     ORM.SubmitChanges;
   end
   ));
