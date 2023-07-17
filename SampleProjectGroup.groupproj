@@ -9,16 +9,16 @@
         <Projects Include="Sample projects\SQL SERVER\Advance\EasyDB_Advance_SQLServer_Script.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Sample projects\SQL SERVER\Large Script\EasyDB_LargeScript_SQLServer.dproj">
+        <Projects Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript_Exceution.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Sample projects\MySQL\Simple\EasyDB_Simple_MySQL_Script.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="Sample projects\MySQL\Advance\EasyDB_Advance_MySQL_Script.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -47,14 +47,23 @@
     <Target Name="EasyDB_Advance_SQLServer_Script:Make">
         <MSBuild Projects="Sample projects\SQL SERVER\Advance\EasyDB_Advance_SQLServer_Script.dproj" Targets="Make"/>
     </Target>
-    <Target Name="EasyDB_LargeScript_SQLServer">
-        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_LargeScript_SQLServer.dproj"/>
+    <Target Name="EasyDB_Simple_SQLServer_ORM">
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj"/>
     </Target>
-    <Target Name="EasyDB_LargeScript_SQLServer:Clean">
-        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_LargeScript_SQLServer.dproj" Targets="Clean"/>
+    <Target Name="EasyDB_Simple_SQLServer_ORM:Clean">
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="EasyDB_LargeScript_SQLServer:Make">
-        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_LargeScript_SQLServer.dproj" Targets="Make"/>
+    <Target Name="EasyDB_Simple_SQLServer_ORM:Make">
+        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="EasyDB_SQLServer_LargeScript_Exceution">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript_Exceution.dproj"/>
+    </Target>
+    <Target Name="EasyDB_SQLServer_LargeScript_Exceution:Clean">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript_Exceution.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_SQLServer_LargeScript_Exceution:Make">
+        <MSBuild Projects="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript_Exceution.dproj" Targets="Make"/>
     </Target>
     <Target Name="EasyDB_Simple_MySQL_Script">
         <MSBuild Projects="Sample projects\MySQL\Simple\EasyDB_Simple_MySQL_Script.dproj"/>
@@ -74,28 +83,19 @@
     <Target Name="EasyDB_Advance_MySQL_Script:Make">
         <MSBuild Projects="Sample projects\MySQL\Advance\EasyDB_Advance_MySQL_Script.dproj" Targets="Make"/>
     </Target>
-    <Target Name="EasyDB_Simple_SQLServer_ORM">
-        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj"/>
-    </Target>
-    <Target Name="EasyDB_Simple_SQLServer_ORM:Clean">
-        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="EasyDB_Simple_SQLServer_ORM:Make">
-        <MSBuild Projects="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDB_Simple_SQLServer_Script;EasyDB_Advance_SQLServer_Script;EasyDB_LargeScript_SQLServer;EasyDB_Simple_MySQL_Script;EasyDB_Advance_MySQL_Script;EasyDB_Simple_SQLServer_ORM"/>
+        <CallTarget Targets="EasyDB_Simple_SQLServer_Script;EasyDB_Advance_SQLServer_Script;EasyDB_Simple_SQLServer_ORM;EasyDB_SQLServer_LargeScript_Exceution;EasyDB_Simple_MySQL_Script;EasyDB_Advance_MySQL_Script"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDB_Simple_SQLServer_Script:Clean;EasyDB_Advance_SQLServer_Script:Clean;EasyDB_LargeScript_SQLServer:Clean;EasyDB_Simple_MySQL_Script:Clean;EasyDB_Advance_MySQL_Script:Clean;EasyDB_Simple_SQLServer_ORM:Clean"/>
+        <CallTarget Targets="EasyDB_Simple_SQLServer_Script:Clean;EasyDB_Advance_SQLServer_Script:Clean;EasyDB_Simple_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript_Exceution:Clean;EasyDB_Simple_MySQL_Script:Clean;EasyDB_Advance_MySQL_Script:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDB_Simple_SQLServer_Script:Make;EasyDB_Advance_SQLServer_Script:Make;EasyDB_LargeScript_SQLServer:Make;EasyDB_Simple_MySQL_Script:Make;EasyDB_Advance_MySQL_Script:Make;EasyDB_Simple_SQLServer_ORM:Make"/>
+        <CallTarget Targets="EasyDB_Simple_SQLServer_Script:Make;EasyDB_Advance_SQLServer_Script:Make;EasyDB_Simple_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript_Exceution:Make;EasyDB_Simple_MySQL_Script:Make;EasyDB_Advance_MySQL_Script:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
-        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj">
-            <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript_Exceution.dproj">
+            <ProjectGuid>{6D9DA672-0086-4CEF-B751-70B71CF316E2}</ProjectGuid>
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>False</Enabled>
@@ -118,17 +118,17 @@
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
         </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_Simple_SQLServer_ORM.dproj">
+            <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
+        </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\SQL SERVER\Simple\EasyDB_Simple_SQLServer_Script.dproj">
             <ProjectGuid>{388CC30A-3A33-475D-89BC-47BDE9DD75C4}</ProjectGuid>
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
-        </BuildGroupProject>
-        <BuildGroupProject Include="Sample projects\SQL SERVER\Large Script\EasyDB_LargeScript_SQLServer.dproj">
-            <ProjectGuid>{6D9DA672-0086-4CEF-B751-70B71CF316E2}</ProjectGuid>
-            <Configurations>Debug</Configurations>
-            <Platforms>Win32</Platforms>
-            <Enabled>False</Enabled>
         </BuildGroupProject>
     </ItemGroup>
 </Project>

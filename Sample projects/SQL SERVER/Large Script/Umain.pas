@@ -65,7 +65,7 @@ begin
   TLogger.Instance.OnLog := OnLog;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
   pbTotal.Style := pbstMarquee;
   Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
 end;

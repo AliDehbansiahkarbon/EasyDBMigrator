@@ -33,7 +33,7 @@ object frmMain: TfrmMain
   object RichEdit1: TRichEdit
     Left = 8
     Top = 63
-    Width = 912
+    Width = 908
     Height = 521
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
@@ -46,6 +46,8 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 2
+    ExplicitTop = 62
+    ExplicitWidth = 904
   end
   object chkLogExecutions: TCheckBox
     Left = 234

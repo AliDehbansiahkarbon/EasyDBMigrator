@@ -59,15 +59,18 @@ type
     FLogAllExecutions: Boolean;
     FUseInternalThread: Boolean;
     FProgressBar: TProgressBar;
+    FDelay: Cardinal;
   public
     constructor Create;
     function LogAllExecutions(AValue: Boolean): TConfig;
     function UseInternalThread(AValue: Boolean): TConfig;
     function SetProgressbar(AProgressbar: TProgressBar): TConfig;
+    function DelayedExecution(ADelay: Cardinal): TConfig;
 
     property ProgressBar: TProgressBar read FProgressBar;
     property UseThreadStat: Boolean read FUseInternalThread;
     property LogAllExecutionsStat: Boolean read FLogAllExecutions;
+    property Delay: Cardinal read FDelay;
   end;
 
 implementation
@@ -133,6 +136,13 @@ begin
   FUseInternalThread := False;
   FLogAllExecutions := False;
   FProgressBar := nil;
+  FDelay := 0;
+end;
+
+function TConfig.DelayedExecution(ADelay: Cardinal): TConfig;
+begin
+  FDelay := ADelay;
+  Result := Self;
 end;
 
 function TConfig.LogAllExecutions(AValue: Boolean): TConfig;

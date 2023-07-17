@@ -39,7 +39,6 @@ type
     destructor Destroy; override;
 
     function AddLogger: TLogger;
-    function AddConfig: TConfig;
     function Add(AMigrationBase: TMigrationBase): TRunner;
     function Clear: TRunner;
 
@@ -66,9 +65,9 @@ end;
 
 constructor TRunner.Create;
 begin
-  FConfig := nil;
   FORM := nil;
   FVersionToDowngrade := 0;
+  FConfig := TConfig.Create;
   FMigrationList := TMigrations.Create;
   FMigrationList.OwnsObjects := True;
   FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
@@ -94,9 +93,7 @@ begin
   FreeAndNil(FInternalMigrationList);
   FreeAndNil(FMigrationList);
   FreeAndNil(FLogger);
-
-  if Assigned(FConfig) then
-    FConfig.Free;
+  FreeAndNil(FConfig);
 
   if Assigned(FORM) then
     FORM.Free;
@@ -108,12 +105,6 @@ function TRunner.Add(AMigrationBase: TMigrationBase): TRunner;
 begin
   FMigrationList.Add(AMigrationBase);
   Result := Self;
-end;
-
-function TRunner.AddConfig: TConfig;
-begin
-  FConfig := TConfig.Create;
-  Result := FConfig;
 end;
 
 function TRunner.AddLogger: TLogger;
@@ -318,6 +309,9 @@ begin
 
       for LvInternalMigration in LvMigrationList do
       begin
+        if FConfig.Delay > 0 then
+          Sleep(FConfig.Delay);
+
         if LvInternalMigration is TMigration then
         begin
           LvTempMigration := TMigration(LvInternalMigration);

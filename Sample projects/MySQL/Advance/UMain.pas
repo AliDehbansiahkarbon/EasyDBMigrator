@@ -100,7 +100,11 @@ begin
   end;
 
   Runner := TmySQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal); //Optional
+  Runner.Config
+    .LogAllExecutions(True) // Optional
+    .UseInternalThread(True) //Optional
+    .SetProgressbar(pbTotal); //Optional
+
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;
 

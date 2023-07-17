@@ -1,4 +1,4 @@
-program EasyDB_LargeScript_SQLServer;
+program EasyDB_SQLServer_LargeScript_Exceution;
 
 uses
   Vcl.Forms,

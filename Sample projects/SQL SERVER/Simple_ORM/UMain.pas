@@ -137,7 +137,7 @@ begin
 
 
       LvBody := 'Declare @Result Money '+ #10 +
-                'Select Sum(TotalAmount) From TbInvoices where InvoiceDate <= @ReportData' + #10 +
+                'Select @Result = Sum(TotalAmount) From TbInvoices where InvoiceDate <= @ReportData' + #10 +
                 'Return @Result';
 
       Create.StoredFunction('GetTotalSum')
@@ -182,7 +182,11 @@ begin
   end;
 
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(False).SetProgressbar(pbTotal);// Optional
+  Runner.Config
+    .LogAllExecutions(True)// Optional
+    .UseInternalThread(True)// Optional
+    .SetProgressbar(pbTotal)// Optional
+    .DelayedExecution(500);// Optional
 
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;

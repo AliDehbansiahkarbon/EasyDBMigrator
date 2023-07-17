@@ -364,7 +364,9 @@ begin
   else if Assigned(FProcedure) then
     Result := FProcedure
   else if Assigned(FFunction) then
-    Result := FFunction;
+    Result := FFunction
+  else
+    Result := nil;
 end;
 
 function TCreate.StoredFunction(AFunctionName: string): TFunction;
@@ -782,6 +784,8 @@ end;
 destructor TFunction.Destroy;
 begin
   FParams.Free;
+  if Assigned(FReturnType) then
+    FReturnType.Free;
   inherited;
 end;
 
