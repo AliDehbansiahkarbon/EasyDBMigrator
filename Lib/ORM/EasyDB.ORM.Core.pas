@@ -5,6 +5,8 @@ interface
 type
   Largeint = Int64;
 
+  TDatabaseType = (dtSQLServer, dtMySQL, dtOracle, dtSQLite, dtAccess);
+
   TColType = (ctBigInt, ctInt, ctSmallInt, ctTinyInt, ctBit, ctDecimal, ctNumeric, ctMoney, ctSmallMoney,
               ctFloat, ctReal, ctDateTime, ctSmallDateTime, ctDate, ctTime, ctDateTimeOffset, ctDatetime2,
               ctChar, ctVarchar, ctVarcharMmax, ctText, ctNchar, ctNvarchar, ctNtext, ctBinary, ctVarbinary,
@@ -14,7 +16,9 @@ type
 
   TTargetType = (ttSQLServer, ttMySQL, ttNone);
 
-  TObjectType = (otTable, otView, otStoredProcedure, otFunction, orNone);
+  TObjectType = (otDatabase, otTable, otView, otStoredProcedure, otFunction, orNone);
+
+  TParamType = (ptIN, ptOUT, ptINOUT, ptNone);
 
 implementation
 

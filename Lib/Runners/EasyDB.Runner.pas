@@ -219,10 +219,12 @@ begin
     Exit;
 
   ArrangeMigrationList(umDESC);
-  LvKey := 0;
   LvArray := FInternalMigrationList.Keys.ToArray;
-  SortArrayDesc(LvArray);
 
+  if Length(LvArray) = 0 then
+    Exit;
+
+  SortArrayDesc(LvArray);
   for LvKey in LvArray do
   begin
     if LvKey > LvDbVer then
@@ -232,6 +234,9 @@ begin
 
     for LvInternalMigration in LvMigrationList do
     begin
+      if FConfig.Delay > 0 then
+        Sleep(FConfig.Delay);
+
       if LvInternalMigration is TMigration then
       begin
         LvTempMigration := TMigration(LvInternalMigration);
@@ -294,7 +299,6 @@ begin
   if FMigrationList.Count = 0 then
     Exit;
 
-  LvTempVersion := 0;
   LvWrittenVersions := TList<Int64>.Create;
   try
     LvDbVer := GetDatabaseVersion;

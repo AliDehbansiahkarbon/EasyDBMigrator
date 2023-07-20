@@ -234,7 +234,7 @@ end;
 
 function TSQLConnection.InitializeDatabase: Boolean;
 var
-  LvTbScript, LvDropScript, LvSpScript: string;
+  LvTbScript: string;
 begin
   LvTbScript := 'If Not Exists ( ' + #10
     + '       Select * ' + #10

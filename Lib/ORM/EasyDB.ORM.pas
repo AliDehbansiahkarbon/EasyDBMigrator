@@ -19,6 +19,7 @@ type
   public
     constructor Create(AType: TColType); overload;
     constructor Create(AType: TColType; ASize: Integer); overload;
+    constructor Create(AType: TColType; APrecision: Byte; AScale: Byte); overload;
     constructor Create(AName: string; AType: TColType; ASize: Integer; APrecision: Byte; AScale: Byte); overload;
 
     property ColType: TColType read FType;
@@ -35,11 +36,16 @@ type
     FAutoIdentity: Boolean;
     FAutoIdentityStart: Int64;
     FAutoIdentityStep: Int64;
+    FParamType: TParamType;
+    FParamPosition: string;
     constructor Create; overload;
-    constructor Create(AParentTable: TTable);overload;
-    constructor Create(AParentTable: TTable; AColType: TColType);overload;
-    constructor Create(AParentTable: TTable; AColType: TColType; AColSize: Integer);overload;
-    constructor Create(AParentTable: TTable; AColType: TColType; APrecision: Byte; AScale: Byte);overload;
+    constructor Create(AParentTable: TTable); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; AParamPosition: string); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType; AParamPosition: string); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; AColSize: Integer); overload;
+    constructor Create(AParentTable: TTable; AColType: TColType; APrecision: Byte; AScale: Byte); overload;
   public
     function NotNullable: TTable;
     function Nullable: TTable;
@@ -56,6 +62,10 @@ type
     property IsNullable: Boolean read FIsNullable;
     /// <summary cref="readonly">readonly</summary>
     property IsPrimary: Boolean read FIsPrimary;
+    /// <summary cref="readonly">MySQL only- readonly</summary>
+    property ParamType: TParamType read FParamType;
+    /// <summary cref="readonly">MySQL only- readonly</summary>
+    property ParamPosition: string read FParamPosition;
   end;
 
   TColumn = class
@@ -110,8 +120,8 @@ type
     FHasAutoID: Boolean;
     FColumnList: TObjectList<TColumn>;
     constructor Create(ATableName: string);
-    destructor Destroy; override;
   public
+    destructor Destroy; override;
     function WithIdColumn: TTable;
     function WithColumn(AColName: string): TColumn;
 
@@ -148,11 +158,12 @@ type
     FBody: string;
     FParams: TObjectDictionary<string, TDataType>;
     FReturnType: TDataType;
+    FIsDeterministic: Boolean;
     constructor Create(AName: string);
   public
     destructor Destroy; override;
     function AddParam(AName: string; ADataType: TDataType): TFunction;
-    function ReturnType(AType: TDataType): TFunction;
+    function ReturnType(AType: TDataType; AIsDeterministic: Boolean): TFunction;
     procedure AddBody(ABody: string);
     function GetReturnType: TDataType;
 
@@ -162,10 +173,76 @@ type
     property Name: string read FName;
     /// <summary cref="readonly">Readonly</summary>
     property Body: string read FBody;
+    /// <summary cref="readonly">Readonly</summary>
+    property IsDeterministic: Boolean read FIsDeterministic;
+  end;
+
+  TSQLServerDatabase = class(TDbBaseObject)
+  private
+    FDBName: string;
+    FMdfFileName: string;
+    FMdfSize: string;
+    FMdfFileGrowth: string;
+    FMdfMaxSize: string;
+    FLdfFileName: string;
+    FLdfSize: string;
+    FLdfFileGrowth: string;
+    FLdfMaxSize: string;
+    FCollation: string;
+  public
+    constructor Create(ADBName: string);
+    function MdfFileName(AName: string): TSQLServerDatabase;
+    function MdfSize(ASize: string): TSQLServerDatabase;
+    function MdfFileGrowth(ASize: string): TSQLServerDatabase;
+    function MdfMaxSize(ASize: string): TSQLServerDatabase;
+    function LdfFileName(AName: string): TSQLServerDatabase;
+    function LdfSize(ASize: string): TSQLServerDatabase;
+    function LdfFileGrowth(ASize: string): TSQLServerDatabase;
+    function LdfMaxSize(ASize: string): TSQLServerDatabase;
+    function Collation(ACollName: string): TSQLServerDatabase;
+
+    /// <summary> readonly </summary>
+    property DBName: string read FDBName;
+    /// <summary> readonly </summary>
+    property GetMdfFileName: string read FMdfFileName;
+    /// <summary> readonly </summary>
+    property GetMdfSize: string read FMdfSize;
+    /// <summary> readonly </summary>
+    property GetMdfFileGrowth: string read FMdfFileGrowth;
+    /// <summary> readonly </summary>
+    property GetMdfMaxSize: string read FMdfMaxSize;
+    /// <summary> readonly </summary>
+    property GetLdfFileName: string read FLdfFileName;
+    /// <summary> readonly </summary>
+    property GetLdfSize: string read FLdfSize;
+    /// <summary> readonly </summary>
+    property GetLdfFileGrowth: string read FLdfFileGrowth;
+    /// <summary> readonly </summary>
+    property GetLdfMaxSize: string read FLdfMaxSize;
+    /// <summary> readonly </summary>
+    property GetCollation: string read FCollation;
+  end;
+
+  TMySQLDatabase = class(TDbBaseObject)
+  private
+    FDBName: string;
+    FCharacterSet: string;
+    FCollate: string;
+  public
+     function GetCollate(ACollateName: string): TMySQLDatabase;
+     function GetCharacterSet(ACharacterSet: string): TMySQLDatabase;
+
+    /// <summary> readonly </summary>
+    property DBName: string read FDBName;
+    /// <summary> readonly </summary>
+    property CharacterSet: string read FCharacterSet;
+    /// <summary> readonly </summary>
+    property Collate: string read FCollate;
   end;
 
   TCreate = class
   private
+    FDatabase: TSQLServerDatabase;
     FTable: TTable;
     FProcedure: TProcedure;
     FFunction: TFunction;
@@ -173,6 +250,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
+    function Database(ADbName: string): TSQLServerDatabase;
     function Table(ATableName: string): TTable;
     function StoredProc(AProcedureName: string): TProcedure;
     function StoredFunction(AFunctionName: string): TFunction;
@@ -222,6 +300,7 @@ type
     FObjectType: TObjectType;
     FObjectName: string;
   public
+    procedure Database(ADBName: string);
     procedure Table(ATableName: string);
     procedure StoredProc(AProcedureName: string);
     procedure StoredFunc(AFunction: string);
@@ -338,13 +417,23 @@ end;
 
 constructor TCreate.Create;
 begin
+  FDatabase := nil;
   FTable := nil;
   FProcedure := nil;
   FFunction := nil;
 end;
 
+function TCreate.Database(ADbName: string): TSQLServerDatabase;
+begin
+  FDatabase := TSQLServerDatabase.Create(ADbName);
+  Exit(FDatabase);
+end;
+
 destructor TCreate.Destroy;
 begin
+  if Assigned(FDatabase) then
+    FDatabase.Free;
+
   if Assigned(FTable) then
     FTable.Free;
 
@@ -378,13 +467,13 @@ end;
 function TCreate.StoredProc(AProcedureName: string): TProcedure;
 begin
   FProcedure := TProcedure.Create(AProcedureName);
-  Result := FProcedure;
+  Exit(FProcedure);
 end;
 
 function TCreate.Table(ATableName: string): TTable;
 begin
   FTable := TTable.Create(ATableName);
-  Result := FTable;
+  Exit(FTable);
 end;
 
 { TTable }
@@ -408,7 +497,7 @@ var
 begin
   LvColumn := TColumn.Create(AColName, Self);
   FColumnList.Add(LvColumn);
-  Result := LvColumn;
+  Exit(LvColumn);
 end;
 
 function TTable.WithIdColumn: TTable;
@@ -419,7 +508,7 @@ begin
   LvColumn.AsInt.PrimaryKey.AutoIdentity(1, 1).NotNullable;
   FColumnList.Add(LvColumn);
   FHasAutoID := True;
-  Result := Self;
+  Exit(Self);
 end;
 
 { TColumn }
@@ -427,163 +516,163 @@ end;
 function TColumn.AsBigInt: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctBigInt);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsBinary(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctBinary, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsBit: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctBit);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsChar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctChar, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsDate: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctDate);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsDateTime: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctDateTime);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsDatetime2: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctDatetime2);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsDateTimeOffset: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctDateTimeOffset);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsDecimal(APrecision, AScale: Byte): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctDecimal, APrecision, AScale);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsFloat: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctFloat);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsImage: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctImage);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsInt: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctInt);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsMoney: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctMoney);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsNchar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctNchar, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsNtext: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctNtext);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsNumeric(APrecision, AScale: Byte): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctNumeric, APrecision, AScale);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsNvarchar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctNvarchar, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsReal: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctReal);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsSmallDateTime: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctSmallDateTime);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsSmallInt: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctSmallInt);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsSmallMoney: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctSmallMoney);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsText: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctText);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsTime: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctTime);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsTinyInt: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctTinyInt);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsVarbinary(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctVarbinary, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsVarchar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctVarchar, ASize);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 function TColumn.AsVarcharMmax: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctVarcharMmax);
-  Result := FDataType;
+  Exit(FDataType);
 end;
 
 constructor TColumn.Create(AColName: string; AParentTable: TTable);
@@ -605,7 +694,7 @@ begin
   FAutoIdentity := True;
   FAutoIdentityStart := AStart;
   FAutoIdentityStep := AStep;
-  Result := Self;
+  Exit(Self);
 end;
 
 constructor TDataType.Create(AParentTable: TTable);
@@ -617,7 +706,7 @@ end;
 function TDataType.PrimaryKey: TDataType;
 begin
   FIsPrimary := True;
-  Result := Self;
+  Exit(Self);
 end;
 
 constructor TDataType.Create(AParentTable: TTable; AColType: TColType);
@@ -639,18 +728,19 @@ begin
   FIsNullable := True;
   FIsPrimary := False;
   FAutoIdentity := False;
+  FParamType := ptNone;
 end;
 
 function TDataType.NotNullable: TTable;
 begin
   FIsNullable := False;
-  Result := FParentTable;
+  Exit(FParentTable);
 end;
 
 function TDataType.Nullable: TTable;
 begin
   FIsNullable := True;
-  Result := FParentTable;
+  Exit(FParentTable);
 end;
 
 constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AColSize: Integer);
@@ -670,7 +760,38 @@ begin
   FScale := AScale;
 end;
 
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType; AParamPosition: string);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+  FParamType := AParamType;
+  FParamPosition := AParamPosition;
+end;
+
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AParamPosition: string);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+  FParamPosition := AParamPosition;
+end;
+
+constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType);
+begin
+  Create;
+  FParentTable := AParentTable;
+  FType := AColType;
+  FParamType := AParamType;
+end;
+
 { TDelete }
+procedure TDelete.Database(ADBName: string);
+begin
+  FObjectType := otDatabase;
+  FObjectName := ADBName;
+end;
+
 procedure TDelete.StoredFunc(AFunction: string);
 begin
   FObjectType := otFunction;
@@ -766,13 +887,14 @@ end;
 function TFunction.AddParam(AName: string; ADataType: TDataType): TFunction;
 begin
   FParams.Add(AName, ADataType);
-  Result := Self;
+  Exit(Self);
 end;
 
-function TFunction.ReturnType(AType: TDataType): TFunction;
+function TFunction.ReturnType(AType: TDataType; AIsDeterministic: Boolean): TFunction;
 begin
   FReturnType := AType;
-  Result := Self;
+  FIsDeterministic := AIsDeterministic;
+  Exit(Self);
 end;
 
 constructor TFunction.Create(AName: string);
@@ -804,7 +926,7 @@ end;
 function TProcedure.AddParam(AName: string; ADataType: TDataType): TProcedure;
 begin
   FParams.Add(AName, ADataType);
-  Result := Self;
+  Exit(Self);
 end;
 
 constructor TProcedure.Create(AName: string);
@@ -839,6 +961,88 @@ end;
 constructor TBaseDataType.Create(AType: TColType);
 begin
   FType := AType;
+end;
+
+constructor TBaseDataType.Create(AType: TColType; APrecision, AScale: Byte);
+begin
+  FType := AType;
+  FPrecision := APrecision;
+  FScale := AScale;
+end;
+
+{ TSQLServerDatabase }
+
+function TSQLServerDatabase.Collation(ACollName: string): TSQLServerDatabase;
+begin
+  FCollation := ACollName;
+  Exit(Self);
+end;
+
+constructor TSQLServerDatabase.Create(ADBName: string);
+begin
+  FDBName := ADBName;
+end;
+
+function TSQLServerDatabase.LdfFileGrowth(ASize: string): TSQLServerDatabase;
+begin
+  FLdfFileGrowth := ASize;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.LdfFileName(AName: string): TSQLServerDatabase;
+begin
+  FLdfFileName := AName;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.LdfMaxSize(ASize: string): TSQLServerDatabase;
+begin
+  FLdfMaxSize := ASize;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.LdfSize(ASize: string): TSQLServerDatabase;
+begin
+  FLdfSize := ASize;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.MdfMaxSize(ASize: string): TSQLServerDatabase;
+begin
+  FMdfMaxSize := ASize;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.MdfFileGrowth(ASize: string): TSQLServerDatabase;
+begin
+  FMdfFileGrowth := ASize;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.MdfFileName(AName: string): TSQLServerDatabase;
+begin
+  FMdfFileName := AName;
+  Exit(Self);
+end;
+
+function TSQLServerDatabase.MdfSize(ASize: string): TSQLServerDatabase;
+begin
+  FMdfSize := ASize;
+  Exit(Self);
+end;
+
+{ TMySQLDatabase }
+
+function TMySQLDatabase.GetCharacterSet(ACharacterSet: string): TMySQLDatabase;
+begin
+  FCharacterSet := ACharacterSet;
+  Exit(Self);
+end;
+
+function TMySQLDatabase.GetCollate(ACollateName: string): TMySQLDatabase;
+begin
+  FCollate := ACollateName;
+  Exit(Self);
 end;
 
 end.

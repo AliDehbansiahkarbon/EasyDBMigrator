@@ -8,7 +8,7 @@ uses
 
   EasyDB.Core,
   EasyDB.Migration,
-  EasyDB.MSSQLRunner,
+  EasyDB.MySQLRunner,
   EasyDB.ORM.Core,
   EasyDB.ORM,
   EasyDB.Logger;
@@ -22,15 +22,13 @@ type
     edtVersion: TEdit;
     mmoLog: TMemo;
     pbTotal: TProgressBar;
-    btnCreateDB: TButton;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
-    procedure btnCreateDBClick(Sender: TObject);
   private
-    Runner: TSQLRunner;
+    Runner: TMySQLRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
     { Public declarations }
@@ -48,7 +46,7 @@ var
   ORM: TORM;
 begin
   Runner.Clear;
-  ORM := TORM.GetInstance(ttSQLServer);
+  ORM := TORM.GetInstance(ttMySQL);
   Runner.ORM := ORM;
 
   Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Created table Users(#2701)',
@@ -57,8 +55,8 @@ begin
     with ORM do
     begin
       Create.Table('TbUsers').WithIdColumn
-      .WithColumn('UserName').AsNvarchar(100).Nullable
-      .WithColumn('Pass').AsNvarchar(50).Nullable;
+        .WithColumn('UserName').AsNvarchar(100).Nullable
+        .WithColumn('Pass').AsNvarchar(50).Nullable;
 
       SubmitChanges;
     end;
@@ -102,14 +100,14 @@ begin
     with ORM do
     begin
       Create.Table('TbCustomers')
-      .WithColumn('Name').AsNvarchar(100).Nullable
-      .WithColumn('Family').AsNvarchar(50).Nullable;
+        .WithColumn('Name').AsNvarchar(100).Nullable
+        .WithColumn('Family').AsNvarchar(50).Nullable;
 
       Create.Table('TbInvoices').WithIdColumn
-      .WithColumn('InvoiceNumber').AsBigInt.Nullable
-      .WithColumn('InvoiceDate').AsDateTime.Nullable
-      .WithColumn('MarketCode').AsInt.Nullable
-      .WithColumn('TotalAmount').AsMoney.Nullable;
+        .WithColumn('InvoiceNumber').AsBigInt.Nullable
+        .WithColumn('InvoiceDate').AsDateTime.Nullable
+        .WithColumn('MarketCode').AsInt.Nullable
+        .WithColumn('TotalAmount').AsMoney.Nullable;
 
       SubmitChanges;
     end;
@@ -129,23 +127,23 @@ begin
   begin
     with ORM do
     begin
-      LvBody := 'Select * from TbInvoices where TotalAmount > @TotalAmount and MarketCode = @MarketCode and InvoiceDate = @ReportData';
+      LvBody := 'Select * from TbInvoices where TotalAmount > @TotalAmount and MarketCode = @MarketCode and InvoiceDate = @ReportData;';
 
       Create.StoredProc('SelectTopTenCustomers')
-      .AddParam('TotalAmount', TDataType.Create(ctMoney))
-      .AddParam('ReportData', TDataType.Create(ctDateTime))
-      .AddParam('MarketCode', TDataType.Create(ctInt))
-      .AddBody(LvBody);
+        .AddParam('TotalAmount', TDataType.Create(ctMoney))
+        .AddParam('ReportData', TDataType.Create(ctDateTime))
+        .AddParam('MarketCode', TDataType.Create(ctInt))
+        .AddBody(LvBody);
 
 
-      LvBody := 'Declare @Result Money '+ #10 +
-                'Select @Result = Sum(TotalAmount) From TbInvoices where InvoiceDate <= @ReportData' + #10 +
-                'Return @Result';
+      LvBody := 'Declare Result DECIMAL(10, 2); '+ #10 +
+                'Select Sum(TotalAmount) Into Result From TbInvoices where InvoiceDate <= @ReportData;' + #10 +
+                'Return Result;';
 
       Create.StoredFunction('GetTotalSum')
-      .AddParam('ReportData', TDataType.Create(ctDateTime))
-      .ReturnType(TDataType.Create(ctMoney))
-      .AddBody(LvBody);
+        .AddParam('ReportData', TDataType.Create(ctDateTime))
+        .ReturnType(TDataType.Create(ctDecimal, 10, 2), True)
+        .AddBody(LvBody);
 
       SubmitChanges;
     end;
@@ -157,67 +155,6 @@ begin
     ORM.SubmitChanges;
   end
   ));
-end;
-
-procedure TForm1.btnCreateDBClick(Sender: TObject);
-var
-  LvConnectionParams: TSqlConnectionParams;
-  ORM: TORM;
-begin
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
-  begin
-    Server := '192.168.212.1';
-    LoginTimeout := 30000;
-    UserName := 'sa';
-    Pass := '1';
-    DatabaseName := 'Master';
-    Schema := 'dbo';
-  end;
-
-  Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.Config
-    .LogAllExecutions(True)// Optional
-    .UseInternalThread(False)// Better to run with a single thread(Only for Database creation)
-    .SetProgressbar(pbTotal)// Optional
-    .DelayedExecution(500);// Optional
-
-  Runner.AddLogger.OnLog := OnLog;
-
-  try
-    Runner.Clear;
-    ORM := TORM.GetInstance(ttSQLServer);
-    Runner.ORM := ORM;
-
-    Runner.Add(TMigration.Create('Library DB', 202301010000, 'GodAdmin!', 'Created the Database',
-    procedure
-    begin
-      with ORM do
-      begin
-        Create.Database('Library')
-        .MdfFileName('C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Library.mdf')
-        .MdfSize('8192KB')
-        .MdfFileGrowth('65536KB')
-        .MdfMaxSize('UNLIMITED')
-        .LdfFileName('C:\Program Files\Microsoft SQL Server\MSSQL15.MSSQLSERVER\MSSQL\DATA\Library.ldf')
-        .LdfSize('8192KB')
-        .LdfFileGrowth('65536KB')
-        .LdfMaxSize('2048GB')
-        .Collation('DATABASE_DEFAULT');
-
-        SubmitChanges;
-      end;
-    end,
-    procedure
-    begin
-      ORM.Delete.Database('Library');
-      ORM.SubmitChanges;
-    end
-    ));
-
-    Runner.UpgradeDatabase;
-  finally
-    Runner.Free;
-  end;
 end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
@@ -232,24 +169,24 @@ end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  LvConnectionParams: TSqlConnectionParams;
+  LvConnectionParams: TMySqlConnectionParams;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
-    Server := '192.168.212.1';
+    Server := '127.0.0.1';
     LoginTimeout := 30000;
-    UserName := 'sa';
-    Pass := '1';
-    DatabaseName := 'Library';
-    Schema := 'dbo';
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
   end;
 
-  Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner := TMySQLRunner.Create(LvConnectionParams);
   Runner.Config
-    .LogAllExecutions(True)// Optional
-    .UseInternalThread(True)// Optional
-    .SetProgressbar(pbTotal)// Optional
-    .DelayedExecution(500);// Optional
+    .LogAllExecutions(True) // Optional
+    .UseInternalThread(True) //Optional
+    .SetProgressbar(pbTotal) //Optional
+    .DelayedExecution(500);
 
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;

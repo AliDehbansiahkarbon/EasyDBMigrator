@@ -18,6 +18,8 @@ type
     procedure GenerateSQLScript;
     procedure GenerateMySQLScript;
     function GetColType(ADataType: TDataType): string;
+    function GetParamType(ADataType: TDataType): string;
+    function GetColPosition(ADataType: TDataType): string;
     function GetOtherSwithches(ACol: TColumn): string;
     function GetObjectType(ADelObject: TDelete): string;
   public
@@ -43,15 +45,11 @@ begin
 end;
 
 procedure TBuilder.GenerateMySQLScript;
-begin
-//TODO
-end;
-
-procedure TBuilder.GenerateSQLScript;
 var
   LvCreate: TCreate;
   LvDbObject: TDbBaseObject;
 
+  LvDatabase: TMySQLDatabase;
   LvTable: TTable;
   LvProcedure: TProcedure;
   LvFunction: TFunction;
@@ -78,7 +76,143 @@ begin
   begin
     LvDbObject := LvCreate.GetObject;
 
-    if LvDbObject is TTable then
+    if LvDbObject is TMySQLDatabase then
+    begin
+      LvDatabase := TMySQLDatabase(LvCreate.GetObject);
+      LvStatement := 'CREATE DATABASE ' + LvDatabase.DBName;
+      ConCat('DEFAULT CHARACTER SET ' + LvDatabase.CharacterSet + ' COLLATE ' + LvDatabase.Collate+ ';')
+    end
+    else if LvDbObject is TTable then
+    begin
+      LvTable :=  TTable(LvCreate.GetObject);
+      LvStatement := 'CREATE TABLE IF NOT EXISTS ';
+      ConCat(LvTable.TableName + ' ( ');
+
+      if LvTable.HasAutoID then
+        ConCat(' ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT, ');
+
+      for LvCol in LvTable.ColumnList do
+      begin
+        if (LvCol.ColName = 'ID') and (LvTable.HasAutoID) then
+          Continue;
+
+        ConCat(LvCol.ColName + ' ' + GetColType(LvCol.DataType) + GetOtherSwithches(LvCol) + ',');
+      end;
+
+      ConCat(');', True);
+    end
+    else if LvDbObject is TProcedure then
+    begin
+      LvProcedure := TProcedure(LvCreate.GetObject);
+      LvStatement := 'DROP PROCEDURE IF EXISTS `' + LvProcedure.Name + '`;';
+      FFinalScript.Add(LvStatement);
+
+      LvStatement := EmptyStr;
+      LvStatement := 'CREATE PROCEDURE ' + LvProcedure.Name;
+      ConCat('(');
+      for Param in LvProcedure.Params.Keys do //param = parameter name
+        ConCat(GetParamType(LvProcedure.Params.Items[Param]) + ' ' + Param + ' ' + GetColType(LvProcedure.Params.Items[Param]) + ',');
+
+      ConCat(')', True);
+      ConCat(' BEGIN ');
+      ConCat(LvProcedure.Body);
+      ConCat(' END;');
+    end
+    else if LvDbObject is TFunction then
+    begin
+      LvFunction := TFunction(LvCreate.GetObject);
+      LvStatement := 'DROP FUNCTION IF EXISTS `' + LvFunction.Name + '`;';
+      FFinalScript.Add(LvStatement);
+      LvStatement := EmptyStr;
+
+      ConCat('CREATE FUNCTION `' + LvFunction.Name + '`');
+      ConCat('(');
+
+      for Param in LvFunction.Params.Keys do //param = parameter name
+        ConCat(Param + ' ' + GetColType(LvFunction.Params.Items[Param]) + ',');
+
+      ConCat(')', True);
+
+      ConCat(' RETURNS ' + GetColType(LvFunction.GetReturnType) + IfThen(LvFunction.IsDeterministic, ' DETERMINISTIC ', ''));
+      ConCat('BEGIN');
+      ConCat(LvFunction.Body);
+      ConCat('END;')
+    end;
+
+    FFinalScript.Add(LvStatement);
+  end;
+  FOrm.GetCreateList.Clear;
+
+  LvStatement := EmptyStr;
+  for LvAlter in FOrm.GetAlterList do
+  begin
+    LvAlterTable := LvAlter.GetTable;
+    LvStatement := 'ALTER TABLE ' + LvAlterTable.TableName;
+
+    case LvAlterTable.AlterMode of
+      amAdd: ConCat(' ADD COLUMN ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column.DataType) + GetColPosition(LvAlterTable.Column.DataType));
+      amDrop: ConCat(' DROP COLUMN ' + LvAlterTable.ColName);
+      amEdit: ConCat(' MODIFY COLUMN ' + LvAlterTable.Column.ColName + GetColType(LvAlterTable.Column.DataType));
+      amRename: ConCat(' RENAME COLUMN ' + LvAlterTable.ColName + ' TO ' +  LvAlterTable.NewColName);
+    end;
+    FFinalScript.Add(LvStatement);
+  end;
+  FOrm.GetAlterList.Clear;
+
+  LvStatement := EmptyStr;
+  for LvDelete in FOrm.GetDeletes do
+  begin
+    if Assigned(LvDelete) then
+      FFinalScript.Add('DROP ' + GetObjectType(LvDelete) + LvDelete.ObjectName);
+  end;
+
+  FOrm.GetDeletes.Clear;
+end;
+
+procedure TBuilder.GenerateSQLScript;
+var
+  LvCreate: TCreate;
+  LvDbObject: TDbBaseObject;
+
+  LvDatabase: TSQLServerDatabase;
+  LvTable: TTable;
+  LvProcedure: TProcedure;
+  LvFunction: TFunction;
+  Param: string;
+
+  LvAlter: TAlter;
+  LvAlterTable: TAlterTable;
+  LvDelete: TDelete;
+
+  LvCol: TColumn;
+  LvStatement: string;
+
+  procedure ConCat(ANewLine: string; AIsLatest: Boolean = False);
+  begin
+    if AIsLatest then
+      LvStatement := LeftStr(LvStatement.Trim, Length(LvStatement.Trim) - 1) + #10 + ANewLine + #10
+    else
+     LvStatement := LvStatement + #10 + ANewLine + #10;
+  end;
+begin
+  LvStatement := EmptyStr;
+
+  for LvCreate in FOrm.GetCreateList do
+  begin
+    LvDbObject := LvCreate.GetObject;
+
+    if LvDbObject is TSQLServerDatabase then
+    begin
+      LvDatabase := TSQLServerDatabase(LvCreate.GetObject);
+      LvStatement := 'CREATE DATABASE ' + LvDatabase.DBName;
+      ConCat('ON (NAME = ''db_data'', FILENAME = ' + LvDatabase.GetMdfFileName.QuotedString +
+        ', SIZE = ' + LvDatabase.GetMdfSize + ', MAXSIZE = ' + LvDatabase.GetMdfMaxSize + ', FILEGROWTH = ' + LvDatabase.GetMdfFileGrowth + ')');
+
+      ConCat('LOG ON (NAME = ''db_log'', FILENAME = ' + LvDatabase.GetLdfFileName.QuotedString +
+        ', SIZE = ' + LvDatabase.GetLdfSize + ', MAXSIZE = ' + LvDatabase.GetLdfMaxSize + ', FILEGROWTH = ' + LvDatabase.GetLdfFileGrowth + ')');
+
+      ConCat('COLLATE ' + LvDatabase.GetCollation);
+    end else if LvDbObject is TTable then
     begin
       LvTable :=  TTable(LvCreate.GetObject);
       LvStatement := 'If Not Exists( Select 1 From sysobjects Where Name = ' +  LvTable.TableName.QuotedString + ' And xtype = ''U'')';
@@ -118,7 +252,7 @@ begin
     else if LvDbObject is TFunction then
     begin
       LvFunction := TFunction(LvCreate.GetObject);
-      LvStatement := 'If Exists (Select * From   sysobjects Where  id = Object_id(N' + LvFunction.Name.QuotedString + ') And xtype In (N''FN'', N''IF'', N''TF''))'
+      LvStatement := 'If Exists (Select 1 From sysobjects Where id = Object_id(N' + LvFunction.Name.QuotedString + ') And xtype In (N''FN'', N''IF'', N''TF''))'
                      + #10 + ' Drop Function ' + LvFunction.Name + #10;
 
       FFinalScript.Add(LvStatement);
@@ -165,37 +299,85 @@ begin
   FOrm.GetDeletes.Clear;
 end;
 
+function TBuilder.GetColPosition(ADataType: TDataType): string;
+begin
+  Result := ' ' + ADataType.ParamPosition + ' ';
+end;
+
 function TBuilder.GetColType(ADataType: TDataType): string;
 begin
-  case ADataType.ColType of
-    ctBigInt: Result := ' BigInt';
-    ctInt: Result := ' Int';
-    ctSmallInt: Result := ' SmallInt';
-    ctTinyInt: Result := ' TinyInt';
-    ctBit: Result := ' Bit';
-    ctDecimal: Result := ' Decimal(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
-    ctNumeric: Result := ' Numeric(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
-    ctMoney: Result := ' Money';
-    ctSmallMoney: Result := ' SmallMoney';
-    ctFloat: Result := ' Float';
-    ctReal: Result := ' Real';
-    ctDateTime: Result := ' DateTime';
-    ctSmallDateTime: Result := ' SmallDateTime';
-    ctDate: Result := ' Date';
-    ctTime: Result := ' Time';
-    ctDateTimeOffset: Result := ' DateTimeOffset';
-    ctDatetime2: Result := ' Datetime2';
-    ctChar: Result := ' Char(' + ADataType.ColSize.ToString + ')';
-    ctVarchar: Result := ' Varchar(' + ADataType.ColSize.ToString + ')';
-    ctVarcharMmax: Result := ' Varchar(Max)';
-    ctText: Result := ' Text';
-    ctNchar: Result := ' Nchar(' + ADataType.ColSize.ToString + ')';
-    ctNvarchar: Result := ' Nvarchar(' + ADataType.ColSize.ToString + ')';
-    ctNtext: Result := ' Ntext';
-    ctBinary: Result := ' Binary(' + ADataType.ColSize.ToString + ')';
-    ctVarbinary: Result := ' Varbinary(' + ADataType.ColSize.ToString + ')';
-    ctImage: Result := ' Image';
-    ctNone: Result := '';
+  case FOrm.GetTarget of
+    ttSQLServer :
+    begin
+
+      case ADataType.ColType of
+        ctBigInt: Result := ' BigInt';
+        ctInt: Result := ' Int';
+        ctSmallInt: Result := ' SmallInt';
+        ctTinyInt: Result := ' TinyInt';
+        ctBit: Result := ' Bit';
+        ctDecimal: Result := ' Decimal(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
+        ctNumeric: Result := ' Numeric(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
+        ctMoney: Result := ' Money';
+        ctSmallMoney: Result := ' SmallMoney';
+        ctFloat: Result := ' Float';
+        ctReal: Result := ' Real';
+        ctDateTime: Result := ' DateTime';
+        ctSmallDateTime: Result := ' SmallDateTime';
+        ctDate: Result := ' Date';
+        ctTime: Result := ' Time';
+        ctDateTimeOffset: Result := ' DateTimeOffset';
+        ctDatetime2: Result := ' Datetime2';
+        ctChar: Result := ' Char(' + ADataType.ColSize.ToString + ')';
+        ctVarchar: Result := ' Varchar(' + ADataType.ColSize.ToString + ')';
+        ctVarcharMmax: Result := ' Varchar(Max)';
+        ctText: Result := ' Text';
+        ctNchar: Result := ' Nchar(' + ADataType.ColSize.ToString + ')';
+        ctNvarchar: Result := ' Nvarchar(' + ADataType.ColSize.ToString + ')';
+        ctNtext: Result := ' Ntext';
+        ctBinary: Result := ' Binary(' + ADataType.ColSize.ToString + ')';
+        ctVarbinary: Result := ' Varbinary(' + ADataType.ColSize.ToString + ')';
+        ctImage: Result := ' Image';
+        ctNone: Result := '';
+      end;
+
+    end;
+
+    ttMySQL:
+    begin
+
+      case ADataType.ColType of
+        ctBigInt: Result := ' BIGINT';
+        ctInt: Result := ' INT';
+        ctSmallInt: Result := ' SMALLINT';
+        ctTinyInt: Result := ' TINYINT';
+        ctBit: Result := ' BIT';
+        ctDecimal: Result := ' DECIMAL(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
+        ctNumeric: Result := ' NUMERIC(' + ADataType.Precision.ToString + ', ' + ADataType.Scale.ToString + ')';
+        ctMoney: Result := ' DOUBLE';
+        ctSmallMoney: Result := ' FLOAT';
+        ctFloat: Result := ' FLOAT';
+        ctReal: Result := ' FLOAT';
+        ctDateTime: Result := ' DATETIME';
+        ctSmallDateTime: Result := ' DATETIME';
+        ctDate: Result := ' DATE';
+        ctTime: Result := ' TIME';
+        ctDateTimeOffset: Result := ' DateTimeOffset is not supported';
+        ctDatetime2: Result := ' DATETIME ';
+        ctChar: Result := ' CHAR(' + ADataType.ColSize.ToString + ')';
+        ctVarchar: Result := ' VARCHAR(' + ADataType.ColSize.ToString + ')';
+        ctVarcharMmax: Result := ' LONGTEXT ';
+        ctText: Result := ' Text';
+        ctNchar: Result := ' NCHAR (' + ADataType.ColSize.ToString + ')';
+        ctNvarchar: Result := ' NVARCHAR (' + ADataType.ColSize.ToString + ')';
+        ctNtext: Result := ' LONGTEXT ';
+        ctBinary: Result := ' BINARY(' + ADataType.ColSize.ToString + ')';
+        ctVarbinary: Result := ' VARBINARY(' + ADataType.ColSize.ToString + ')';
+        ctImage: Result := ' BLOB';
+        ctNone: Result := '';
+      end;
+
+    end;
   end;
 end;
 
@@ -214,16 +396,40 @@ begin
   Result := '';
 
   if ACol.DataType.IsPrimary then
-    Result := ' Primary key ';
+    Result := ' PRIMARY KEY ';
+
 
   if ACol.DataType.IsAutoIdentity then
-    Result := Result +
-    ' Identity(' + ACol.DataType.AutoIdentityStart.ToString + ', ' + ACol.DataType.AutoIdentityStep.ToString + ') ';
+  begin
+    case FOrm.GetTarget of
+      ttSQLServer:
+      begin
+        Result := Result +
+        ' IDENTITY(' + ACol.DataType.AutoIdentityStart.ToString + ', ' + ACol.DataType.AutoIdentityStep.ToString + ') ';
+      end;
+
+      ttMySQL:
+      begin
+        Result := Result +
+          ' AUTOINCREMENT((' + ACol.DataType.AutoIdentityStart.ToString + ', ' + ACol.DataType.AutoIdentityStep.ToString + ') ';
+      end;
+    end;
+  end;
 
   if ACol.DataType.IsNullable then
     Result := Result + ' NULL '
   else
     Result := Result + ' NOT NULL ';
+end;
+
+function TBuilder.GetParamType(ADataType: TDataType): string;
+begin
+  case ADataType.ParamType of
+    ptIN : Result := ' IN ';
+    ptOUT : Result := ' OUT ';
+    ptINOUT : Result := ' INOUT ';
+    ptNone : Result := '';
+  end;
 end;
 
 procedure TBuilder.Submit;

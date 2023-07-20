@@ -1,9 +1,8 @@
 object Form1: TForm1
-  Left = 585
-  Top = 310
-  BorderStyle = bsToolWindow
-  Caption = 'Form1'
-  ClientHeight = 486
+  Left = 678
+  Top = 299
+  Caption = 'MySQL + ORM'
+  ClientHeight = 478
   ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -16,14 +15,14 @@ object Form1: TForm1
   OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
-    Left = 294
+    Left = 151
     Top = 42
     Width = 58
     Height = 15
     Caption = 'to version: '
   end
   object btnDowngradeDatabase: TButton
-    Left = 151
+    Left = 8
     Top = 39
     Width = 137
     Height = 25
@@ -42,7 +41,7 @@ object Form1: TForm1
   end
   object btnAddMigrations: TButton
     Left = 8
-    Top = 39
+    Top = 8
     Width = 137
     Height = 25
     Caption = 'Add Migrations'
@@ -50,7 +49,7 @@ object Form1: TForm1
     OnClick = btnAddMigrationsClick
   end
   object edtVersion: TEdit
-    Left = 352
+    Left = 209
     Top = 39
     Width = 82
     Height = 23
@@ -72,14 +71,5 @@ object Form1: TForm1
     Width = 169
     Height = 17
     TabOrder = 5
-  end
-  object btnCreateDB: TButton
-    Left = 8
-    Top = 8
-    Width = 137
-    Height = 25
-    Caption = 'Create Database'
-    TabOrder = 6
-    OnClick = btnCreateDBClick
   end
 end
