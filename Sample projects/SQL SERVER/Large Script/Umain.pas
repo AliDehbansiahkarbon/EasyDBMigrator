@@ -52,6 +52,8 @@ procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 var
   LvConnectionParams: TSqlConnectionParams;
 begin
+  pbTotal.Style := pbstMarquee;
+
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
     Server := '192.168.212.1';
@@ -63,10 +65,8 @@ begin
   end;
 
   TLogger.Instance.OnLog := OnLog;
-
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.Config.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
-  pbTotal.Style := pbstMarquee;
   Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
 end;
 

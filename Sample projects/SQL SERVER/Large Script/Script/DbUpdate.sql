@@ -56,5 +56,3 @@ Go
     Alter Table TbInvoices Add TotlaAmount Decimal(10, 2)
   Go  
     Alter Table TbInvoices Drop Column TotlaAmount
-    
-    
