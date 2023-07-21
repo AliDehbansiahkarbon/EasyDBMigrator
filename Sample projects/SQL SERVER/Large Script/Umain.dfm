@@ -33,7 +33,7 @@ object frmMain: TfrmMain
   object RichEdit1: TRichEdit
     Left = 8
     Top = 63
-    Width = 904
+    Width = 900
     Height = 521
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
@@ -47,15 +47,7 @@ object frmMain: TfrmMain
     ScrollBars = ssVertical
     TabOrder = 2
     ExplicitTop = 62
-    ExplicitWidth = 900
-  end
-  object chkLogExecutions: TCheckBox
-    Left = 234
-    Top = 13
-    Width = 97
-    Height = 17
-    Caption = 'Log Executions'
-    TabOrder = 3
+    ExplicitWidth = 896
   end
   object btnClear: TButton
     Left = 151
@@ -63,7 +55,25 @@ object frmMain: TfrmMain
     Width = 75
     Height = 25
     Caption = 'Clear'
-    TabOrder = 4
+    TabOrder = 3
     OnClick = btnClearClick
+  end
+  object rb_LogAllExecutions: TRadioButton
+    Left = 241
+    Top = 12
+    Width = 133
+    Height = 17
+    Caption = 'Log each execution'
+    Checked = True
+    TabOrder = 4
+    TabStop = True
+  end
+  object RadioButton1: TRadioButton
+    Left = 382
+    Top = 12
+    Width = 107
+    Height = 17
+    Caption = 'Just Log errors'
+    TabOrder = 5
   end
 end

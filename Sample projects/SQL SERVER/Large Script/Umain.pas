@@ -23,12 +23,14 @@ type
     btnUpgradeDatabase: TButton;
     pbTotal: TProgressBar;
     RichEdit1: TRichEdit;
-    chkLogExecutions: TCheckBox;
     btnClear: TButton;
+    rb_LogAllExecutions: TRadioButton;
+    RadioButton1: TRadioButton;
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnClearClick(Sender: TObject);
   private
     Runner: TSQLRunner;
+    function GetLogStatus: Boolean;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
     { Private declarations }
   public
@@ -66,7 +68,7 @@ begin
 
   TLogger.Instance.OnLog := OnLog;
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.Config.UseInternalThread(True).LogAllExecutions(chkLogExecutions.Checked);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
   Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql');
 end;
 
@@ -75,6 +77,11 @@ begin
   pbTotal.Style := pbstNormal;
   pbTotal.Position := 0;
   Runner.Free;
+end;
+
+function TfrmMain.GetLogStatus: Boolean;
+begin
+  Result := rb_LogAllExecutions.Checked;
 end;
 
 procedure TfrmMain.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);

@@ -1,4 +1,4 @@
-program EasyDB_Simple_MySQL_Script;
+program EasyDB_Simple_MySQL;
 
 uses
   Vcl.Forms,
