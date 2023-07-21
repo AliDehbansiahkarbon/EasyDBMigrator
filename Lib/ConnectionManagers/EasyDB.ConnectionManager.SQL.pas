@@ -100,7 +100,9 @@ function TSQLConnection.Connect: Boolean;
 begin
   try
     FConnection.Connected := True;
-    InitializeDatabase;
+    if not FConnectionParams.DatabaseName.ToLower.Trim.Equals('master') then
+      InitializeDatabase;
+
     Result := True;
   except on E: Exception do
     begin

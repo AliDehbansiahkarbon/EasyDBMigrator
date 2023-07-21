@@ -23,11 +23,11 @@ type
     FORM: TORM;
 
     function GetLogger: TLogger;
-    procedure DoUpgrade;
-    procedure DoDowngrade;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationX): TMigrationX;
     procedure SortArrayDesc(AArray: TArray<Int64>);
+    procedure DoUpgrade;
+    procedure DoDowngrade;
   protected
     FRollBackAllByAnyError: Boolean;
 

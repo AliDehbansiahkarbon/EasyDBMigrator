@@ -23,7 +23,6 @@ type
     mmoLog: TMemo;
     pbTotal: TProgressBar;
     btnCreateDB: TButton;
-    procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
@@ -31,6 +30,7 @@ type
     procedure btnCreateDBClick(Sender: TObject);
   private
     Runner: TSQLRunner;
+    procedure InitializeRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
     { Public declarations }
@@ -47,6 +47,9 @@ procedure TForm1.btnAddMigrationsClick(Sender: TObject);
 var
   ORM: TORM;
 begin
+  InitializeRunner;
+  TLogger.Instance.Log(atUpgrade, '');
+
   Runner.Clear;
   ORM := TORM.GetInstance(ttSQLServer);
   Runner.ORM := ORM;
@@ -69,6 +72,7 @@ begin
     ORM.SubmitChanges;
   end
   ));
+  Exit;
   //============================================
   Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Added NewField2 to table Tbusers(#2702)',
   procedure
@@ -162,6 +166,7 @@ end;
 procedure TForm1.btnCreateDBClick(Sender: TObject);
 var
   LvConnectionParams: TSqlConnectionParams;
+  LvRunner: TSQLRunner;
   ORM: TORM;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
@@ -174,21 +179,21 @@ begin
     Schema := 'dbo';
   end;
 
-  Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.Config
+  LvRunner := TSQLRunner.Create(LvConnectionParams);
+  LvRunner.Config
     .LogAllExecutions(True)// Optional
     .UseInternalThread(False)// Better to run with a single thread(Only for Database creation)
     .SetProgressbar(pbTotal)// Optional
     .DelayedExecution(500);// Optional
 
-  Runner.AddLogger.OnLog := OnLog;
+  LvRunner.AddLogger.OnLog := OnLog;
 
   try
-    Runner.Clear;
+    LvRunner.Clear;
     ORM := TORM.GetInstance(ttSQLServer);
-    Runner.ORM := ORM;
+    LvRunner.ORM := ORM;
 
-    Runner.Add(TMigration.Create('Library DB', 202301010000, 'GodAdmin!', 'Created the Database',
+    LvRunner.Add(TMigration.Create('Library DB', 202301010000, 'GodAdmin!', 'Created the Database',
     procedure
     begin
       with ORM do
@@ -202,7 +207,7 @@ begin
         .LdfSize('8192KB')
         .LdfFileGrowth('65536KB')
         .LdfMaxSize('2048GB')
-        .Collation('DATABASE_DEFAULT');
+        .Collation('Latin1_General_CI_AS');
 
         SubmitChanges;
       end;
@@ -214,23 +219,31 @@ begin
     end
     ));
 
-    Runner.UpgradeDatabase;
+    LvRunner.UpgradeDatabase;
   finally
-    Runner.Free;
+    LvRunner.Free;
   end;
 end;
 
 procedure TForm1.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  Runner.DowngradeDatabase(StrToInt64Def(edtVersion.Text, 0));
+  if Assigned(Runner) then
+    Runner.DowngradeDatabase(StrToInt64Def(edtVersion.Text, 0));
 end;
 
 procedure TForm1.btnUpgradeDatabaseClick(Sender: TObject);
 begin
-  Runner.UpgradeDatabase;
+  if Assigned(Runner) then
+    Runner.UpgradeDatabase;
 end;
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  if Assigned(Runner) then
+    Runner.Free;
+end;
+
+procedure TForm1.InitializeRunner;
 var
   LvConnectionParams: TSqlConnectionParams;
 begin
@@ -244,6 +257,9 @@ begin
     Schema := 'dbo';
   end;
 
+  if Assigned(Runner) then
+    Runner.Free;
+
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True)// Optional
@@ -256,11 +272,6 @@ begin
 
   {Use this line if you need local log}
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
-end;
-
-procedure TForm1.FormDestroy(Sender: TObject);
-begin
-  Runner.Free;
 end;
 
 procedure TForm1.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);

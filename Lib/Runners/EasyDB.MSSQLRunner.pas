@@ -62,8 +62,13 @@ end;
 
 function TSQLRunner.GetDatabaseVersion: Int64;
 begin
-  if FSQLConnection.IsConnected then
-    Result := FSQLConnection.OpenAsInteger('Select max(Version) from ' + TB)
+  if not FDbName.ToLower.Trim.Equals('master') then
+  begin
+    if FSQLConnection.IsConnected then
+      Result := FSQLConnection.OpenAsInteger('Select max(Version) from ' + TB)
+    else
+      Result := -1;
+  end
   else
     Result := -1;
 end;
@@ -75,6 +80,9 @@ var
   LvAuthor:string;
   LvDescription: string;
 begin
+  if FDbName.ToLower.Trim.Equals('master') then
+    Exit;
+
   if AMigration is TMigration then
   begin
     LvLatestVersion := TMigration(AMigration).Version;
@@ -126,6 +134,9 @@ procedure TSQLRunner.DownGradeVersionInfo(AVersionToDownGrade: Int64);
 var
   LvScript: string;
 begin
+  if FDbName.ToLower.Trim.Equals('master') then
+    Exit;
+
   LvScript := 'Delete from ' + TB + ' Where Version > ' + AVersionToDownGrade.ToString;
   FSQLConnection.ExecuteAdHocQuery(LvScript);
 end;

@@ -163,7 +163,8 @@ type
   public
     destructor Destroy; override;
     function AddParam(AName: string; ADataType: TDataType): TFunction;
-    function ReturnType(AType: TDataType; AIsDeterministic: Boolean): TFunction;
+    function ReturnType(AType: TDataType): TFunction; overload;
+    function ReturnType(AType: TDataType; AIsDeterministic: Boolean): TFunction; overload;
     procedure AddBody(ABody: string);
     function GetReturnType: TDataType;
 
@@ -448,6 +449,9 @@ end;
 
 function TCreate.GetObject: TDbBaseObject;
 begin
+  if Assigned(FDatabase) then
+    Result := FDatabase
+  else
   if Assigned(FTable) then
     Result := FTable
   else if Assigned(FProcedure) then
@@ -914,6 +918,12 @@ end;
 function TFunction.GetReturnType: TDataType;
 begin
   Result := FReturnType;
+end;
+
+function TFunction.ReturnType(AType: TDataType): TFunction;
+begin
+  FReturnType := AType;
+  Exit(Self);
 end;
 
 { TProcedure }

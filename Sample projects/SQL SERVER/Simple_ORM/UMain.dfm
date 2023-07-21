@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 310
   BorderStyle = bsToolWindow
   Caption = 'Form1'
-  ClientHeight = 486
-  ClientWidth = 491
+  ClientHeight = 474
+  ClientWidth = 483
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,7 +12,6 @@ object Form1: TForm1
   Font.Name = 'Segoe UI'
   Font.Style = []
   Position = poDesigned
-  OnCreate = FormCreate
   OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
