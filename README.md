@@ -966,12 +966,12 @@ end;
 
 <details>
   <summary>
-   🟠 Remarks
+   🚩Note
   </summary>
-🚩Note: To execute large scripts with this library you must separate each statement with the SQL Server-specific keyword "GO", this is mandatory!
-
+ 
+### To execute large scripts with this library you must separate each statement with the SQL Server-specific keyword "GO", this is mandatory!
 ### If you already have an extensive script that's not a problem you can keep it as it is and continue with this library from now on.
-To execute the existing script with any size refer to the related sample project(EasyDB_LargeScript_SQLServer).
+### To execute the existing script with any size refer to the related sample project(EasyDB_LargeScript_SQLServer).
 </details>
 
 <details>
