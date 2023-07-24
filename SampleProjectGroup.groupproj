@@ -27,6 +27,9 @@
         <Projects Include="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Sample projects\Oracle\Simple\EasyDB.Oracle.Simple.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -107,14 +110,23 @@
     <Target Name="EasyDB_PostgreSQL_Simple:Make">
         <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDB_Oracle_Simple">
+        <MSBuild Projects="Sample projects\Oracle\Simple\EasyDB.Oracle.Simple.dproj"/>
+    </Target>
+    <Target Name="EasyDB_Oracle_Simple:Clean">
+        <MSBuild Projects="Sample projects\Oracle\Simple\EasyDB.Oracle.Simple.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_Oracle_Simple:Make">
+        <MSBuild Projects="Sample projects\Oracle\Simple\EasyDB.Oracle.Simple.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_PostgreSQL_Simple"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_PostgreSQL_Simple;EasyDB_Oracle_Simple"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean;EasyDB_Oracle_Simple:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_PostgreSQL_Simple:Make"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_PostgreSQL_Simple:Make;EasyDB_Oracle_Simple:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
@@ -159,6 +171,12 @@
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\Oracle\Simple\EasyDB.Oracle.Simple.dproj">
+            <ProjectGuid>{71F65792-ECEB-42CA-AD50-D7369FABB44A}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
         </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\SQL SERVER\Advance\EasyDB_SQLServer_Advance.dproj">
             <ProjectGuid>{F62E9656-5DE9-46CD-94CF-71EA2ACCD537}</ProjectGuid>

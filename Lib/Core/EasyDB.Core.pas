@@ -47,7 +47,7 @@ type
     Port: Integer;
     UserName: string;
     Pass: string;
-    Schema: string;
+    DatabaseName: string;
   end;
 
   TMongoConnectionParams = record
