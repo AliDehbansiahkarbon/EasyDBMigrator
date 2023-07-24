@@ -4,6 +4,18 @@
 ## Migrations are kinda structured objects to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved. 
 Migrations solve the problem of evolving a database schema for multiple databases (for example, the developer's local database, the test database, and the production database). Database schema changes are described in classes written in Delphi that can be checked into a version control system.
 
+# Supported Databases
+
+|Name | Simple | Advanced | ORM | LargeScript Execution|
+|---|---|---|---|---|
+| Microsoft SQL SERVER | ✅ | ✅ | ✅ | ✅ |
+| MySQL | ✅ | ✅ | ✅ | NA |
+| Oracle | ✅ | NA | NA | NA |
+| PostgreSQL | ✅ | NA | NA | NA |
+| SQLite | NA | NA | NA | NA |
+| MongoDB | NA | NA | NA | NA |
+
+
 # How it works?
 It's a library, so you just need to use the units in your projects, add migrations and run the migratory.
 
