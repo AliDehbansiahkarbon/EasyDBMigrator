@@ -206,8 +206,6 @@ begin
       Result := False;
     end;
   end;
-
-
 end;
 
 class function TMySQLConnection.Instance: TMySQLConnection;

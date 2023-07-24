@@ -8,7 +8,7 @@ uses
   UCustomers, UUsers, UInvoices,
   EasyDB.Core,
   EasyDB.ConnectionManager.SQL,
-  EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer Attributes.
+  EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer to use Attributes.
   EasyDB.MSSQLRunner,
   EasyDB.Logger;
 

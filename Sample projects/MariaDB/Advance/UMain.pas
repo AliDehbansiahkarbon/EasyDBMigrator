@@ -4,12 +4,13 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, System.TypInfo, System.StrUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls,System.TypInfo, System.StrUtils,
   UCustomers, UUsers, UInvoices,
+
   EasyDB.Core,
-  EasyDB.ConnectionManager.MySQL,
+  EasyDB.ConnectionManager.MariaDB,
   EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer to use Attributes.
-  EasyDB.MySQLRunner,
+  EasyDB.MariaDBRunner,
   EasyDB.Logger;
 
 type
@@ -21,13 +22,11 @@ type
     edtVersion: TEdit;
     mmoLog: TMemo;
     pbTotal: TProgressBar;
-    procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
-    procedure btnUpgradeDatabaseClick(Sender: TObject);
-    procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    Runner: TMySQLRunner;
+    Runner: TMariaDBRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
     { Public declarations }
@@ -39,8 +38,6 @@ var
 implementation
 
 {$R *.dfm}
-
-{ TForm4 }
 
 procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
@@ -69,25 +66,9 @@ begin
 }
 end;
 
-procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);
-begin
-  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
-end;
-
-procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
-begin
-  if Runner.MigrationList.Count = 0 then
-  begin
-    ShowMessage('You should add at least one migration object.');
-    Exit;
-  end;
-
-  Runner.UpgradeDatabase;
-end;
-
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
-  LvConnectionParams: TMySqlConnectionParams;
+  LvConnectionParams: TMariaDBConnectionParams;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
@@ -99,7 +80,7 @@ begin
     Schema := 'Library';
   end;
 
-  Runner := TmySQLRunner.Create(LvConnectionParams);
+  Runner := TMariaDBRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True) // Optional
     .UseInternalThread(True) //Optional

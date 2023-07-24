@@ -137,7 +137,6 @@ begin
 
   {Use this line if you need local log}
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
-
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);
