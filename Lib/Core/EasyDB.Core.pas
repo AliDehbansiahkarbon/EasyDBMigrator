@@ -31,6 +31,41 @@ type
     Schema: string;
   end;
 
+  TPgConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
+    DatabaseName: string;
+    Schema: string;
+  end;
+
+  TOracleConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
+    Schema: string;
+  end;
+
+  TMongoConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
+  end;
+
+  TSQLiteConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
+  end;
+
   TObjListHelper = class helper for TMigrations
   public
     function FindMigration(AMigrationObj: TMigrationBase): Boolean;

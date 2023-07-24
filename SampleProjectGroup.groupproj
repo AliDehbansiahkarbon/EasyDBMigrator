@@ -24,6 +24,9 @@
         <Projects Include="Sample projects\MySQL\Simple_ORM\EasyDB_MySQL_ORM.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -95,14 +98,23 @@
     <Target Name="EasyDB_MySQL_ORM:Make">
         <MSBuild Projects="Sample projects\MySQL\Simple_ORM\EasyDB_MySQL_ORM.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDB_PostgreSQL_Simple">
+        <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj"/>
+    </Target>
+    <Target Name="EasyDB_PostgreSQL_Simple:Clean">
+        <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_PostgreSQL_Simple:Make">
+        <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_PostgreSQL_Simple"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_PostgreSQL_Simple:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
@@ -124,14 +136,20 @@
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
         </BuildGroupProject>
-        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple\EasyDB_SQLServer_Simple.dproj">
-            <ProjectGuid>{388CC30A-3A33-475D-89BC-47BDE9DD75C4}</ProjectGuid>
+        <BuildGroupProject Include="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj">
+            <ProjectGuid>{8D304D8E-F8E4-42E9-A382-D6E3631FD52B}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_SQLServer_ORM.dproj">
+            <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
         </BuildGroupProject>
-        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_SQLServer_ORM.dproj">
-            <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
+        <BuildGroupProject Include="Sample projects\SQL SERVER\Simple\EasyDB_SQLServer_Simple.dproj">
+            <ProjectGuid>{388CC30A-3A33-475D-89BC-47BDE9DD75C4}</ProjectGuid>
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>

@@ -1,4 +1,4 @@
-unit EasyDB.ConnectionManager.MySQL;
+unit EasyDB.ConnectionManager.PostgreSQL;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet, {=MySQL=}FireDAC.Phys.MySQL, FireDAC.Phys.MySQLDef, FireDAC.Comp.UI, {=MySQL=}
+  FireDAC.Comp.DataSet, {=PostgreSQL=} FireDAC.Phys.PGDef, FireDAC.Phys.PG, {=PostgreSQL=}
 
   EasyDB.ConnectionManager.Base,
   EasyDB.Core,
@@ -16,22 +16,22 @@ uses
 
  type
 
-  TMySQLConnection = class(TConnection) // Singletone
+  TPgConnection = class(TConnection) // Singletone
   private
     FConnection: TFDConnection;
-    FMySQLDriver: TFDPhysMySQLDriverLink;
+    FPgDriver: TFDPhysPgDriverLink;
     FQuery: TFDQuery;
-    FConnectionParams: TMySqlConnectionParams;
+    FConnectionParams: TPgConnectionParams;
     Constructor Create;
-    class var FInstance: TMySQLConnection;
+    class var FInstance: TPgConnection;
   public
-    class function Instance: TMySQLConnection;
+    class function Instance: TPgConnection;
     Destructor Destroy; override;
 
     function GetConnectionString: string; override;
-    function SetConnectionParam(AConnectionParams: TMySqlConnectionParams): TMySQLConnection;
+    function SetConnectionParam(AConnectionParams: TPgConnectionParams): TPgConnection;
     function Connect: Boolean; override;
-    function ConnectEx: TMySQLConnection;
+    function ConnectEx: TPgConnection;
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
     function Logger: TLogger; override;
@@ -45,24 +45,24 @@ uses
     procedure CommitTrans;
     procedure RollBackTrans;
 
-    property ConnectionParams: TMySqlConnectionParams read FConnectionParams;
+    property ConnectionParams: TPgConnectionParams read FConnectionParams;
   end;
 
 implementation
 
-{ TMySQLConnection }
+{ TPgConnection }
 
-procedure TMySQLConnection.BeginTrans;
+procedure TPgConnection.BeginTrans;
 begin
   FConnection.Transaction.StartTransaction;
 end;
 
-procedure TMySQLConnection.CommitTrans;
+procedure TPgConnection.CommitTrans;
 begin
   FConnection.Transaction.Commit;
 end;
 
-function TMySQLConnection.Connect: Boolean;
+function TPgConnection.Connect: Boolean;
 begin
   try
     FConnection.Connected := True;
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ConnectEx: TMySQLConnection;
+function TPgConnection.ConnectEx: TPgConnection;
 begin
   if Connect then
     Result := FInstance
@@ -84,32 +84,32 @@ begin
     Result := nil;
 end;
 
-constructor TMySQLConnection.Create;
+constructor TPgConnection.Create;
 begin
   FConnection := TFDConnection.Create(nil);
-  FMySQLDriver := TFDPhysMySQLDriverLink.Create(nil);
-  FMySQLDriver.VendorHome := '.';
-  FMySQLDriver.VendorLib := 'libmysql32.dll';
+  FPgDriver := TFDPhysPgDriverLink.Create(nil);
+  FPgDriver.VendorHome := '.';
+  FPgDriver.VendorLib := 'libpq.dll';
 
-  FConnection.DriverName := 'MySQL';
+  FConnection.DriverName := 'PG';
   FConnection.LoginPrompt := False;
 
   FQuery := TFDQuery.Create(nil);
   FQuery.Connection := FConnection;
 end;
 
-destructor TMySQLConnection.Destroy;
+destructor TPgConnection.Destroy;
 begin
   FQuery.Close;
   FQuery.Free;
-  FMySQLDriver.Free;
+  FPgDriver.Free;
 
   FConnection.Close;
   FConnection.Free;
   inherited;
 end;
 
-function TMySQLConnection.ExecuteAdHocQuery(AScript: string): Boolean;
+function TPgConnection.ExecuteAdHocQuery(AScript: string): Boolean;
 begin
   try
     FConnection.ExecSQL(AScript);
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+function TPgConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
 begin
   try
     BeginTrans;
@@ -140,7 +140,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+function TPgConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -181,26 +181,24 @@ begin
   end;
 end;
 
-function TMySQLConnection.GetConnectionString: string;
+function TPgConnection.GetConnectionString: string;
 begin
   Result := FConnection.ConnectionString;
 end;
 
-function TMySQLConnection.InitializeDatabase: Boolean;
+function TPgConnection.InitializeDatabase: Boolean;
 var
   LvTbScript: string;
 begin
-  LvTbScript := 'CREATE TABLE IF NOT EXISTS EasyDBVersionInfo ( ' + #10
-       + '  Version BIGINT NOT NULL PRIMARY KEY, ' + #10
-       + '  AppliedOn DATETIME DEFAULT CURRENT_TIMESTAMP, ' + #10
-       + '  Author NVARCHAR(100), ' + #10
-       + '  Description NVARCHAR(4000) ' + #10
-       + ');';
-
+  LvTbScript := 'CREATE TABLE IF NOT EXISTS EasyDBVersionInfo' + #10
+                + '(' + #10
+                + 'Version     BIGINT NOT NULL PRIMARY KEY,' + #10
+                + 'AppliedOn   TIMESTAMP DEFAULT CURRENT_TIMESTAMP,' + #10
+                + 'Author      VARCHAR(100),' + #10
+                + 'Description TEXT' + #10
+                + ');';
   try
     ExecuteAdHocQuery(LvTbScript);
-//    ExecuteAdHocQuery(LvDropScript);
-//    ExecuteAdHocQuery(LvSpScript);
     Result := True;
   except on E: Exception do
     begin
@@ -208,29 +206,27 @@ begin
       Result := False;
     end;
   end;
-
-
 end;
 
-class function TMySQLConnection.Instance: TMySQLConnection;
+class function TPgConnection.Instance: TPgConnection;
 begin
   if not Assigned(FInstance) then
-    FInstance := TMySQLConnection.Create;
+    FInstance := TPgConnection.Create;
 
   Result := FInstance;
 end;
 
-function TMySQLConnection.IsConnected: Boolean;
+function TPgConnection.IsConnected: Boolean;
 begin
   Result := FConnection.Connected;
 end;
 
-function TMySQLConnection.Logger: TLogger;
+function TPgConnection.Logger: TLogger;
 begin
   Result := TLogger.Instance;
 end;
 
-function TMySQLConnection.OpenAsInteger(AScript: string): Largeint;
+function TPgConnection.OpenAsInteger(AScript: string): Largeint;
 begin
   FQuery.Open(AScript);
   if FQuery.RecordCount > 0 then
@@ -239,22 +235,22 @@ begin
     Result := -1;
 end;
 
-procedure TMySQLConnection.RollBackTrans;
+procedure TPgConnection.RollBackTrans;
 begin
   FConnection.Transaction.Rollback;
 end;
 
-function TMySQLConnection.SetConnectionParam(AConnectionParams: TMySqlConnectionParams): TMySQLConnection;
+function TPgConnection.SetConnectionParam(AConnectionParams: TPgConnectionParams): TPgConnection;
 begin
   FConnectionParams := AConnectionParams;
 
   with FConnection.Params, FConnectionParams do
   begin
     Clear;
-    Add('DriverID=MySQL');
+    Add('DriverID=PG');
     Add('Server=' + Server);
     Add('Port=' + Port.ToString);
-    Add('Database=' + Schema);
+    Add('Database=' + DatabaseName);
     Add('User_name=' + UserName);
     Add('Password=' + Pass);
     Add('LoginTimeout=' + LoginTimeout.ToString);
