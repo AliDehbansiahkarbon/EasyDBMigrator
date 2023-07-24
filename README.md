@@ -1028,3 +1028,15 @@ There is an internal simple logger inside the library that is able to write log 
 Using his event you can use your desired logging method like [QuickLogger](https://github.com/exilon/QuickLogger) or anything else and target any destination 
 like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com), Telegram, Email, etc...
 
+---
+
+# New Integration instruction
+## Didn't find your database?
+**No problem!** you can easily integrate this library with your environment, folowwing bellow steps:
+- Create a new unit in this path ..\EasyDB\Lib\ConnectionManagers including a class that is inherited 
+  from TConnection in the unit EasyDB.ConnectionManager.Base.pas, see the EasyDB.ConnectionManager.SQL.pas unit as a template.
+- Create a new unit in this path ..\EasyDB\Lib\Runners including a class that is inherited from
+  TRunner in the unit EasyDB.Runner.pas, see the EasyDB.MSSQLRunner.pas unit as a template.
+- The two above steps are enough to use in simple and advanced modes but in case you prefer to use ORM form you need to create 
+  a new function in the TBuilder class to generate scripts based on your target database, this class can be found
+  in the path ..\EasyDB\Lib\ORM and unit EasyDB.ORM.Builder.pas.
