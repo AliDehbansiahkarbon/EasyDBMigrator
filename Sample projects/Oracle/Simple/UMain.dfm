@@ -1,9 +1,10 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
+  BorderStyle = bsToolWindow
   Caption = 'Oracle Simple'
-  ClientHeight = 480
-  ClientWidth = 461
+  ClientHeight = 491
+  ClientWidth = 465
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -57,7 +58,7 @@ object frmMain: TfrmMain
     Left = 8
     Top = 80
     Width = 445
-    Height = 360
+    Height = 392
     ScrollBars = ssVertical
     TabOrder = 4
   end

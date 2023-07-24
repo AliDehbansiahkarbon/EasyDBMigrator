@@ -2,7 +2,9 @@ program EasyDB_SQLServer_Simple;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {frmMain};
+  UMain in 'UMain.pas' {frmMain},
+  Vcl.Themes,
+  Vcl.Styles;
 
 {$R *.res}
 

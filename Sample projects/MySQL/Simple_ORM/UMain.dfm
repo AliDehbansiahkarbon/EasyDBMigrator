@@ -1,9 +1,10 @@
 object Form1: TForm1
   Left = 678
   Top = 299
+  BorderStyle = bsToolWindow
   Caption = 'MySQL + ORM'
-  ClientHeight = 478
-  ClientWidth = 491
+  ClientHeight = 489
+  ClientWidth = 495
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

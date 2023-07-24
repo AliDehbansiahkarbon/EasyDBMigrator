@@ -1,10 +1,10 @@
-object Form2: TForm2
+object Form3: TForm3
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'SImple_PostgreSQL'
-  ClientHeight = 493
-  ClientWidth = 494
+  Caption = 'MariaDb ORM'
+  ClientHeight = 491
+  ClientWidth = 495
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -59,7 +59,7 @@ object Form2: TForm2
   end
   object mmoLog: TMemo
     Left = 16
-    Top = 74
+    Top = 70
     Width = 465
     Height = 403
     ScrollBars = ssVertical

@@ -349,7 +349,7 @@ begin
 
     end;
 
-    ttMySQL:
+    ttMySQL, ttMariaDB:
     begin
 
       case ADataType.ColType of
@@ -414,7 +414,7 @@ begin
         ' IDENTITY(' + ACol.DataType.AutoIdentityStart.ToString + ', ' + ACol.DataType.AutoIdentityStep.ToString + ') ';
       end;
 
-      ttMySQL:
+      ttMySQL, ttMariaDB:
       begin
         Result := Result +
           ' AUTOINCREMENT((' + ACol.DataType.AutoIdentityStart.ToString + ', ' + ACol.DataType.AutoIdentityStep.ToString + ') ';
@@ -450,7 +450,7 @@ begin
         TSQLConnection.Instance.ExecuteAdHocQuery(FFinalScript[I]);
     end;
 
-    ttMySQL:
+    ttMySQL, ttMariaDB:
     begin
       GenerateMySQLScript;
       for I := 0 to Pred(FFinalScript.Count) do

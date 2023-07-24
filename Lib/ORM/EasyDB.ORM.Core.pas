@@ -14,7 +14,7 @@ type
 
   TAlterMode = (amAdd, amDrop, amEdit, amRename, amNone);
 
-  TTargetType = (ttSQLServer, ttMySQL, ttNone);
+  TTargetType = (ttSQLServer, ttMySQL, ttMariaDB, ttNone);
 
   TObjectType = (otDatabase, otTable, otView, otStoredProcedure, otFunction, orNone);
 

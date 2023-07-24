@@ -1,9 +1,10 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
+  BorderStyle = bsToolWindow
   Caption = 'MariaDB Simple'
-  ClientHeight = 486
-  ClientWidth = 487
+  ClientHeight = 497
+  ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

@@ -28,7 +28,7 @@ object frmMain: TfrmMain
     Width = 137
     Height = 25
     Caption = 'Downgrade Database'
-    TabOrder = 0
+    TabOrder = 2
     OnClick = btnDowngradeDatabaseClick
   end
   object btnUpgradeDatabase: TButton
@@ -46,7 +46,7 @@ object frmMain: TfrmMain
     Width = 137
     Height = 25
     Caption = 'Add Migrations'
-    TabOrder = 2
+    TabOrder = 0
     OnClick = btnAddMigrationsClick
   end
   object edtVersion: TEdit

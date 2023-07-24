@@ -1,9 +1,10 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
+  BorderStyle = bsToolWindow
   Caption = 'Large Script Execution'
-  ClientHeight = 594
-  ClientWidth = 940
+  ClientHeight = 608
+  ClientWidth = 925
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,8 +12,8 @@ object frmMain: TfrmMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   DesignSize = (
-    940
-    594)
+    925
+    608)
   TextHeight = 15
   object btnUpgradeDatabase: TButton
     Left = 8
@@ -25,16 +26,19 @@ object frmMain: TfrmMain
   end
   object pbTotal: TProgressBar
     Left = 8
-    Top = 46
-    Width = 928
+    Top = 57
+    Width = 909
     Height = 17
+    Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
+    ExplicitTop = 46
+    ExplicitWidth = 922
   end
   object RichEdit1: TRichEdit
     Left = 8
-    Top = 63
-    Width = 900
-    Height = 521
+    Top = 74
+    Width = 909
+    Height = 529
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -46,8 +50,8 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 2
-    ExplicitTop = 62
-    ExplicitWidth = 896
+    ExplicitTop = 63
+    ExplicitWidth = 905
   end
   object btnClear: TButton
     Left = 151
