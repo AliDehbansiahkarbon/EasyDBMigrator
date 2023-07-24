@@ -10,14 +10,15 @@ Migrations solve the problem of evolving a database schema for multiple database
 |---|---|---|---|---|
 | Microsoft SQL SERVER | ✅ | ✅ | ✅ | ✅ |
 | MySQL | ✅ | ✅ | ✅ | NA |
+| MariaDB | ✅ | ✅ | ✅ | NA |
 | Oracle | ✅ | NA | NA | NA |
 | PostgreSQL | ✅ | NA | NA | NA |
-| SQLite | NA | NA | NA | NA |
-| MongoDB | NA | NA | NA | NA |
-
 
 # How it works?
-It's a library, so you just need to use the units in your projects, add migrations and run the migratory.
+It's a library, so you need to use the units in your projects, add migrations and run the migratory.
+
+# Is it possible to use it for other databases?
+Yes, you can easily integrate it with your environment, please have a look at the integration section.
 
 # How to use it?
 There are some samples that demonstrate the usage of the library with extra details but have a look at the following codes for a quick start please:
