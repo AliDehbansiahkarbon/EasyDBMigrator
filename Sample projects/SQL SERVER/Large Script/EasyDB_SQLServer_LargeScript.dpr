@@ -1,8 +1,8 @@
-program EasyDB_Simple_MySQL;
+program EasyDB_SQLServer_LargeScript;
 
 uses
   Vcl.Forms,
-  UMain in 'UMain.pas' {frmMain};
+  Umain in 'Umain.pas' {frmMain};
 
 {$R *.res}
 
@@ -10,6 +10,5 @@ begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmMain, frmMain);
-  ReportMemoryLeaksOnShutdown := True;
   Application.Run;
 end.

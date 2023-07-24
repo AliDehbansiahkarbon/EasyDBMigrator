@@ -1,4 +1,4 @@
-program EasyDB_Simple_SQLServer;
+program EasyDB_SQLServer_Simple;
 
 uses
   Vcl.Forms,

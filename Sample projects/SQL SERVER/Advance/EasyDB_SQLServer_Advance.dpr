@@ -1,4 +1,4 @@
-program EasyDB_Advance_MySQL;
+program EasyDB_SQLServer_Advance;
 
 uses
   Vcl.Forms,
