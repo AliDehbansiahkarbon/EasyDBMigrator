@@ -1,4 +1,4 @@
-unit EasyDB.ConnectionManager.MySQL;
+unit EasyDB.ConnectionManager.MariaDB;
 
 interface
 
@@ -7,7 +7,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet, {=MySQL=}FireDAC.Phys.MySQL, FireDAC.Phys.MySQLDef, FireDAC.Comp.UI, {=MySQL=}
+  FireDAC.Comp.DataSet, {=MariaBD=}FireDAC.Phys.MySQL, FireDAC.Phys.MySQLDef, FireDAC.Comp.UI, {=MariaBD=}
 
   EasyDB.ConnectionManager.Base,
   EasyDB.Core,
@@ -16,22 +16,22 @@ uses
 
  type
 
-  TMySQLConnection = class(TConnection) // Singletone
+  TMariaDBConnection = class(TConnection) // Singletone
   private
     FConnection: TFDConnection;
-    FMySQLDriver: TFDPhysMySQLDriverLink;
+    FMariaDBDriver: TFDPhysMySQLDriverLink;
     FQuery: TFDQuery;
-    FConnectionParams: TMySqlConnectionParams;
+    FConnectionParams: TMariaDBConnectionParams;
     Constructor Create;
-    class var FInstance: TMySQLConnection;
+    class var FInstance: TMariaDBConnection;
   public
-    class function Instance: TMySQLConnection;
+    class function Instance: TMariaDBConnection;
     Destructor Destroy; override;
 
     function GetConnectionString: string; override;
-    function SetConnectionParam(AConnectionParams: TMySqlConnectionParams): TMySQLConnection;
+    function SetConnectionParam(AConnectionParams: TMariaDBConnectionParams): TMariaDBConnection;
     function Connect: Boolean; override;
-    function ConnectEx: TMySQLConnection;
+    function ConnectEx: TMariaDBConnection;
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
     function Logger: TLogger; override;
@@ -45,24 +45,24 @@ uses
     procedure CommitTrans;
     procedure RollBackTrans;
 
-    property ConnectionParams: TMySqlConnectionParams read FConnectionParams;
+    property ConnectionParams: TMariaDBConnectionParams read FConnectionParams;
   end;
 
 implementation
 
-{ TMySQLConnection }
+{ TMariaDBConnection }
 
-procedure TMySQLConnection.BeginTrans;
+procedure TMariaDBConnection.BeginTrans;
 begin
   FConnection.Transaction.StartTransaction;
 end;
 
-procedure TMySQLConnection.CommitTrans;
+procedure TMariaDBConnection.CommitTrans;
 begin
   FConnection.Transaction.Commit;
 end;
 
-function TMySQLConnection.Connect: Boolean;
+function TMariaDBConnection.Connect: Boolean;
 begin
   try
     FConnection.Connected := True;
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ConnectEx: TMySQLConnection;
+function TMariaDBConnection.ConnectEx: TMariaDBConnection;
 begin
   if Connect then
     Result := FInstance
@@ -84,12 +84,12 @@ begin
     Result := nil;
 end;
 
-constructor TMySQLConnection.Create;
+constructor TMariaDBConnection.Create;
 begin
   FConnection := TFDConnection.Create(nil);
-  FMySQLDriver := TFDPhysMySQLDriverLink.Create(nil);
-  FMySQLDriver.VendorHome := '.';
-  FMySQLDriver.VendorLib := 'libmysql32.dll';
+  FMariaDBDriver := TFDPhysMySQLDriverLink.Create(nil);
+  FMariaDBDriver.VendorHome := '.';
+  FMariaDBDriver.VendorLib := 'libmariadb.dll';
 
   FConnection.DriverName := 'MySQL';
   FConnection.LoginPrompt := False;
@@ -98,18 +98,18 @@ begin
   FQuery.Connection := FConnection;
 end;
 
-destructor TMySQLConnection.Destroy;
+destructor TMariaDBConnection.Destroy;
 begin
   FQuery.Close;
   FQuery.Free;
-  FMySQLDriver.Free;
+  FMariaDBDriver.Free;
 
   FConnection.Close;
   FConnection.Free;
   inherited;
 end;
 
-function TMySQLConnection.ExecuteAdHocQuery(AScript: string): Boolean;
+function TMariaDBConnection.ExecuteAdHocQuery(AScript: string): Boolean;
 begin
   try
     FConnection.ExecSQL(AScript);
@@ -123,7 +123,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+function TMariaDBConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
 begin
   try
     BeginTrans;
@@ -140,7 +140,7 @@ begin
   end;
 end;
 
-function TMySQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+function TMariaDBConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -181,12 +181,12 @@ begin
   end;
 end;
 
-function TMySQLConnection.GetConnectionString: string;
+function TMariaDBConnection.GetConnectionString: string;
 begin
   Result := FConnection.ConnectionString;
 end;
 
-function TMySQLConnection.InitializeDatabase: Boolean;
+function TMariaDBConnection.InitializeDatabase: Boolean;
 var
   LvTbScript: string;
 begin
@@ -210,25 +210,25 @@ begin
 
 end;
 
-class function TMySQLConnection.Instance: TMySQLConnection;
+class function TMariaDBConnection.Instance: TMariaDBConnection;
 begin
   if not Assigned(FInstance) then
-    FInstance := TMySQLConnection.Create;
+    FInstance := TMariaDBConnection.Create;
 
   Result := FInstance;
 end;
 
-function TMySQLConnection.IsConnected: Boolean;
+function TMariaDBConnection.IsConnected: Boolean;
 begin
   Result := FConnection.Connected;
 end;
 
-function TMySQLConnection.Logger: TLogger;
+function TMariaDBConnection.Logger: TLogger;
 begin
   Result := TLogger.Instance;
 end;
 
-function TMySQLConnection.OpenAsInteger(AScript: string): Largeint;
+function TMariaDBConnection.OpenAsInteger(AScript: string): Largeint;
 begin
   FQuery.Open(AScript);
   if FQuery.RecordCount > 0 then
@@ -237,12 +237,12 @@ begin
     Result := -1;
 end;
 
-procedure TMySQLConnection.RollBackTrans;
+procedure TMariaDBConnection.RollBackTrans;
 begin
   FConnection.Transaction.Rollback;
 end;
 
-function TMySQLConnection.SetConnectionParam(AConnectionParams: TMySqlConnectionParams): TMySQLConnection;
+function TMariaDBConnection.SetConnectionParam(AConnectionParams: TMariaDBConnectionParams): TMariaDBConnection;
 begin
   FConnectionParams := AConnectionParams;
 

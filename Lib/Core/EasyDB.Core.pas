@@ -31,6 +31,15 @@ type
     Schema: string;
   end;
 
+  TMariaDBConnectionParams = record
+    Server: string;
+    LoginTimeout: Integer;
+    Port: Integer;
+    UserName: string;
+    Pass: string;
+    Schema: string;
+  end;
+
   TPgConnectionParams = record
     Server: string;
     LoginTimeout: Integer;
@@ -48,22 +57,6 @@ type
     UserName: string;
     Pass: string;
     DatabaseName: string;
-  end;
-
-  TMongoConnectionParams = record
-    Server: string;
-    LoginTimeout: Integer;
-    Port: Integer;
-    UserName: string;
-    Pass: string;
-  end;
-
-  TSQLiteConnectionParams = record
-    Server: string;
-    LoginTimeout: Integer;
-    Port: Integer;
-    UserName: string;
-    Pass: string;
   end;
 
   TObjListHelper = class helper for TMigrations
