@@ -21,24 +21,29 @@ It's a library, so you need to use the units in your projects, add migrations an
 Yes, you can easily integrate it with your environment, please have a look at the integration section.
 
 # How to use it?
-There are some samples that demonstrate the usage of the library with extra details but have a look at the following codes for a quick start please:
+Samples demonstrate the usage of the library with extra details but have a look at the following codes for a quick start please:
 
-# Simple 
-**Suitable** for small projects (using on-demand classes with anonymous methods).
+# Different types of sample
+
+- Simple: suitable for **small** projects (using on-demand classes with anonymous methods).
+- Advanced: Suitable for **large** projects (using versioned classes with attributes).
+  Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes.
+  
+- ORM: suitable for both small and large projects.
+- Large Script: it's a large script executor to use your existing old script as a starting point and continue with this library from now on.
+
+---
+
+- # Simple
 
 <details>
 <summary>
-  🔵 SQL SERVER Sample 
+  🟢 SQL SERVER Sample 
 </summary>
+<br>
+  - Initializing
 
-### Project name: EasyDB_Simple_SQLServer
-
-<details>
-  <summary>
-Initializing
-  </summary>
-
-  ```delphi
+```delphi
 uses
   EasyDB.Core,
   EasyDB.Migration,
@@ -70,14 +75,8 @@ begin
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
 end
 ```
-</details>  
 
-<details>
-  <summary>
-Add migrations
-  </summary>
-
-
+- Add migrations
 ```delphi
 
 Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Create table Users, Task Number #2701',
@@ -149,38 +148,22 @@ Runner.MigrationList.Add(TMigration.Create('TbUsers', 202301010001, 'Alex', 'Cre
 //...
 
 ```
-  
-</details>  
 
-<details>
-<summary>
-  Run the Migrator
-</summary>
-
-
-- 🟩 Upgrade the database to the latest version
+- Run the Migrator
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  // Or 
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
-  //This version and lower versions of the database will remain and any version above this will be restored.
+  //This version and lower versions of the database will remain and any version above this will be reverted.
 ```    
 </details>
-</details>
+
 <details>
 <summary>
   🟠 MySQL Sample
 </summary>
-  
-  ### Project name: EasyDB_Simple_MySQL 
-  ### It's the same as the SQL Server sample but some different units should be used, refer to the samples, please.
-
-<details>
-<summary>
-  Initializing
-</summary>
+ <br> 
+  - Initializing
   
  ```delphi
 
@@ -215,13 +198,8 @@ begin
   {Use this line if you need local log}
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 ```
-</details>
 
-<details>
-<summary>
-  Add migrations
-</summary>
-
+  - Add migrations
   ```delphi
   //Modern way
   Runner.Clear
@@ -247,38 +225,44 @@ begin
   Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
 }
 ```  
-</details>  
-<details>
-<summary>
-  Run the Migrator
-</summary>
-  - 🟩 Upgrade the database to the latest version
+ 
+- Run the Migrator
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  //OR
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
   //This version and lower versions of the database will remain and any version above this will be restored.
 ``` 
 </details>
-</details>
-
-
-# Advanced
-### Suitable for large projects (using versioned classes with attributes).
-
-<details>
-  <summary>
-   🔵 SQL SERVER Sample
-  </summary>
-  
-### Project name: EasyDB_Advance_SQLServer
 
 <details>
 <summary>
-  Initializing
+  🟣 MariaDB sample
 </summary>
+</details>
+
+<details>
+<summary>
+  🔵 PostgreSQL sample
+</summary>
+</details>
+
+<details>
+<summary>
+  🔴 Oracle Sample 
+</summary>
+</details>
+
+
+- # Advanced
+
+
+<details>
+  <summary>
+   🟢 SQL SERVER Sample
+  </summary>
+  <br>
+  - Initializing
 
 ```delphi
 uses
@@ -312,13 +296,7 @@ begin
   Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
 end
 ```  
-</details>
-
-<details>
-<summary>
-  Define migrations in diffrent place(unit)
-</summary>
-**Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes like the following code:**
+- Define migrations in diffrent place(unit)
 
 ```delphi
 uses
@@ -421,15 +399,10 @@ begin
   end;
 end;
 ```
-  
-</details>
 
-<details>
-<summary>
- Add migrations
-</summary>
+- Add migrations
   
-  ```delphi
+```delphi
   //Modern way
   Runner.Clear
   .Add(TUsersMgr_202301010001.Create)
@@ -454,38 +427,22 @@ end;
   Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
 }
 ```
-</details>
 
-<details>
-<summary>
- Run the Migrator exactly like the simple mode.
-</summary>
-  
-- 🟩 Upgrade the database to the latest version
+- Run the Migrator exactly like the simple mode.
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  //OR
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
   //This version and lower versions of the database will remain and any version above this will be restored.
 ```
-</details>
 </details>
 
 <details>
   <summary>
    🟠 MySQL Sample
   </summary>
-  
-### Project name: EasyDB_Advance_MySQL
-### It's the same as the SQL Server sample but different units should be used.
-
-<details>
-  <summary>
-   Initializing
-  </summary>
-
+  <br>
+  - Initializing
    
 ```delphi
   uses
@@ -522,14 +479,9 @@ begin
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
  ```
 
-</details>
+- Add migrations
 
-<details>
-  <summary>
-   Add migrations
-  </summary>
-
-  ```delphi
+```delphi
   //Modern way
   Runner.Clear
   .Add(TUsersMgr_202301010001.Create)
@@ -554,38 +506,48 @@ begin
   Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
 }
 ```
-</details>
-  
-<details>
-  <summary>
-   Run the Migrator
-  </summary>
+ 
+- Run the Migrator
 
-  - 🟩 Upgrade the database to the latest version
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  //OR
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
   //This version and lower versions of the database will remain and any version above this will be restored.
 ```  
-</details>  
 </details>
 
-# ORM
-### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.
+<details>
+  <summary>
+   🟣 MariaDb Sample
+  </summary>
+</details>  
+
+<details>
+  <summary>
+   🔵 PostgreSQL Sample
+  </summary>
+</details>  
+
+<details>
+  <summary>
+   🟠 Oracle Sample
+  </summary>
+</details>  
+
+
+- # ORM
+### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.(<ins>SQL SERVER and MySQL only</ins>).
+### Of course you can use any other ORM that you prefer like [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
+
 <details>
   <summary>
    🔵 SQL SERVER Sample
   </summary>
+<br>
+- Initializing + Database creation
 
-<details>
-  <summary>
-   Initializing + Database creation
-  </summary>
-
-  ```delphi
+```delphi
 var
   LvConnectionParams: TSqlConnectionParams;
   LvRunner: TSQLRunner;
@@ -647,12 +609,8 @@ begin
   end;
 end;
 ```
-</details>  
 
-<details>
-  <summary>
-   Add migrations
-  </summary>
+- Add migrations
 
 ```delphi
 var
@@ -774,37 +732,26 @@ begin
   ));
 end;
 ```  
-</details>  
 
-<details>
-  <summary>
-   Run the Migrator
-  </summary>
+- Run the Migrator
 
-  - 🟩 Upgrade the database to the latest version
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  //OR
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
   //This version and lower versions of the database will remain and any version above this will be restored.
 ``` 
 
-</details>
 </details>
 
 <details>
   <summary>
    🟠 MySQL Sample
   </summary>
+<br>
+- Initializing
 
-<details>
-  <summary>
-   Initializing
-  </summary>
-
-  ```delphi
+```delphi
 var
   LvConnectionParams: TMySqlConnectionParams;
 begin
@@ -831,14 +778,10 @@ begin
   {Use this line if you need local log}
   //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 ```
-</details>
 
-<details>
-  <summary>
-   Add migrations
-  </summary>
+- Add migrations
 
-  ```delphi
+```delphi
 var
   ORM: TORM;
 begin
@@ -954,32 +897,22 @@ begin
   ));
 end;
 ```
-</details>
+- Run the Migrator
 
-<details>
-  <summary>
-   Run the Migrator
-  </summary>
-
-  - 🟩 Upgrade the database to the latest version
 ```delphi
   Runner.UpgradeDatabase; // Do upgrade
-```
-- 🟩 Downgrade the database to the latest version
-```delphi
+  //OR
   Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
   //This version and lower versions of the database will remain and any version above this will be restored.
 ``` 
 
-</details>  
 </details>
 
-
-# Large Script execution - SQL Server Only
+- # Large Script execution - SQL Server Only
 
 <details>
   <summary>
-   🚩Note
+   🚩Important Note!
   </summary>
  
 ### To execute large scripts with this library you must separate each statement with the SQL Server-specific keyword "GO", this is mandatory!
@@ -1029,10 +962,11 @@ Using his event you can use your desired logging method like [QuickLogger](https
 like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com), Telegram, Email, etc...
 
 ---
+---
 
 # New Integration instruction
 ## Didn't find your database?
-**No problem!** you can easily integrate this library with your environment, folowwing bellow steps:
+**No problem!** you can easily integrate this library with your environment, by following bellow steps:
 - Create a new unit in this path ..\EasyDB\Lib\ConnectionManagers including a class that is inherited 
   from TConnection in the unit EasyDB.ConnectionManager.Base.pas, see the EasyDB.ConnectionManager.SQL.pas unit as a template.
 - Create a new unit in this path ..\EasyDB\Lib\Runners including a class that is inherited from
