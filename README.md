@@ -1144,17 +1144,169 @@ end;
   
 - Initializing
 ```delphi
+var
+  LvConnectionParams: TPgConnectionParams;
+begin
+  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
+  begin
+    Server := '192.168.212.1';
+    LoginTimeout := 30000;
+    Port := 5432;
+    UserName := 'postgres';
+    Pass := 'Admin123!@#';
+    DatabaseName := 'Library';
+    Schema := 'public';
+  end;
+
+  Runner := TPgRunner.Create(LvConnectionParams);
+  Runner.Config
+    .LogAllExecutions(True) // Optional
+    .UseInternalThread(True) //Optional
+    .SetProgressbar(pbTotal); //Optional
+
+  {Use this line if you don't need local log}
+  Runner.AddLogger.OnLog := OnLog;
+
+  {Use this line if you need local log}
+  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+end;
 ```
 - Define migrations in diffrent place(unit)
 ```delphi
+uses
+  System.SysUtils,
+
+  EasyDB.Core,
+  EasyDB.MigrationX,
+  EasyDB.Attribute,
+  UHelper;
+
+type
+
+  [TCustomMigrationAttribute('TbUsers', 202301010001, 'Created users table', 'Alex')]
+  TUsersMgr_202301010001 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+  [TCustomMigrationAttribute('TbUsers', 202301010002, 'Added newfielad1', 'Alex')]
+  TUsersMgr_202301010002 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+  [TCustomMigrationAttribute('TbUsers', 202301010003, 'Added newfielad2', 'Alex')]
+  TUsersMgr_202301010003 = class(TMigrationX)
+  public
+    procedure Upgrade; override;
+    procedure Downgrade; override;
+  end;
+
+implementation
+
+{ TUsersMgr_202301010001 }
+procedure TUsersMgr_202301010001.Downgrade;
+begin
+  try
+    PG.ExecuteAdHocQuery('DROP TABLE IF EXISTS public.tbusers;');
+  except on E: Exception do
+    Logger.Log(atDowngrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010001.Upgrade;
+var
+  LvScript: string;
+begin
+  LvScript := 'CREATE TABLE IF NOT EXISTS public.tbusers' + #10
+              + '(' + #10
+              + 'id SERIAL PRIMARY KEY,' + #10
+              + 'username VARCHAR(100),' + #10
+              + 'pass VARCHAR(50)' + #10
+              + ');';
+
+  try
+    PG.ExecuteAdHocQuery(LvScript);
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+{ TUsersMgr_202301010002 }
+procedure TUsersMgr_202301010002.Downgrade;
+begin
+  try
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers DROP COLUMN IF EXISTS CreatedDate;');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010002.Upgrade;
+begin
+  try
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers ADD COLUMN CreatedDate TIMESTAMP;');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+{ TUsersMgr_202301010003 }
+
+procedure TUsersMgr_202301010003.Downgrade;
+begin
+  try
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers DROP COLUMN IF EXISTS ImageLink;');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
+
+procedure TUsersMgr_202301010003.Upgrade;
+begin
+  try
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers ADD COLUMN ImageLink VARCHAR(500);');
+  except on E: Exception do
+    Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
+  end;
+end;
 ```
 - Add migrations
 ```delphi
+  //Modern way
+  Runner.Clear
+  .Add(TUsersMgr_202301010001.Create)
+  .Add(TUsersMgr_202301010002.Create)
+  .Add(TUsersMgr_202301010003.Create)
+  .Add(TCustomersMgr_202301010005.Create)
+  .Add(TCustomersMgr_202301010010.Create)
+  .Add(TInvoicesMgr_202301010005.Create)
+  .Add(TInvoicesMgr_202301010010.Create);
+
+  // Classic Way
+{
+  Runner.Clear;
+  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
+
+  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
+  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
+
+  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
+  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+}
 ```
 - Run the Migrator
 ```delphi
+  Runner.UpgradeDatabase; // Do upgrade
+  //OR
+  Runner.DowngradeDatabase(202301010001); // Do downgrade to a specific version.
+  //This version and lower versions of the database will remain and any version above this will be restored.
 ```
-  
+ 
 </details>  
 
 <details>
@@ -1180,7 +1332,8 @@ end;
 
 
 - # ORM
-### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.(<ins>SQL SERVER and MySQL only</ins>).
+### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
+
 ### Of course you can use any other ORM that you prefer like [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
 
 <details>
