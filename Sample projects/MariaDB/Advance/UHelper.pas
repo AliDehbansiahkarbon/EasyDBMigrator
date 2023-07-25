@@ -2,15 +2,15 @@ unit UHelper;
 
 interface
 uses
-  EasyDB.ConnectionManager.MySQL;
+  EasyDB.ConnectionManager.MariaDB;
 
-  function MySQL: TMySQLConnection;
+  function MariaDB: TMariaDBConnection;
 
 implementation
 
-function MySQL: TMySQLConnection;
+function MariaDB: TMariaDBConnection;
 begin
-  Result := TMySQLConnection.Instance;
+  Result := TMariaDBConnection.Instance;
 end;
 
 end.

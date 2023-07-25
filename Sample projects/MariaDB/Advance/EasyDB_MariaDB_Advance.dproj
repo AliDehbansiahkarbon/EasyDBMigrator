@@ -110,6 +110,7 @@
         <DCCReference Include="Migrations\UCustomers.pas"/>
         <DCCReference Include="Migrations\UInvoices.pas"/>
         <DCCReference Include="Migrations\UUsers.pas"/>
+        <DCCReference Include="UHelper.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

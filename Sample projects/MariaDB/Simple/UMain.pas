@@ -99,7 +99,6 @@ begin
     Runner.MySQL.ExecuteAdHocQuery('DROP TABLE TbCustomers');
   end
   ));
-
 end;
 
 procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);

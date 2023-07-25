@@ -30,13 +30,16 @@
         <Projects Include="Sample projects\MariaDB\Advance\EasyDB_MariaDB_Advance.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj">
+            <Dependencies/>
+        </Projects>
         <Projects Include="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Sample projects\Oracle\Simple\EasyDB_Oracle_Simple.dproj">
+        <Projects Include="Sample projects\PostgreSQL\Advance\EasyDB_PostgreSQL_Advance.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj">
+        <Projects Include="Sample projects\Oracle\Simple\EasyDB_Oracle_Simple.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -128,6 +131,15 @@
     <Target Name="EasyDB_MariaDB_Advance:Make">
         <MSBuild Projects="Sample projects\MariaDB\Advance\EasyDB_MariaDB_Advance.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDB_MariaDB_ORM">
+        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj"/>
+    </Target>
+    <Target Name="EasyDB_MariaDB_ORM:Clean">
+        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_MariaDB_ORM:Make">
+        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj" Targets="Make"/>
+    </Target>
     <Target Name="EasyDB_PostgreSQL_Simple">
         <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj"/>
     </Target>
@@ -136,6 +148,15 @@
     </Target>
     <Target Name="EasyDB_PostgreSQL_Simple:Make">
         <MSBuild Projects="Sample projects\PostgreSQL\Simple\EasyDB_PostgreSQL_Simple.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="EasyDB_PostgreSQL_Advance">
+        <MSBuild Projects="Sample projects\PostgreSQL\Advance\EasyDB_PostgreSQL_Advance.dproj"/>
+    </Target>
+    <Target Name="EasyDB_PostgreSQL_Advance:Clean">
+        <MSBuild Projects="Sample projects\PostgreSQL\Advance\EasyDB_PostgreSQL_Advance.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_PostgreSQL_Advance:Make">
+        <MSBuild Projects="Sample projects\PostgreSQL\Advance\EasyDB_PostgreSQL_Advance.dproj" Targets="Make"/>
     </Target>
     <Target Name="EasyDB_Oracle_Simple">
         <MSBuild Projects="Sample projects\Oracle\Simple\EasyDB_Oracle_Simple.dproj"/>
@@ -146,38 +167,17 @@
     <Target Name="EasyDB_Oracle_Simple:Make">
         <MSBuild Projects="Sample projects\Oracle\Simple\EasyDB_Oracle_Simple.dproj" Targets="Make"/>
     </Target>
-    <Target Name="EasyDB_MariaDB_ORM">
-        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj"/>
-    </Target>
-    <Target Name="EasyDB_MariaDB_ORM:Clean">
-        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="EasyDB_MariaDB_ORM:Make">
-        <MSBuild Projects="Sample projects\MariaDB\ORM\EasyDB_MariaDB_ORM.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_MariaDB_Simple;EasyDB_MariaDB_Advance;EasyDB_PostgreSQL_Simple;EasyDB_Oracle_Simple;EasyDB_MariaDB_ORM"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_MariaDB_Simple;EasyDB_MariaDB_Advance;EasyDB_MariaDB_ORM;EasyDB_PostgreSQL_Simple;EasyDB_PostgreSQL_Advance;EasyDB_Oracle_Simple"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_MariaDB_Simple:Clean;EasyDB_MariaDB_Advance:Clean;EasyDB_PostgreSQL_Simple:Clean;EasyDB_Oracle_Simple:Clean;EasyDB_MariaDB_ORM:Clean"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_MariaDB_Simple:Clean;EasyDB_MariaDB_Advance:Clean;EasyDB_MariaDB_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean;EasyDB_PostgreSQL_Advance:Clean;EasyDB_Oracle_Simple:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_MariaDB_Simple:Make;EasyDB_MariaDB_Advance:Make;EasyDB_PostgreSQL_Simple:Make;EasyDB_Oracle_Simple:Make;EasyDB_MariaDB_ORM:Make"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_MariaDB_Simple:Make;EasyDB_MariaDB_Advance:Make;EasyDB_MariaDB_ORM:Make;EasyDB_PostgreSQL_Simple:Make;EasyDB_PostgreSQL_Advance:Make;EasyDB_Oracle_Simple:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
-        <BuildGroupProject Include="Sample projects\MariaDB\Advance\EasyDB_MariaDB_Advance.dproj">
-            <ProjectGuid>{6D729BE9-04D8-4769-9187-C68CC44F1983}</ProjectGuid>
-            <Configurations>Debug</Configurations>
-            <Platforms>Win32</Platforms>
-            <Enabled>False</Enabled>
-        </BuildGroupProject>
-        <BuildGroupProject Include="Sample projects\MySQL\Simple\EasyDB_MySQL_Simple.dproj">
-            <ProjectGuid>{08DA3CF1-7454-4706-9449-A056DAD59E1D}</ProjectGuid>
-            <Configurations>Debug</Configurations>
-            <Platforms>Win32</Platforms>
-            <Enabled>True</Enabled>
-        </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\MySQL\Advance\EasyDB_MySQL_Advance.dproj">
             <ProjectGuid>{B86CF368-A84A-47A2-A4E4-FE19AFDF65D9}</ProjectGuid>
             <Configurations>Debug</Configurations>
@@ -196,12 +196,6 @@
             <Platforms>Win32</Platforms>
             <Enabled>False</Enabled>
         </BuildGroupProject>
-        <BuildGroupProject Include="Sample projects\MariaDB\Simple\EasyDB_MariaDB_Simple.dproj">
-            <ProjectGuid>{ABAE0364-33B8-41D4-9DB9-1EDC534DEFAB}</ProjectGuid>
-            <Configurations>Debug</Configurations>
-            <Platforms>Win32</Platforms>
-            <Enabled>False</Enabled>
-        </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\SQL SERVER\Simple_ORM\EasyDB_SQLServer_ORM.dproj">
             <ProjectGuid>{8B4A91A6-70F0-43F6-8744-A71947C9F21C}</ProjectGuid>
             <Configurations>Debug</Configurations>
@@ -213,6 +207,30 @@
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\MariaDB\Advance\EasyDB_MariaDB_Advance.dproj">
+            <ProjectGuid>{6D729BE9-04D8-4769-9187-C68CC44F1983}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\MySQL\Simple\EasyDB_MySQL_Simple.dproj">
+            <ProjectGuid>{08DA3CF1-7454-4706-9449-A056DAD59E1D}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>True</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\PostgreSQL\Advance\EasyDB_PostgreSQL_Advance.dproj">
+            <ProjectGuid>{D6CF6B76-6C5B-439D-ABC7-4C86F2479405}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\MariaDB\Simple\EasyDB_MariaDB_Simple.dproj">
+            <ProjectGuid>{ABAE0364-33B8-41D4-9DB9-1EDC534DEFAB}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
         </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\SQL SERVER\Large Script\EasyDB_SQLServer_LargeScript.dproj">
             <ProjectGuid>{6D9DA672-0086-4CEF-B751-70B71CF316E2}</ProjectGuid>

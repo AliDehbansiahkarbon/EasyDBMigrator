@@ -38,7 +38,7 @@ implementation
 procedure TUsersMgr_202301010001.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Drop Table TbUsers');
+    PG.ExecuteAdHocQuery('DROP TABLE IF EXISTS public.tbusers;');
   except on E: Exception do
     Logger.Log(atDowngrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -48,13 +48,15 @@ procedure TUsersMgr_202301010001.Upgrade;
 var
   LvScript: string;
 begin
-  LvScript := 'CREATE TABLE IF NOT EXISTS TbUsers ( ' + #10
-            + '    ID INT NOT NULL PRIMARY KEY, ' + #10
-            + '    UserName NVARCHAR(100), ' + #10
-            + '    Pass NVARCHAR(100) ' + #10
-            + '    );';
+  LvScript := 'CREATE TABLE IF NOT EXISTS public.tbusers' + #10
+              + '(' + #10
+              + 'id SERIAL PRIMARY KEY,' + #10
+              + 'username VARCHAR(100),' + #10
+              + 'pass VARCHAR(50)' + #10
+              + ');';
+
   try
-    MariaDB.ExecuteAdHocQuery(LvScript);
+    PG.ExecuteAdHocQuery(LvScript);
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -64,7 +66,7 @@ end;
 procedure TUsersMgr_202301010002.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbUsers Drop Column CreatedDate');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers DROP COLUMN IF EXISTS CreatedDate;');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -73,7 +75,7 @@ end;
 procedure TUsersMgr_202301010002.Upgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbUsers Add CreatedDate Datetime');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers ADD COLUMN CreatedDate TIMESTAMP;');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -84,7 +86,7 @@ end;
 procedure TUsersMgr_202301010003.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbUsers Drop Column ImageLink');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers DROP COLUMN IF EXISTS ImageLink;');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -93,7 +95,7 @@ end;
 procedure TUsersMgr_202301010003.Upgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbUsers Add ImageLink Varchar(500)');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.tbusers ADD COLUMN ImageLink VARCHAR(500);');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;

@@ -32,7 +32,7 @@ implementation
 procedure TInvoicesMgr_202301010005.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Drop Table TbInvoices');
+    PG.ExecuteAdHocQuery('DROP TABLE IF EXISTS public.TbInvoices;');
   except on E: Exception do
     Logger.Log(atDowngrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -42,15 +42,16 @@ procedure TInvoicesMgr_202301010005.Upgrade;
 var
   LvScript: string;
 begin
-  LvScript := 'CREATE TABLE IF NOT EXISTS TbInvoices (  ' + #10
-       + '    ID INT NOT NULL PRIMARY KEY, ' + #10
-       + '    InvoiceID Int, ' + #10
-       + '    CustomerID Int, ' + #10
-       + '    InvoiceDate Datetime ' + #10
-       + '    );';
+  LvScript := 'CREATE TABLE IF NOT EXISTS public.TbInvoices' + #10
+              + '(' + #10
+              + 'ID INT NOT NULL PRIMARY KEY,' + #10
+              + 'InvoiceID INT,' + #10
+              + 'CustomerID INT,' + #10
+              + 'InvoiceDate TIMESTAMP' + #10
+              + ');';
 
   try
-    MariaDB.ExecuteAdHocQuery(LvScript);
+    PG.ExecuteAdHocQuery(LvScript);
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -61,7 +62,7 @@ end;
 procedure TInvoicesMgr_202301010010.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbInvoices Drop Column TotlaAmount');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.TbInvoices DROP COLUMN IF EXISTS TotlaAmount;');
   except on E: Exception do
     Logger.Log(atDownGrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -70,7 +71,7 @@ end;
 procedure TInvoicesMgr_202301010010.Upgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbInvoices Add TotlaAmount Decimal(10, 2)');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.TbInvoices ADD COLUMN TotlaAmount DECIMAL(10, 2);');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;

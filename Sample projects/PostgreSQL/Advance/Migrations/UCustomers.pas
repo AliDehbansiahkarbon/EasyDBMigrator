@@ -32,7 +32,7 @@ implementation
 procedure TCustomersMgr_202301010005.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Drop Table TbCustomers');
+    PG.ExecuteAdHocQuery('DROP TABLE IF EXISTS public.TbCustomers;');
   except on E: Exception do
     Logger.Log(atDowngrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -42,14 +42,15 @@ procedure TCustomersMgr_202301010005.Upgrade;
 var
   LvScript: string;
 begin
-  LvScript := 'CREATE TABLE IF NOT EXISTS TbCustomers ( ' + #10
-            + '    ID INT NOT NULL PRIMARY KEY, ' + #10
-            + '    Name NVARCHAR(100), ' + #10
-            + '    Family NVARCHAR(100) ' + #10
-            + '    );';
+  LvScript := 'CREATE TABLE IF NOT EXISTS public.TbCustomers' + #10
+              + '(' + #10
+              + 'ID INT NOT NULL PRIMARY KEY,' + #10
+              + 'Name VARCHAR(100),' + #10
+              + 'Family VARCHAR(100)' + #10
+              + ');';
 
   try
-    MariaDB.ExecuteAdHocQuery(LvScript);
+    PG.ExecuteAdHocQuery(LvScript);
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -60,7 +61,7 @@ end;
 procedure TCustomersMgr_202301010010.Downgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbCustomers Drop Column Phone');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.TbCustomers DROP COLUMN IF EXISTS Phone;');
   except on E: Exception do
     Logger.Log(atDownGrade, E.Message, AttribEntityName, AttribVersion);
   end;
@@ -69,7 +70,7 @@ end;
 procedure TCustomersMgr_202301010010.Upgrade;
 begin
   try
-    MariaDB.ExecuteAdHocQuery('Alter table TbCustomers Add Phone Varchar(10)');
+    PG.ExecuteAdHocQuery('ALTER TABLE public.TbCustomers ADD COLUMN Phone VARCHAR(10);');
   except on E: Exception do
     Logger.Log(atUpgrade, E.Message, AttribEntityName, AttribVersion);
   end;

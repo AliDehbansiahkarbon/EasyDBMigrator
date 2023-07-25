@@ -119,7 +119,6 @@ begin
     ORM.SubmitChanges;
   end
   ));
-
   //============================================
   Runner.Add(TMigration.Create('SelectTopTenCustomers', 202301010004, 'Alexander', 'Added SP and function(Task number #2704)',
   procedure

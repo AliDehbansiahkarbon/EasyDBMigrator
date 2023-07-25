@@ -72,7 +72,6 @@ begin
     ORM.SubmitChanges;
   end
   ));
-  Exit;
   //============================================
   Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Added NewField2 to table Tbusers(#2702)',
   procedure

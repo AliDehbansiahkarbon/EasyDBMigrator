@@ -10,6 +10,7 @@ uses
   EasyDB.Migration,
   EasyDB.OracleRunner,
   EasyDB.Logger;
+
 type
   TfrmMain = class(TForm)
     Label1: TLabel;
@@ -21,6 +22,9 @@ type
     pbTotal: TProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnUpgradeDatabaseClick(Sender: TObject);
+    procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure btnAddMigrationsClick(Sender: TObject);
   private
     Runner: TOracleRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -34,6 +38,84 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
+begin
+  Runner.Clear;
+  Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
+  procedure
+  var sql: string;
+  begin
+    sql := 'CREATE TABLE TbUsers( ' + #10
+     + '    ID INT NOT NULL PRIMARY KEY, ' + #10
+     + '    UserName NVARCHAR2(100), ' + #10
+     + '    Pass NVARCHAR2(100) ' + #10
+     + '    );';
+
+    Runner.Oracle.ExecuteAdHocQuery(sql);
+  end,
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('DROP TABLE TbUsers');
+  end
+  ));
+  //============================================
+  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
+  end,
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
+  end
+  ));
+  //============================================
+  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
+  end,
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
+  end
+  ));
+  //============================================
+  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
+  procedure
+  var sql: string;
+  begin
+    sql := 'CREATE TABLE TbCustomers( ' + #10
+     + '    ID INT NOT NULL PRIMARY KEY, ' + #10
+     + '    Name NVARCHAR2(100), ' + #10
+     + '    Family NVARCHAR2(100) ' + #10
+     + '    );';
+
+    Runner.Oracle.ExecuteAdHocQuery(sql);
+  end,
+  procedure
+  begin
+    Runner.Oracle.ExecuteAdHocQuery('DROP TABLE TbCustomers');
+  end
+  ));
+end;
+
+procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);
+begin
+  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
+end;
+
+procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
+begin
+  if Runner.MigrationList.Count = 0 then
+  begin
+    ShowMessage('You should add at least one migration object.');
+    Exit;
+  end;
+
+  Runner.UpgradeDatabase;
+end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
