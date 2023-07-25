@@ -12,7 +12,7 @@ Migrations solve the problem of evolving a database schema for multiple database
 | **MySQL** | ✅ | ✅ | ✅ | NA |
 | **MariaDB** | ✅ | ✅ | ✅ | NA |
 | **PostgreSQL** | ✅ | ✅ | NA | NA |
-| **Oracle** | ✅ | NA | NA | NA |
+| **Oracle** | ✅ | ✅ | NA | NA |
 
 # How it works?
 It's a library, so you need to use the units in your projects, add migrations and run the migratory.
