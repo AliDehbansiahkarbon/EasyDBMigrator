@@ -28,6 +28,7 @@ object Form4: TForm4
     Height = 25
     Caption = 'Downgrade Database'
     TabOrder = 0
+    OnClick = btnDowngradeDatabaseClick
   end
   object btnUpgradeDatabase: TButton
     Left = 151
@@ -36,6 +37,7 @@ object Form4: TForm4
     Height = 25
     Caption = 'Upgrade Database'
     TabOrder = 1
+    OnClick = btnUpgradeDatabaseClick
   end
   object btnAddMigrations: TButton
     Left = 8

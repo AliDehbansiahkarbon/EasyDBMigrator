@@ -1,4 +1,4 @@
-unit UMain;
+unit Umain;
 
 interface
 
@@ -8,9 +8,8 @@ uses
   UCustomers, UUsers, UInvoices,
 
   EasyDB.Core,
-  EasyDB.ConnectionManager.MariaDB,
-  EasyDB.MigrationX, // Do not use "EasyDB.Migration.Base" here if you prefer to use Attributes.
-  EasyDB.MariaDBRunner,
+  EasyDB.Migration,
+  EasyDB.OracleRunner,
   EasyDB.Logger;
 
 type
@@ -24,11 +23,11 @@ type
     pbTotal: TProgressBar;
     procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
-    Runner: TMariaDBRunner;
+    Runner: TOracleRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
     { Public declarations }
@@ -86,23 +85,22 @@ end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 var
-  LvConnectionParams: TMariaDBConnectionParams;
+  LvConnectionParams: TOracleConnectionParams;
 begin
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
     Server := '127.0.0.1';
     LoginTimeout := 30000;
-    Port := 3306;
-    UserName := 'ali';
-    Pass := 'Admin123!@#';
-    Schema := 'Library';
+    UserName := 'admin';
+    Pass := '123';
+    DatabaseName := 'Library';
   end;
 
-  Runner := TMariaDBRunner.Create(LvConnectionParams);
+  Runner := TOracleRunner.Create(LvConnectionParams);
   Runner.Config
-    .LogAllExecutions(True) // Optional
-    .UseInternalThread(True) //Optional
-    .SetProgressbar(pbTotal); //Optional
+    .LogAllExecutions(True)// Optional
+    .UseInternalThread(True)// Optional
+    .SetProgressbar(pbTotal);// Optional
 
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;

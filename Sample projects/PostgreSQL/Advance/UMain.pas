@@ -24,6 +24,8 @@ type
     procedure FormCreate(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure btnUpgradeDatabaseClick(Sender: TObject);
+    procedure btnDowngradeDatabaseClick(Sender: TObject);
   private
     Runner: TPgRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -63,6 +65,22 @@ begin
   Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
   Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
 }
+end;
+
+procedure TForm4.btnDowngradeDatabaseClick(Sender: TObject);
+begin
+  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
+end;
+
+procedure TForm4.btnUpgradeDatabaseClick(Sender: TObject);
+begin
+  if Runner.MigrationList.Count = 0 then
+  begin
+    ShowMessage('You should add at least one migration object.');
+    Exit;
+  end;
+
+  Runner.UpgradeDatabase;
 end;
 
 procedure TForm4.FormCreate(Sender: TObject);

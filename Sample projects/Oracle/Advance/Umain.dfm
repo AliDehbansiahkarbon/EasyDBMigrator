@@ -2,9 +2,9 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'MariaDB Advance'
-  ClientHeight = 488
-  ClientWidth = 495
+  Caption = 'Oracle Advance'
+  ClientHeight = 489
+  ClientWidth = 465
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -15,8 +15,8 @@ object frmMain: TfrmMain
   OnDestroy = FormDestroy
   TextHeight = 15
   object Label1: TLabel
-    Left = 151
-    Top = 42
+    Left = 155
+    Top = 43
     Width = 58
     Height = 15
     Caption = 'to version: '
@@ -33,7 +33,7 @@ object frmMain: TfrmMain
   object btnUpgradeDatabase: TButton
     Left = 151
     Top = 8
-    Width = 137
+    Width = 140
     Height = 25
     Caption = 'Upgrade Database'
     TabOrder = 1
@@ -49,26 +49,26 @@ object frmMain: TfrmMain
     OnClick = btnAddMigrationsClick
   end
   object edtVersion: TEdit
-    Left = 209
+    Left = 211
     Top = 39
-    Width = 82
+    Width = 80
     Height = 23
     NumbersOnly = True
     TabOrder = 3
     Text = '202301010001'
   end
   object mmoLog: TMemo
-    Left = 16
-    Top = 70
-    Width = 465
-    Height = 403
+    Left = 8
+    Top = 80
+    Width = 445
+    Height = 392
     ScrollBars = ssVertical
     TabOrder = 4
   end
   object pbTotal: TProgressBar
-    Left = 312
+    Left = 303
     Top = 8
-    Width = 169
+    Width = 150
     Height = 17
     TabOrder = 5
   end
