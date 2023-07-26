@@ -25,12 +25,12 @@ Samples demonstrate the usage of the library with extra details but have a look 
 
 # Different types of sample
 
-- Simple: suitable for **small** projects (using on-demand classes with anonymous methods).
-- Advanced: Suitable for **large** projects (using versioned classes with attributes).
+- <ins>**Simple**</ins>: suitable for **small** projects (using on-demand classes with anonymous methods).
+- <ins>**Advanced**</ins>: Suitable for **large** projects (using versioned classes with attributes).
   Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes.
   
-- ORM: suitable for both small and large projects.
-- Large Script: it's a large script executor to use your existing old script as a starting point and continue with this library from now on.
+- <ins>**ORM**</ins>: suitable for both small and large projects.
+- <ins>**Large Script**</ins>: it's a large script executor to use your existing old script as a starting point and continue with this library from now on.
 
 ---
 
@@ -2030,7 +2030,7 @@ begin
  
 ### To execute large scripts with this library you must separate each statement with the SQL Server-specific keyword "GO", this is mandatory!
 ### If you already have an extensive script that's not a problem you can keep it as it is and continue with this library from now on.
-### To execute the existing script with any size refer to the related sample project(EasyDB_LargeScript_SQLServer).
+### To execute the existing script with any size refer to the related sample project(EasyDB_LargeScript_SQLServer, ...).
 </details>
 
 <details>
