@@ -11,8 +11,8 @@ Migrations solve the problem of evolving a database schema for multiple database
 | **Microsoft SQL SERVER** | ✅ | ✅ | ✅ | ✅ |
 | **MySQL** | ✅ | ✅ | ✅ | ✅ |
 | **MariaDB** | ✅ | ✅ | ✅ | ✅ |
-| **PostgreSQL** | ✅ | ✅ | NA | NA |
-| **Oracle** | ✅ | ✅ | NA | NA |
+| **PostgreSQL** | ✅ | ✅ | - | - |
+| **Oracle** | ✅ | ✅ | - | - |
 
 # How it works?
 It's a library, so you need to use the units in your projects, add migrations and run the migratory.
