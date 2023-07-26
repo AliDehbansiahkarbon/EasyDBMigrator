@@ -2067,6 +2067,65 @@ end;
 ![image](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/2d5b9113-8a9f-46e6-8c5d-2073bacfeac5)
 </details>
 
+
+<details>
+  <summary>
+   🟠 MySQL Sample
+  </summary>
+
+## Initiate and run your script easily!
+```delphi
+var
+  LvConnectionParams: TMySqlConnectionParams;
+begin
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
+  begin
+    Server := '127.0.0.1';
+    LoginTimeout := 30000;
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
+  end;
+
+  TLogger.Instance.OnLog := OnLog;
+  Runner := TMySQLRunner.Create(LvConnectionParams);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
+  Runner.MySQL.ExecuteScriptFile('..\..\Script\DBUpdateScript.sql', ';');
+end;
+```
+</details>  
+
+<details>
+  <summary>
+   🟣 MariaDb Sample
+  </summary>
+
+## Initiate and run your script easily!
+```delphi
+var
+  LvConnectionParams: TMariaDBConnectionParams;
+begin
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
+  begin
+    Server := '127.0.0.1';
+    LoginTimeout := 30000;
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
+  end;
+
+  TLogger.Instance.OnLog := OnLog;
+  Runner := TMariaDBRunner.Create(LvConnectionParams);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
+  Runner.MariaDB.ExecuteScriptFile('..\..\Script\DBUpdateScript.sql', ';');
+end;
+```
+  
+</details>  
+
+
 # Last but not least!
 ### OnLog() - a very useful callback event.
 
