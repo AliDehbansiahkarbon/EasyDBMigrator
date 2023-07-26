@@ -168,7 +168,7 @@ var
   LvRunner: TSQLRunner;
   ORM: TORM;
 begin
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
     Server := '192.168.212.1';
     LoginTimeout := 30000;

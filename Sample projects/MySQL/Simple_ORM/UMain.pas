@@ -170,7 +170,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   LvConnectionParams: TMySqlConnectionParams;
 begin
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
     Server := '127.0.0.1';
     LoginTimeout := 30000;

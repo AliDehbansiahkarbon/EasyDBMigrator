@@ -3,7 +3,7 @@ unit EasyDB.ConnectionManager.MariaDB;
 interface
 
 uses
-  System.SysUtils, System.Classes,
+  System.SysUtils, System.Classes, System.StrUtils,
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
@@ -38,7 +38,7 @@ uses
 
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string): Boolean; override;
+    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
     function OpenAsInteger(AScript: string): Largeint;
 
     procedure BeginTrans;
@@ -140,7 +140,7 @@ begin
   end;
 end;
 
-function TMariaDBConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+function TMariaDBConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean;
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -157,7 +157,7 @@ begin
       while not LvStreamReader.EndOfStream do
       begin
         LvLine := LvStreamReader.ReadLine;
-        if not LvLine.Trim.ToLower.Equals('go') then
+        if not RightStr(LvLine.Trim.ToLower, Length(ADelimiter)).Equals(ADelimiter) then
           LvStatement := LvStatement + ' ' + LvLine
         else
         begin

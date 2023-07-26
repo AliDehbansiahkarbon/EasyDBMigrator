@@ -26,7 +26,7 @@ type
     constructor Create(AConnectionParams: TMariaDBConnectionParams); overload;
     destructor Destroy; override;
 
-    property MySQL: TMariaDBConnection read FMariaDBConnection write FMariaDBConnection;
+    property MariaDB: TMariaDBConnection read FMariaDBConnection write FMariaDBConnection;
     property Schema: string read FSchema write FSchema;
   end;
 

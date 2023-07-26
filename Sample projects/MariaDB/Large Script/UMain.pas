@@ -1,15 +1,15 @@
-unit Umain;
+unit UMain;
 
 interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, System.StrUtils,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, System.StrUtils,
 
   EasyDB.Core,
   EasyDB.Consts,
   EasyDB.Logger,
-  EasyDB.MSSQLRunner;
+  EasyDB.MariaDBRunner;
 
 type
   TRichEditHelper = class helper for TRichEdit
@@ -25,9 +25,8 @@ type
     rb_LogAllExecutions: TRadioButton;
     RadioButton1: TRadioButton;
     procedure btnUpgradeDatabaseClick(Sender: TObject);
-    procedure btnClearClick(Sender: TObject);
   private
-    Runner: TSQLRunner;
+    Runner: TMariaDBRunner;
     function GetLogStatus: Boolean;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
   public
@@ -41,32 +40,24 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmMain.btnClearClick(Sender: TObject);
-begin
-  RichEdit1.Lines.Clear;
-  RichEdit1.Refresh;
-end;
-
 procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 var
-  LvConnectionParams: TSqlConnectionParams;
+  LvConnectionParams: TMariaDBConnectionParams;
 begin
-  pbTotal.Style := pbstMarquee;
-
   with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
-    Server := '192.168.212.1';
+    Server := '127.0.0.1';
     LoginTimeout := 30000;
-    UserName := 'sa';
-    Pass := '1';
-    DatabaseName := 'AdventureWorks2019';
-    Schema := 'dbo';
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
   end;
 
   TLogger.Instance.OnLog := OnLog;
-  Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner := TMariaDBRunner.Create(LvConnectionParams);
   Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
-  Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql', 'GO');
+  Runner.MariaDB.ExecuteScriptFile('..\..\Script\DBUpdateScript.sql', ';');
 end;
 
 procedure TfrmMain.Done(var Msg: TMessage);
@@ -117,5 +108,4 @@ begin
 
   Lines.Add(Avalue);
 end;
-
 end.

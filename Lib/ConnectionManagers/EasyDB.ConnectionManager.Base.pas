@@ -17,7 +17,7 @@ type
     function Logger: TLogger; virtual; abstract;
 
     function ExecuteAdHocQuery(AScript: string): Boolean; virtual; abstract;
-    function ExecuteScriptFile(AScriptPath: string): Boolean; virtual; abstract;
+    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; virtual; abstract;
   end;
 
 implementation

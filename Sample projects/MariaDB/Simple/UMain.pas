@@ -52,33 +52,33 @@ begin
      + '    Pass NVARCHAR(100) ' + #10
      + '    );';
 
-    Runner.MySQL.ExecuteAdHocQuery(sql);
+    Runner.MariaDB.ExecuteAdHocQuery(sql);
   end,
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('DROP TABLE TbUsers');
+    Runner.MariaDB.ExecuteAdHocQuery('DROP TABLE TbUsers');
   end
   ));
   //============================================
   Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
+    Runner.MariaDB.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
   end,
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
+    Runner.MariaDB.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField2');
   end
   ));
   //============================================
   Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
+    Runner.MariaDB.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
   end,
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
+    Runner.MariaDB.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP COLUMN NewField3');
   end
   ));
   //============================================
@@ -92,11 +92,11 @@ begin
      + '    Family NVARCHAR(100) ' + #10
      + '    );';
 
-    Runner.MySQL.ExecuteAdHocQuery(sql);
+    Runner.MariaDB.ExecuteAdHocQuery(sql);
   end,
   procedure
   begin
-    Runner.MySQL.ExecuteAdHocQuery('DROP TABLE TbCustomers');
+    Runner.MariaDB.ExecuteAdHocQuery('DROP TABLE TbCustomers');
   end
   ));
 end;
@@ -115,7 +115,7 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 var
   LvConnectionParams: TMariaDBConnectionParams;
 begin
-  with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
     Server := '127.0.0.1';
     LoginTimeout := 30000;

@@ -40,7 +40,7 @@ type
 
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string): Boolean; override;
+    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
     function RemoveCommentFromTSQL(const ASQLLine: string): string;
     function OpenAsInteger(AScript: string): Largeint;
 
@@ -148,7 +148,7 @@ begin
   end;
 end;
 
-function TSQLConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+function TSQLConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean;
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -177,7 +177,7 @@ begin
         while not LvStreamReader.EndOfStream do
         begin
           LvLine := LvStreamReader.ReadLine;
-          if not LvLine.Trim.ToLower.Equals('go') then
+          if not LvLine.Trim.ToLower.Equals(ADelimiter) then
           begin
             if not ((LeftStr(LvLine.Trim, 2) = '/*') or (RightStr(LvLine.Trim, 2) = '*/') or (LeftStr(LvLine.Trim, 2) = '--')) then
               LvStatement := LvStatement + ' ' + RemoveCommentFromTSQL(LvLine)

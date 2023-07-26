@@ -38,7 +38,7 @@ uses
 
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string): Boolean; override;
+    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
     function OpenAsInteger(AScript: string): Largeint;
 
     procedure BeginTrans;
@@ -140,7 +140,7 @@ begin
   end;
 end;
 
-function TPgConnection.ExecuteScriptFile(AScriptPath: string): Boolean;
+function TPgConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean;
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -157,7 +157,7 @@ begin
       while not LvStreamReader.EndOfStream do
       begin
         LvLine := LvStreamReader.ReadLine;
-        if not LvLine.Trim.ToLower.Equals('go') then
+        if not LvLine.Trim.ToLower.Equals(ADelimiter) then
           LvStatement := LvStatement + ' ' + LvLine
         else
         begin

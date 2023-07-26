@@ -1,10 +1,9 @@
 object frmMain: TfrmMain
   Left = 0
   Top = 0
-  BorderStyle = bsToolWindow
-  Caption = 'Large Script Execution'
-  ClientHeight = 608
-  ClientWidth = 925
+  Caption = 'frmMain'
+  ClientHeight = 685
+  ClientWidth = 958
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,8 +11,8 @@ object frmMain: TfrmMain
   Font.Name = 'Segoe UI'
   Font.Style = []
   DesignSize = (
-    925
-    608)
+    958
+    685)
   TextHeight = 15
   object btnUpgradeDatabase: TButton
     Left = 8
@@ -26,19 +25,19 @@ object frmMain: TfrmMain
   end
   object pbTotal: TProgressBar
     Left = 8
-    Top = 57
-    Width = 893
+    Top = 48
+    Width = 937
     Height = 17
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
-    ExplicitTop = 45
-    ExplicitWidth = 885
+    ExplicitTop = 47
+    ExplicitWidth = 933
   end
   object RichEdit1: TRichEdit
     Left = 8
-    Top = 74
-    Width = 893
-    Height = 529
+    Top = 65
+    Width = 937
+    Height = 612
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -50,6 +49,8 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 2
+    ExplicitTop = 64
+    ExplicitWidth = 933
   end
   object btnClear: TButton
     Left = 151
@@ -58,7 +59,6 @@ object frmMain: TfrmMain
     Height = 25
     Caption = 'Clear'
     TabOrder = 3
-    OnClick = btnClearClick
   end
   object rb_LogAllExecutions: TRadioButton
     Left = 241
