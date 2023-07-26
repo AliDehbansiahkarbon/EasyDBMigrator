@@ -1,4 +1,4 @@
-# EasyDbMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
+# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
 
 ## EasyDbMigrator is a database migration library for Delphi, built to streamline the database evolution, available in 32-Bit and 64-Bit.
 ## Migrations are kinda structured objects to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved.
