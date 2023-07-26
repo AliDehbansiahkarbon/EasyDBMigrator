@@ -9,8 +9,8 @@ Migrations solve the problem of evolving a database schema for multiple database
 |Name | Simple | Advanced | ORM | LargeScript Execution|
 |---|---|---|---|---|
 | **Microsoft SQL SERVER** | ✅ | ✅ | ✅ | ✅ |
-| **MySQL** | ✅ | ✅ | ✅ | NA |
-| **MariaDB** | ✅ | ✅ | ✅ | NA |
+| **MySQL** | ✅ | ✅ | ✅ | ✅ |
+| **MariaDB** | ✅ | ✅ | ✅ | ✅ |
 | **PostgreSQL** | ✅ | ✅ | NA | NA |
 | **Oracle** | ✅ | ✅ | NA | NA |
 
