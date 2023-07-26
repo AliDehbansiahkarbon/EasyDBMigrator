@@ -44,16 +44,16 @@ begin
   Runner.Clear;
   Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'If Not Exists( Select * From sysobjects Where Name = ''TbUsers'' And xtype = ''U'') ' + #10
+    LvScript := 'If Not Exists( Select * From sysobjects Where Name = ''TbUsers'' And xtype = ''U'') ' + #10
      + '    Create Table TbUsers( ' + #10
      + '    	ID Int Primary key Identity(1, 1) Not null, ' + #10
      + '    	UserName Nvarchar(100), ' + #10
      + '    	Pass Nvarchar(50) ' + #10
      + '    );';
 
-    Runner.SQL.ExecuteAdHocQuery(sql);
+    Runner.SQL.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin
@@ -85,15 +85,15 @@ begin
   //============================================
   Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'If Not Exists( Select * From sysobjects Where Name = ''TbCustomers'' And xtype = ''U'') ' + #10
+    LvScript := 'If Not Exists( Select * From sysobjects Where Name = ''TbCustomers'' And xtype = ''U'') ' + #10
      + '    Create Table TbCustomers( ' + #10
      + '    	ID Int Primary key Identity(1, 1) Not null, ' + #10
      + '    	Name Nvarchar(100), ' + #10
      + '    	Family Nvarchar(50) ' + #10
      + '    );';
-    Runner.SQL.ExecuteAdHocQuery(sql);
+    Runner.SQL.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin

@@ -7,10 +7,6 @@ uses
 
 type
   TConnection = class
-  private
-    FConnectionString: string;
-    FConnectionTimeOut: Integer;// ms
-    FCommandTimeOut: Integer; // ms
   public
     function GetConnectionString: string; virtual; abstract;
     function Connect: Boolean; virtual; abstract;

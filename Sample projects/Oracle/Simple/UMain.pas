@@ -44,15 +44,15 @@ begin
   Runner.Clear;
   Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'CREATE TABLE TbUsers( ' + #10
+    LvScript := 'CREATE TABLE TbUsers( ' + #10
      + '    ID INT NOT NULL PRIMARY KEY, ' + #10
      + '    UserName NVARCHAR2(100), ' + #10
      + '    Pass NVARCHAR2(100) ' + #10
      + '    );';
 
-    Runner.Oracle.ExecuteAdHocQuery(sql);
+    Runner.Oracle.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin
@@ -84,15 +84,15 @@ begin
   //============================================
   Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'CREATE TABLE TbCustomers( ' + #10
+    LvScript := 'CREATE TABLE TbCustomers( ' + #10
      + '    ID INT NOT NULL PRIMARY KEY, ' + #10
      + '    Name NVARCHAR2(100), ' + #10
      + '    Family NVARCHAR2(100) ' + #10
      + '    );';
 
-    Runner.Oracle.ExecuteAdHocQuery(sql);
+    Runner.Oracle.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin

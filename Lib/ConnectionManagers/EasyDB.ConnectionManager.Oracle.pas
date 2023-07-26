@@ -40,7 +40,7 @@ type
 
     function ExecuteAdHocQuery(AScript: string): Boolean; override;
     function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-
+    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
     function RemoveCommentFromTSQL(const ASQLLine: string): string;
     function OpenAsInteger(AScript: string): Largeint;
 
@@ -145,6 +145,11 @@ begin
       raise;
     end;
   end;
+end;
+
+function TOracleConnection.ExecuteScriptFile(AScriptPath, ADelimiter: string): Boolean;
+begin
+  Result := False; //Not planned.
 end;
 
 function TOracleConnection.RemoveCommentFromTSQL(const ASQLLine: string): string;

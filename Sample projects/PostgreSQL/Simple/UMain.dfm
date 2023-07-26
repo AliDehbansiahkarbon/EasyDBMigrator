@@ -3,8 +3,8 @@ object Form2: TForm2
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'SImple_PostgreSQL'
-  ClientHeight = 493
-  ClientWidth = 494
+  ClientHeight = 481
+  ClientWidth = 486
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

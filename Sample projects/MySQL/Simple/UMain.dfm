@@ -3,8 +3,8 @@ object frmMain: TfrmMain
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Simple_MySQL'
-  ClientHeight = 479
-  ClientWidth = 487
+  ClientHeight = 467
+  ClientWidth = 479
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

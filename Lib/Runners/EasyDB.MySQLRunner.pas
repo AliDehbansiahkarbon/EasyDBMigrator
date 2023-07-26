@@ -17,7 +17,7 @@ type
   private
     FSchema: string;
     FMySQLConnection: TMySQLConnection;
-
+  protected
     procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;

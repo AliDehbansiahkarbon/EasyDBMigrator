@@ -44,9 +44,9 @@ begin
   Runner.Clear;
   Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'CREATE TABLE IF NOT EXISTS public.tbusers' + #10 +
+    LvScript := 'CREATE TABLE IF NOT EXISTS public.tbusers' + #10 +
     '('+ #10 +
     'id integer NOT NULL DEFAULT nextval(''tbusers_id_seq''::regclass),' + #10 +
     'username character varying(100) COLLATE pg_catalog."default",' + #10 +
@@ -54,7 +54,7 @@ begin
     'CONSTRAINT tbusers_pkey PRIMARY KEY (id)' + #10 +
     ');';
 
-    Runner.PG.ExecuteAdHocQuery(sql);
+    Runner.PG.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin
@@ -86,9 +86,9 @@ begin
   //============================================
   Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'CREATE TABLE IF NOT EXISTS public.tbcustomers' + #10 +
+    LvScript := 'CREATE TABLE IF NOT EXISTS public.tbcustomers' + #10 +
     '(' + #10 +
     'id integer NOT NULL DEFAULT nextval(''tbcustomers_id_seq''::regclass),' + #10 +
     'name character varying(100) COLLATE pg_catalog."default",' + #10 +
@@ -96,7 +96,7 @@ begin
     'phone character varying(10) COLLATE pg_catalog."default",' + #10 +
     'CONSTRAINT tbcustomers_pkey PRIMARY KEY (id)' + #10 +
     ')';
-    Runner.PG.ExecuteAdHocQuery(sql);
+    Runner.PG.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin
@@ -106,9 +106,9 @@ begin
   //============================================
   Runner.Add(TMigration.Create('TbCustomers', 202301010004, 'Tom', 'Task number #2703',
   procedure
-  var sql: string;
+  var LvScript: string;
   begin
-    sql := 'CREATE TABLE IF NOT EXISTS public.tbinvoices' + #10 +
+    LvScript := 'CREATE TABLE IF NOT EXISTS public.tbinvoices' + #10 +
     '(' + #10 +
     'id integer NOT NULL DEFAULT nextval(''tbinvoices_id_seq''::regclass),' + #10 +
     'invoiceid integer,' + #10 +
@@ -117,7 +117,7 @@ begin
     'totalamount numeric(10,2),' + #10 +
     'CONSTRAINT tbinvoices_pkey PRIMARY KEY (id)' + #10 +
     ')';
-    Runner.PG.ExecuteAdHocQuery(sql);
+    Runner.PG.ExecuteAdHocQuery(LvScript);
   end,
   procedure
   begin

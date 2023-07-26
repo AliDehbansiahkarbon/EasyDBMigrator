@@ -3,8 +3,8 @@ object frmMain: TfrmMain
   Top = 0
   BorderStyle = bsToolWindow
   Caption = 'Oracle Simple'
-  ClientHeight = 491
-  ClientWidth = 465
+  ClientHeight = 479
+  ClientWidth = 457
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

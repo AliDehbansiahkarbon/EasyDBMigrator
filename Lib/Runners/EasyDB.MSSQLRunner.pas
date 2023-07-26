@@ -19,10 +19,10 @@ type
     FDbName: string;
     FSchema: string;
     FSQLConnection: TSQLConnection;
-
-    procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
+  protected
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
+    procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
   public
     constructor Create(ASQLConnection: TSQLConnection = nil); overload;
     constructor Create(AConnectionParams: TSqlConnectionParams); overload;
