@@ -1483,7 +1483,7 @@ end;
 
 
 - # ORM
-### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
+### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
 ### Of course you can use any other ORM that you prefer like [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
 
@@ -2021,7 +2021,7 @@ begin
 </details>  
 
 
-- # Large Script execution - SQL Server Only
+- # Large Script execution - (<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
 <details>
   <summary>
