@@ -1,8 +1,8 @@
 # EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
 
-## EasyDbMigrator is a database migration library for Delphi, built to streamline the database evolution, available in 32-Bit and 64-Bit.
-## Migrations are kinda structured objects to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved.
-Migrations solve the problem of evolving a database schema for multiple databases (for example, the developer's local database, the test database, and the production database). Database schema changes are described in classes written in Delphi that can be checked into a version control system.
+## EasyDbMigrator is a database migration library designed for Delphi. It simplifies database evolution and is available in both 32-Bit and 64-Bit versions.
+## Migrations are structured objects designed to alter your database schema. They provide an alternative to creating numerous SQL scripts that would require manual execution by every developer involved.
+When dealing with multiple databases, such as the developer's local database, test database, and production database, migrations are a helpful solution for evolving a database schema. These changes to the schema are recorded in Delphi classes, which can then be committed to a version control system.
 
 # Supported Databases
 
@@ -15,22 +15,25 @@ Migrations solve the problem of evolving a database schema for multiple database
 | **Oracle** | ✅ | ✅ | - | - |
 
 # How it works?
-It's a library, so you need to use the units in your projects, add migrations and run the migratory.
+To use the library, simply incorporate the units into your projects, implement migrations, and execute the migrator. It's that simple.
 
 # Is it possible to use it for other databases?
-Yes, you can easily integrate it with your environment, please have a look at the integration section.
+Certainly! You can seamlessly integrate it with your environment. Kindly refer to the integration section for more details.
 
 # How to use it?
-Samples demonstrate the usage of the library with extra details but have a look at the following codes for a quick start please:
+To get started quickly, please take a look at the sample codes provided. These examples showcase how to use the library and include extra details.
 
-# Different types of sample
+# There are various kinds of samples available.
 
 - <ins>**Simple**</ins>: suitable for **small** projects (using on-demand classes with anonymous methods).
 - <ins>**Advanced**</ins>: Suitable for **large** projects (using versioned classes with attributes).
   Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes.
   
 - <ins>**ORM**</ins>: suitable for both small and large projects.
-- <ins>**Large Script**</ins>: it's a large script executor to use your existing old script as a starting point and continue with this library from now on.
+- <ins>**Large Script**</ins>: This is a script executor that allows you to use your existing old scripts as a starting point and continue working with this library from now on.
+
+# Dependencies
+To work with certain database engines such as Mysql(libmysql32.dll) or PostgreSQL(libpq.dll), you will need to have the appropriate Dlls. There are no other prerequisite libraries or components required. It is important to ensure that you provide the correct Dll or class library depending on the specific version of the database engine installed in your environment. Please note that this library does not include the necessary DLLs, but rather provides a template for each database engine.
 
 ---
 
@@ -1483,9 +1486,9 @@ end;
 
 
 - # ORM
-### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
+### This library includes a mini Object-Relational Mapping (ORM) tool that can assist you in modernizing and simplifying your database upgrades and downgrades.(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
-### Of course you can use any other ORM that you prefer like [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
+### Feel free to utilize any ORM of your choice, such as [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
 
 <details>
   <summary>
@@ -2028,9 +2031,9 @@ begin
    🚩Important Note!
   </summary>
  
-### To execute large scripts with this library you must separate each statement with the SQL Server-specific keyword "GO", this is mandatory!
-### If you already have an extensive script that's not a problem you can keep it as it is and continue with this library from now on.
-### To execute the existing script with any size refer to the related sample project(EasyDB_LargeScript_SQLServer, ...).
+### To execute large scripts using this library, it is mandatory to separate each statement with the SQL Server-specific keyword "GO".
+### If you have an extensive script, there's no problem. You can keep it as it is and proceed with this library going forward.
+### To execute the current script with any size, you can refer to the corresponding sample project.(EasyDB_LargeScript_SQLServer, ...).
 </details>
 
 <details>
@@ -2039,7 +2042,7 @@ begin
   </summary>
 
 
-## Initiate and run your script easily!  
+## Managing and running your script is a simple task that you can easily accomplish.  
 ```delphi
 var
   LvConnectionParams: TSqlConnectionParams;
@@ -2073,7 +2076,7 @@ end;
    🟠 MySQL Sample
   </summary>
 
-## Initiate and run your script easily!
+## Managing and running your script is a simple task that you can easily accomplish.
 ```delphi
 var
   LvConnectionParams: TMySqlConnectionParams;
@@ -2101,7 +2104,7 @@ end;
    🟣 MariaDb Sample
   </summary>
 
-## Initiate and run your script easily!
+## Managing and running your script is a simple task that you can easily accomplish.
 ```delphi
 var
   LvConnectionParams: TMariaDBConnectionParams;
@@ -2133,12 +2136,10 @@ There is an internal simple logger inside the library that is able to write log 
 Using his event you can use your desired logging method like [QuickLogger](https://github.com/exilon/QuickLogger) or anything else and target any destination 
 like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com), Telegram, Email, etc...
 
----
----
 
 # New Integration instruction
 ## Didn't find your database?
-**No problem!** you can easily integrate this library with your environment, by following bellow steps:
+**No problem!** You can easily integrate this library with your environment by following the steps below:
 - Create a new unit in this path ..\EasyDB\Lib\ConnectionManagers including a class that is inherited 
   from TConnection in the unit EasyDB.ConnectionManager.Base.pas, see the EasyDB.ConnectionManager.SQL.pas unit as a template.
 - Create a new unit in this path ..\EasyDB\Lib\Runners including a class that is inherited from
@@ -2146,3 +2147,13 @@ like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com),
 - The two above steps are enough to use in simple and advanced modes but in case you prefer to use ORM form you need to create 
   a new function in the TBuilder class to generate scripts based on your target database, this class can be found
   in the path ..\EasyDB\Lib\ORM and unit EasyDB.ORM.Builder.pas.
+
+
+
+<hr>
+<p align="center">
+<img src="https://dtffvb2501i0o.cloudfront.net/images/logos/delphi-logo-128.webp" alt="Delphi">
+</p>
+<h5 align="center">
+Made with :heart: on Delphi
+</h5>
