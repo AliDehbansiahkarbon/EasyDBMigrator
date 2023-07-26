@@ -2047,8 +2047,6 @@ begin
 var
   LvConnectionParams: TSqlConnectionParams;
 begin
-  pbTotal.Style := pbstMarquee;
-
   with LvConnectionParams do // Could be loaded from ini, registry or somewhere else.
   begin
     Server := '192.168.212.1';
