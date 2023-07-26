@@ -1,4 +1,4 @@
-# EasyDbMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
+# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
 
 ## EasyDbMigrator is a database migration library for Delphi, built to streamline the database evolution, available in 32-Bit and 64-Bit.
 ## Migrations are kinda structured objects to alter your database schema and are an alternative to creating lots of SQL scripts that have to be run manually by every developer involved.
@@ -9,10 +9,10 @@ Migrations solve the problem of evolving a database schema for multiple database
 |Name | Simple | Advanced | ORM | LargeScript Execution|
 |---|---|---|---|---|
 | **Microsoft SQL SERVER** | ✅ | ✅ | ✅ | ✅ |
-| **MySQL** | ✅ | ✅ | ✅ | NA |
-| **MariaDB** | ✅ | ✅ | ✅ | NA |
-| **PostgreSQL** | ✅ | ✅ | NA | NA |
-| **Oracle** | ✅ | ✅ | NA | NA |
+| **MySQL** | ✅ | ✅ | ✅ | ✅ |
+| **MariaDB** | ✅ | ✅ | ✅ | ✅ |
+| **PostgreSQL** | ✅ | ✅ | - | - |
+| **Oracle** | ✅ | ✅ | - | - |
 
 # How it works?
 It's a library, so you need to use the units in your projects, add migrations and run the migratory.
@@ -1483,7 +1483,7 @@ end;
 
 
 - # ORM
-### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable.(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
+### There is a **mini ORM** underlying in this library which can help you to make your database upgrades/downgrades more modern and more readable(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
 ### Of course you can use any other ORM that you prefer like [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
 
@@ -2021,7 +2021,7 @@ begin
 </details>  
 
 
-- # Large Script execution - SQL Server Only
+- # Large Script execution - (<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
 <details>
   <summary>
@@ -2066,6 +2066,65 @@ end;
 
 ![image](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/2d5b9113-8a9f-46e6-8c5d-2073bacfeac5)
 </details>
+
+
+<details>
+  <summary>
+   🟠 MySQL Sample
+  </summary>
+
+## Initiate and run your script easily!
+```delphi
+var
+  LvConnectionParams: TMySqlConnectionParams;
+begin
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
+  begin
+    Server := '127.0.0.1';
+    LoginTimeout := 30000;
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
+  end;
+
+  TLogger.Instance.OnLog := OnLog;
+  Runner := TMySQLRunner.Create(LvConnectionParams);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
+  Runner.MySQL.ExecuteScriptFile('..\..\Script\DBUpdateScript.sql', ';');
+end;
+```
+</details>  
+
+<details>
+  <summary>
+   🟣 MariaDb Sample
+  </summary>
+
+## Initiate and run your script easily!
+```delphi
+var
+  LvConnectionParams: TMariaDBConnectionParams;
+begin
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
+  begin
+    Server := '127.0.0.1';
+    LoginTimeout := 30000;
+    Port := 3306;
+    UserName := 'ali';
+    Pass := 'Admin123!@#';
+    Schema := 'Library';
+  end;
+
+  TLogger.Instance.OnLog := OnLog;
+  Runner := TMariaDBRunner.Create(LvConnectionParams);
+  Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
+  Runner.MariaDB.ExecuteScriptFile('..\..\Script\DBUpdateScript.sql', ';');
+end;
+```
+  
+</details>  
+
 
 # Last but not least!
 ### OnLog() - a very useful callback event.
