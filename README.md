@@ -31,7 +31,7 @@ Delphi 11.0 Alexandria
 # How it works?
 To use the library, simply incorporate the units into your projects, implement migrations, and execute the migrator. It's that simple.
 
-# Is it possible to use it for other databases?
+# Can it be utilized with other databases?
 Certainly! You can seamlessly integrate it with your environment. Kindly refer to the integration section for more details.
 
 # How to use it?
