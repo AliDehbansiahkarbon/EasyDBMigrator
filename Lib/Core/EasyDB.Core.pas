@@ -58,12 +58,12 @@ type
     Pass: string;
     DatabaseName: string;
   end;
-
+  {$IF CompilerVersion >= 30}
   TObjListHelper = class helper for TMigrations
   public
     function FindMigration(AMigrationObj: TMigrationBase): Boolean;
   end;
-
+  {$IFEND}
   IRunner = interface
     ['{DECF074C-109F-488F-A97D-4B3C68FB4F35}']
 
@@ -121,6 +121,7 @@ begin
   inherited;
 end;
 
+{$IF CompilerVersion >= 30}
 { TObjListHelper }
 
 function TObjListHelper.FindMigration(AMigrationObj: TMigrationBase): Boolean;
@@ -154,6 +155,7 @@ begin
     end;
   end;
 end;
+{$IFEND}
 
 { TConfig }
 

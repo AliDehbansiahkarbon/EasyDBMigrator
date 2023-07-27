@@ -3,11 +3,11 @@ unit EasyDB.ConnectionManager.Oracle;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Threading, System.StrUtils,
+  System.SysUtils, System.Classes, System.StrUtils, {$IF CompilerVersion >= 30}System.Threading,{$IFEND}
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet,{==Oracle==} FireDAC.Phys.OracleDef, FireDAC.Phys.Oracle,{==Oracle==}
+  FireDAC.Comp.DataSet,{==Oracle==} {$IF CompilerVersion >= 30}FireDAC.Phys.OracleDef,{$IFEND} FireDAC.Phys.Oracle,{==Oracle==}
 
   EasyDB.ConnectionManager.Base,
   EasyDB.Core,

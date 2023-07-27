@@ -135,8 +135,9 @@ begin
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True)// Optional
-    .UseInternalThread(True)// Optional
-    .SetProgressbar(pbTotal);// Optional
+    .UseInternalThread(True)// Optional - executes asynchronously and doesn't block the screen
+    .SetProgressbar(pbTotal)// Optional
+    .DelayedExecution(500); //Just for test
 
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;

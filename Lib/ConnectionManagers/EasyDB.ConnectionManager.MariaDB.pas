@@ -7,7 +7,7 @@ uses
   FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Error, FireDAC.UI.Intf, FireDAC.Phys.Intf,
   FireDAC.Stan.Def, FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.VCLUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.Stan.Param, FireDAC.DatS, FireDAC.DApt.Intf, FireDAC.DApt,
-  FireDAC.Comp.DataSet, {=MariaBD=}FireDAC.Phys.MySQL, FireDAC.Phys.MySQLDef, FireDAC.Comp.UI, {=MariaBD=}
+  FireDAC.Comp.DataSet, {=MariaBD=}FireDAC.Phys.MySQL, {$IF CompilerVersion >= 30}FireDAC.Phys.MySQLDef,{$IFEND} FireDAC.Comp.UI, {=MariaBD=}
 
   EasyDB.ConnectionManager.Base,
   EasyDB.Core,
