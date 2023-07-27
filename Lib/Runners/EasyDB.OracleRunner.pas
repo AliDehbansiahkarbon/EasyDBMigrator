@@ -13,7 +13,6 @@ uses
   EasyDB.Core;
 
 type
-
   TOracleRunner = class(TRunner)
   private
     FDbName: string;
@@ -23,7 +22,6 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(ASQLConnection: TOracleConnection = nil); overload;
     constructor Create(AConnectionParams: TOracleConnectionParams); overload;
     destructor Destroy; override;
 
@@ -33,14 +31,7 @@ type
 
 implementation
 
-constructor TOracleRunner.Create(ASQLConnection: TOracleConnection = nil);
-begin
-  inherited Create;
-  if Assigned(ASQLConnection) then
-    FOracleConnection:= ASQLConnection
-  else
-    FOracleConnection:= TOracleConnection.Instance.SetConnectionParam(TOracleConnection.Instance.ConnectionParams).ConnectEx;
-end;
+{TOracleRunner}
 
 constructor TOracleRunner.Create(AConnectionParams: TOracleConnectionParams);
 begin

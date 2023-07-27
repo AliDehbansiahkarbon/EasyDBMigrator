@@ -80,8 +80,6 @@ type
     destructor Destroy; override;
   end;
 
-  //Runner.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
-
   TConfig = class
   private
     FLogAllExecutions: Boolean;

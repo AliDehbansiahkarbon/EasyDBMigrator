@@ -12,7 +12,6 @@ uses
   EasyDB.ConnectionManager.PostgreSQL;
 
 type
-
   TPgRunner = class(TRunner)
   private
     FDbName: string;
@@ -23,7 +22,6 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(APgConnection: TPgConnection = nil); overload;
     constructor Create(AConnectionParams: TPgConnectionParams); overload;
     destructor Destroy; override;
 
@@ -35,15 +33,6 @@ type
 implementation
 
 { TPgRunner }
-
-constructor TPgRunner.Create(APgConnection: TPgConnection);
-begin
-  inherited Create;
-  if Assigned(APgConnection) then
-    FPgConnection:= APgConnection
-  else
-    FPgConnection:= TPgConnection.Instance.SetConnectionParam(TPgConnection.Instance.ConnectionParams).ConnectEx;
-end;
 
 constructor TPgRunner.Create(AConnectionParams: TPgConnectionParams);
 begin

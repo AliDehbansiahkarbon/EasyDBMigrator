@@ -36,9 +36,9 @@ uses
     function InitializeDatabase: Boolean;
     function Logger: TLogger; override;
 
-    function ExecuteAdHocQuery(AScript: string): Boolean; override;
-    function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
+    procedure ExecuteAdHocQuery(AScript: string); override;
+    procedure ExecuteAdHocQueryWithTransaction(AScript: string);
+    procedure ExecuteScriptFile(AScriptPath: string; ADelimiter: string); override;
     function OpenAsInteger(AScript: string): Largeint;
 
     procedure BeginTrans;
@@ -109,38 +109,34 @@ begin
   inherited;
 end;
 
-function TPgConnection.ExecuteAdHocQuery(AScript: string): Boolean;
+procedure TPgConnection.ExecuteAdHocQuery(AScript: string);
 begin
   try
     FConnection.ExecSQL(AScript);
-    Result := True;
   except on E: Exception do
     begin
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TPgConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+procedure TPgConnection.ExecuteAdHocQueryWithTransaction(AScript: string);
 begin
   try
     BeginTrans;
     FConnection.ExecSQL(AScript);
     CommitTrans;
-    Result := True;
   except on E: Exception do
     begin
       RollBackTrans;
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TPgConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean;
+procedure TPgConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string);
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
@@ -148,7 +144,6 @@ var
 begin
   if FileExists(AScriptPath) then
   begin
-    Result := True;
     LvStreamReader := TStreamReader.Create(AScriptPath, TEncoding.UTF8);
     LvLine := EmptyStr;
     LvStatement := EmptyStr;
@@ -172,13 +167,9 @@ begin
     finally
       LvStreamReader.Free;
     end;
-    Result := True;
   end
   else
-  begin
     Logger.Log(atFileExecution, 'Script file doesn''t exists.');
-    Result := False;
-  end;
 end;
 
 function TPgConnection.GetConnectionString: string;

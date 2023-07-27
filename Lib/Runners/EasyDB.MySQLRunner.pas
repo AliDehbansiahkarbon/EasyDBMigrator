@@ -12,7 +12,6 @@ uses
   EasyDB.ConnectionManager.MySQL;
 
 type
-
   TMySQLRunner = class(TRunner)
   private
     FSchema: string;
@@ -22,7 +21,6 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AMySQLConnection: TMySQLConnection = nil); overload;
     constructor Create(AConnectionParams: TMySqlConnectionParams); overload;
     destructor Destroy; override;
 
@@ -33,15 +31,6 @@ type
 implementation
 
 { TMySQLRunner }
-
-constructor TMySQLRunner.Create(AMySQLConnection: TMySQLConnection);
-begin
-  inherited Create;
-  if Assigned(AMySQLConnection) then
-    FMySQLConnection:= AMySQLConnection
-  else
-    FMySQLConnection:= TMySQLConnection.Instance.SetConnectionParam(TMySQLConnection.Instance.ConnectionParams).ConnectEx;
-end;
 
 constructor TMySQLRunner.Create(AConnectionParams: TMySqlConnectionParams);
 begin

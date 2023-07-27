@@ -12,10 +12,9 @@ type
     function Connect: Boolean; virtual; abstract;
     function Logger: TLogger; virtual; abstract;
 
-    function ExecuteAdHocQuery(AScript: string): Boolean; virtual; abstract;
-    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; virtual; abstract;
+    procedure ExecuteAdHocQuery(AScript: string); virtual; abstract;
+    procedure ExecuteScriptFile(AScriptPath: string; ADelimiter: string); virtual; abstract;
   end;
 
 implementation
-
 end.

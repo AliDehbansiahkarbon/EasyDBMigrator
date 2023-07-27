@@ -38,9 +38,9 @@ type
     function InitializeDatabase: Boolean;
     function Logger: TLogger; override;
 
-    function ExecuteAdHocQuery(AScript: string): Boolean; override;
-    function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
+    procedure ExecuteAdHocQuery(AScript: string); override;
+    procedure ExecuteAdHocQueryWithTransaction(AScript: string);
+    procedure ExecuteScriptFile(AScriptPath: string; ADelimiter: string); override;
     function RemoveCommentFromTSQL(const ASQLLine: string): string;
     function OpenAsInteger(AScript: string): Largeint;
 
@@ -116,40 +116,36 @@ begin
   FConnection.Transaction.Commit;
 end;
 
-function TOracleConnection.ExecuteAdHocQuery(AScript: string): Boolean;
+procedure TOracleConnection.ExecuteAdHocQuery(AScript: string);
 begin
   try
     FConnection.ExecSQL(AScript);
-    Result := True;
   except on E: Exception do
     begin
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TOracleConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+procedure TOracleConnection.ExecuteAdHocQueryWithTransaction(AScript: string);
 begin
   try
     BeginTrans;
     FConnection.ExecSQL(AScript);
     CommitTrans;
-    Result := True;
   except on E: Exception do
     begin
       RollBackTrans;
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TOracleConnection.ExecuteScriptFile(AScriptPath, ADelimiter: string): Boolean;
+procedure TOracleConnection.ExecuteScriptFile(AScriptPath, ADelimiter: string);
 begin
-  Result := False; //Not planned.
+  //Not planned.
 end;
 
 function TOracleConnection.RemoveCommentFromTSQL(const ASQLLine: string): string;

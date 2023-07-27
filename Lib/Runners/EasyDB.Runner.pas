@@ -20,7 +20,7 @@ type
     FConfig: TConfig;
     FLogger: TLogger;
     FVersionToDowngrade: Int64;
-    FORM: TORM;
+    FOrm: TORM;
 
     function GetLogger: TLogger;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
@@ -50,7 +50,7 @@ type
     property MigrationList: TMigrations read FMigrationList write FMigrationList;
     property Config: TConfig read FConfig;
     property Logger: TLogger read GetLogger;
-    property ORM: TORM read FORM write FORM;
+    property ORM: TORM read FOrm write FOrm;
   end;
 
 implementation
@@ -65,7 +65,7 @@ end;
 
 constructor TRunner.Create;
 begin
-  FORM := nil;
+  FOrm := nil;
   FVersionToDowngrade := 0;
   FConfig := TConfig.Create;
   FMigrationList := TMigrations.Create;
@@ -95,8 +95,8 @@ begin
   FreeAndNil(FLogger);
   FreeAndNil(FConfig);
 
-  if Assigned(FORM) then
-    FORM.Free;
+  if Assigned(FOrm) then
+    FOrm.Free;
 
   inherited;
 end;

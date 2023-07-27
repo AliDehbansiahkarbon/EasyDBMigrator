@@ -44,6 +44,7 @@ procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 var
   LvConnectionParams: TMariaDBConnectionParams;
 begin
+  pbTotal.Style := pbstMarquee;
   with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
     Server := '127.0.0.1';

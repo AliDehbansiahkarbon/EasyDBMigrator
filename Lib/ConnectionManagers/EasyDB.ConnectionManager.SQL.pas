@@ -37,13 +37,12 @@ type
     function IsConnected: Boolean;
     function InitializeDatabase: Boolean;
     function Logger: TLogger; override;
-
-    function ExecuteAdHocQuery(AScript: string): Boolean; override;
-    function ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
-    function ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean; override;
     function RemoveCommentFromTSQL(const ASQLLine: string): string;
     function OpenAsInteger(AScript: string): Largeint;
 
+    procedure ExecuteAdHocQuery(AScript: string); override;
+    procedure ExecuteAdHocQueryWithTransaction(AScript: string);
+    procedure ExecuteScriptFile(AScriptPath: string; ADelimiter: string); override;
     procedure BeginTrans;
     procedure CommitTrans;
     procedure RollBackTrans;
@@ -117,48 +116,42 @@ begin
   FConnection.Transaction.Commit;
 end;
 
-function TSQLConnection.ExecuteAdHocQuery(AScript: string): Boolean;
+procedure TSQLConnection.ExecuteAdHocQuery(AScript: string);
 begin
   try
     FConnection.ExecSQL(AScript);
-    Result := True;
   except on E: Exception do
     begin
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TSQLConnection.ExecuteAdHocQueryWithTransaction(AScript: string): Boolean;
+procedure TSQLConnection.ExecuteAdHocQueryWithTransaction(AScript: string);
 begin
   try
     BeginTrans;
     FConnection.ExecSQL(AScript);
     CommitTrans;
-    Result := True;
   except on E: Exception do
     begin
       RollBackTrans;
       E.Message := ' Script: ' + AScript + #13#10 + ' Error: ' + E.Message;
-      Result := False;
       raise;
     end;
   end;
 end;
 
-function TSQLConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string): Boolean;
+procedure TSQLConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string);
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
   LvStatement: string;
-  LvResult: Boolean;
   LvLineNumber: Integer;
   LvTask: ITask;
   LvLogExecutions: Boolean;
 begin
-  LvResult := False;
   if Assigned(FParentRunner) and Assigned(FParentRunner.Config) then
     LvLogExecutions := FParentRunner.Config.LogAllExecutionsStat
   else
@@ -206,16 +199,10 @@ begin
       finally
         LvStreamReader.Free;
       end;
-
-      LvResult := True;
     end);
-    Result := LvResult;
   end
   else
-  begin
     Logger.Log(atFileExecution, 'Script file doesn''t exists.');
-    Result := False;
-  end;
 end;
 
 function TSQLConnection.RemoveCommentFromTSQL(const ASQLLine: string): string;

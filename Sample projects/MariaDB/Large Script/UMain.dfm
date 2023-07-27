@@ -26,17 +26,17 @@ object frmMain: TfrmMain
   object pbTotal: TProgressBar
     Left = 8
     Top = 48
-    Width = 937
+    Width = 933
     Height = 17
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
     ExplicitTop = 47
-    ExplicitWidth = 933
+    ExplicitWidth = 929
   end
   object RichEdit1: TRichEdit
     Left = 8
     Top = 65
-    Width = 937
+    Width = 933
     Height = 612
     Anchors = [akLeft, akRight, akBottom]
     Font.Charset = ANSI_CHARSET
@@ -50,7 +50,7 @@ object frmMain: TfrmMain
     ScrollBars = ssVertical
     TabOrder = 2
     ExplicitTop = 64
-    ExplicitWidth = 933
+    ExplicitWidth = 929
   end
   object btnClear: TButton
     Left = 151

@@ -13,7 +13,6 @@ uses
   EasyDB.Core;
 
 type
-
   TSQLRunner = class(TRunner)
   private
     FDbName: string;
@@ -24,8 +23,7 @@ type
     function GetDatabaseVersion: Int64; override;
     procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
   public
-    constructor Create(ASQLConnection: TSQLConnection = nil); overload;
-    constructor Create(AConnectionParams: TSqlConnectionParams); overload;
+    constructor Create(AConnectionParams: TSqlConnectionParams);
     destructor Destroy; override;
 
     property SQL: TSQLConnection read FSQLConnection write FSQLConnection;
@@ -34,15 +32,6 @@ type
   end;
 
 implementation
-
-constructor TSQLRunner.Create(ASQLConnection: TSQLConnection = nil);
-begin
-  inherited Create;
-  if Assigned(ASQLConnection) then
-    FSQLConnection:= ASQLConnection
-  else
-    FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(TSQLConnection.Instance.ConnectionParams).ConnectEx;
-end;
 
 constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams);
 begin

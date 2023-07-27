@@ -39,11 +39,13 @@ type
     FParamType: TParamType;
     FParamPosition: string;
     constructor Create; overload;
+    {$IFDEF FullOptions}
     constructor Create(AParentTable: TTable); overload;
-    constructor Create(AParentTable: TTable; AColType: TColType); overload;
     constructor Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType); overload;
     constructor Create(AParentTable: TTable; AColType: TColType; AParamPosition: string); overload;
     constructor Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType; AParamPosition: string); overload;
+    {$ENDIF}
+    constructor Create(AParentTable: TTable; AColType: TColType); overload;
     constructor Create(AParentTable: TTable; AColType: TColType; AColSize: Integer); overload;
     constructor Create(AParentTable: TTable; AColType: TColType; APrecision: Byte; AScale: Byte); overload;
   public
@@ -701,12 +703,6 @@ begin
   Exit(Self);
 end;
 
-constructor TDataType.Create(AParentTable: TTable);
-begin
-  Create;
-  FParentTable := AParentTable;
-end;
-
 function TDataType.PrimaryKey: TDataType;
 begin
   FIsPrimary := True;
@@ -764,6 +760,13 @@ begin
   FScale := AScale;
 end;
 
+{$IFDEF FullOptions}
+constructor TDataType.Create(AParentTable: TTable);
+begin
+  Create;
+  FParentTable := AParentTable;
+end;
+
 constructor TDataType.Create(AParentTable: TTable; AColType: TColType; AParamType: TParamType; AParamPosition: string);
 begin
   Create;
@@ -788,6 +791,7 @@ begin
   FType := AColType;
   FParamType := AParamType;
 end;
+{$ENDIF}
 
 { TDelete }
 procedure TDelete.Database(ADBName: string);

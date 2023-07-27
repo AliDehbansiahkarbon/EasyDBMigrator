@@ -22,7 +22,6 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AMariaDBConnection: TMariaDBConnection = nil); overload;
     constructor Create(AConnectionParams: TMariaDBConnectionParams); overload;
     destructor Destroy; override;
 
@@ -33,15 +32,6 @@ type
 implementation
 
 { TMariaDBRunner }
-
-constructor TMariaDBRunner.Create(AMariaDBConnection: TMariaDBConnection);
-begin
-  inherited Create;
-  if Assigned(AMariaDBConnection) then
-    FMariaDBConnection:= AMariaDBConnection
-  else
-    FMariaDBConnection:= TMariaDBConnection.Instance.SetConnectionParam(TMariaDBConnection.Instance.ConnectionParams).ConnectEx;
-end;
 
 constructor TMariaDBRunner.Create(AConnectionParams: TMariaDBConnectionParams);
 begin
