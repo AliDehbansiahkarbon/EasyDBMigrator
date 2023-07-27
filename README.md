@@ -21,15 +21,24 @@ To use the library, simply incorporate the units into your projects, implement m
 Certainly! You can seamlessly integrate it with your environment. Kindly refer to the integration section for more details.
 
 # How to use it?
-To get started quickly, please take a look at the sample codes provided. These examples showcase how to use the library and include extra details.
+To get started quickly, please take a look at the sample codes provided. These examples showcase how to use the library and include extra details.<br>
+To use this library, you must add the library paths to your project's search path or Delphi's library path.
+It is necessary to include lines that are similar to the following: 
+```delphi
+..\..\..\lib\Logger;
+..\..\..\lib\ConnectionManagers;
+..\..\..\lib\Core;
+..\..\..\lib\Runners;
+..\..\..\lib\ORM
+```
 
 # There are various kinds of samples available.
 
-- <ins>**Simple**</ins>: suitable for **small** projects (using on-demand classes with anonymous methods).
+- <ins>**Simple**</ins>: Suitable for **small** projects (using on-demand classes with anonymous methods).
 - <ins>**Advanced**</ins>: Suitable for **large** projects (using versioned classes with attributes).
   Instead of creating some on-demand classes you can create one unit per entity and implement versioned classes.
   
-- <ins>**ORM**</ins>: suitable for both small and large projects.
+- <ins>**ORM**</ins>: Suitable for both small and large projects.
 - <ins>**Large Script**</ins>: This is a script executor that allows you to use your existing old scripts as a starting point and continue working with this library from now on.
 
 # Dependencies
@@ -1488,7 +1497,7 @@ end;
 - # ORM
 ### This library includes a mini Object-Relational Mapping (ORM) tool that can assist you in modernizing and simplifying your database upgrades and downgrades.(<ins>SQL SERVER</ins>, <ins>MySQL</ins>, and <ins>MariaDB</ins> only).
 
-### Feel free to utilize any ORM of your choice, such as [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
+### Please feel free to utilize any other ORM of your choice if you don't prefer the internal one, such as [mORMot](https://github.com/synopse/mORMot), [TMS Aurelius](https://www.tmssoftware.com/site/aurelius.asp), etc...
 
 <details>
   <summary>
