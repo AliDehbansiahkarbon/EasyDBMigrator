@@ -44,8 +44,12 @@ It is necessary to include lines that are similar to the following:
 # Dependencies
 To work with certain database engines such as Mysql(libmysql32.dll) or PostgreSQL(libpq.dll), you will need to have the appropriate Dlls. There are no other prerequisite libraries or components required. It is important to ensure that you provide the correct Dll or class library depending on the specific version of the database engine installed in your environment. Please note that this library does not include the necessary DLLs, but rather provides a template for each database engine.
 
----
+- ## Note:
+A condition definition has been added to provide additional features such as additional overridden constructors and functions.
+This is to prevent compiler prompts/hints for unused functions, if you want access to all functionalities, you can use "FullOptions" as a conditional definition of your project.
 
+---
+# I have provided some samples and templates for your reference.👇
 - # Simple
 
 <details>
@@ -2155,7 +2159,11 @@ like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com),
   a new function in the TBuilder class to generate scripts based on your target database, this class can be found
   in the path ..\EasyDB\Lib\ORM and unit EasyDB.ORM.Builder.pas.
 
+# Last word!
+If you find this library helpful, please do not hesitate to give me a rating by clicking on the star button.<br>
+Additionally, keep an eye on the repository to stay updated on the latest features, bug fixes, and updates, While I welcome any pull requests, discussions, or issues, I kindly ask that you first review the closed issues to avoid any duplicates. Thank you for your trust.
 
+Good luck!
 
 <hr>
 <p align="center">
