@@ -2159,7 +2159,11 @@ like [Graylog](https://www.graylog.org), [Betterstack](https://betterstack.com),
   a new function in the TBuilder class to generate scripts based on your target database, this class can be found
   in the path ..\EasyDB\Lib\ORM and unit EasyDB.ORM.Builder.pas.
 
+# Last word!
+If you find this library helpful, please do not hesitate to give me a rating by clicking on the star button.<br>
+Additionally, keep an eye on the repository to stay updated on the latest features, bug fixes, and updates, While I welcome any pull requests, discussions, or issues, I kindly ask that you first review the closed issues to avoid any duplicates. Thank you for your trust.
 
+Good luck!
 
 <hr>
 <p align="center">
