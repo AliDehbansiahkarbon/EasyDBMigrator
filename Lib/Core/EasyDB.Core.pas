@@ -58,12 +58,7 @@ type
     Pass: string;
     DatabaseName: string;
   end;
-  {$IF CompilerVersion >= 30}
-  TObjListHelper = class helper for TMigrations
-  public
-    function FindMigration(AMigrationObj: TMigrationBase): Boolean;
-  end;
-  {$IFEND}
+
   IRunner = interface
     ['{DECF074C-109F-488F-A97D-4B3C68FB4F35}']
 
@@ -120,42 +115,6 @@ begin
     HiddenAttribDic.Free;
   inherited;
 end;
-
-{$IF CompilerVersion >= 30}
-{ TObjListHelper }
-
-function TObjListHelper.FindMigration(AMigrationObj: TMigrationBase): Boolean;
-var
-  I: Integer;
-  LvTempMigration: TMigration;
-  LvTempMigrationX: TMigrationX;
-begin
-  Result := False;
-  for I := 0 to Pred(Self.Count) do
-  begin
-    if AMigrationObj is TMigration then
-    begin
-      LvTempMigration := TMigration(AMigrationObj);
-      if (LvTempMigration.Version = TMigration(Self.Items[I]).Version) and
-         (LvTempMigration.EntityName = TMigration(Self.Items[I]).EntityName) then
-      begin
-        Result := True;
-        Break;
-      end;
-    end
-    else if AMigrationObj is TMigrationX then
-    begin
-      LvTempMigrationX := TMigrationX(AMigrationObj);
-      if (LvTempMigrationX.AttribVersion = TMigrationX(Self.Items[I]).AttribVersion) and
-         (LvTempMigrationX.AttribEntityName = TMigrationX(Self.Items[I]).AttribEntityName) then
-      begin
-        Result := True;
-        Break;
-      end;
-    end;
-  end;
-end;
-{$IFEND}
 
 { TConfig }
 

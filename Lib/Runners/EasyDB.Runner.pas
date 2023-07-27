@@ -14,12 +14,11 @@ uses
   EasyDB.ORM;
 
 type
-  {$IF CompilerVersion < 30}
   TObjListHelper = class helper for TMigrations
   public
     function FindMigration(AMigrationObj: TMigrationBase): Boolean;
   end;
-  {$IFEND}
+
   TRunner = class(TInterfacedObject, IRunner)
   private
     FInternalMigrationList: TMigrationsDic;
@@ -441,7 +440,6 @@ begin
   end;
 end;
 
-{$IF CompilerVersion < 30}
 { TObjListHelper }
 function TObjListHelper.FindMigration(AMigrationObj: TMigrationBase): Boolean;
 var
@@ -474,5 +472,5 @@ begin
     end;
   end;
 end;
-{$IFEND}
+
 end.
