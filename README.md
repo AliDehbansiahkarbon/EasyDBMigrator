@@ -205,7 +205,7 @@ begin
   Runner := TMySQLRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True) // Optional
-    .UseInternalThread(True) //Optional
+    .UseInternalThread(True) //Optional - executes asynchronously and doesn't block the screen
     .SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
@@ -281,7 +281,7 @@ begin
   Runner := TMariaDBRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True) // Optional
-    .UseInternalThread(True) //Optional
+    .UseInternalThread(True) //Optional - executes asynchronously and doesn't block the screen
     .SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
@@ -393,7 +393,7 @@ begin
   Runner := TPgRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True) // Optional
-    .UseInternalThread(True) //Optional
+    .UseInternalThread(True) //Optional - executes asynchronously and doesn't block the screen
     .SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
@@ -528,7 +528,7 @@ begin
   Runner := TOracleRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True)// Optional
-    .UseInternalThread(True)// Optional
+    .UseInternalThread(True)// Optional - executes asynchronously and doesn't block the screen
     .SetProgressbar(pbTotal);// Optional
 
   {Use this line if you don't need local log}
@@ -630,29 +630,31 @@ uses
   EasyDB.Logger;
 
 var
-  Runner: TSQLRunner;
-  ConnectionParams: TConnectionParams;
+  LvConnectionParams: TSqlConnectionParams;
 begin
-
-  with LvConnectionParams do // Could be loaded from ini, registry, or somewhere else.
+  with LvConnectionParams do // The information can be sourced from an ini file, registry or other location.
   begin
-    Server := '127.0.0.1'; // SQL Server address
+    Server := '192.168.212.1';
     LoginTimeout := 30000;
-    Username := 'sa';
+    UserName := 'sa';
     Pass := '1';
     DatabaseName := 'Library';
-    Schema := 'dbo'; //Optional
+    Schema := 'dbo';
   end;
 
-  {Use this line if you need a local log}
-  TLogger.Instance.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog; // Logger must be configured before creating the Runner.
-
-  {Use this line if you don't need a local log}
-  // TLogger.Instance.OnLog := OnLog;
-
   Runner := TSQLRunner.Create(LvConnectionParams);
-  Runner.AddConfig.LogAllExecutions(True).UseInternalThread(True).SetProgressbar(pbTotal).RollBackAllByAnyError(True); //each part This line is Optional
-end
+  Runner.Config
+    .LogAllExecutions(True)// Optional
+    .UseInternalThread(True)// Optional - executes asynchronously and doesn't block the screen
+    .SetProgressbar(pbTotal)// Optional
+    .DelayedExecution(500); //Just for test
+
+  {Use this line if you don't need local log}
+  Runner.AddLogger.OnLog := OnLog;
+
+  {Use this line if you need local log}
+  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+end;
 ```  
 - Define migrations in diffrent place(unit)
 
