@@ -4,7 +4,7 @@
 ## Migrations are structured objects designed to alter your database schema. They provide an alternative to creating numerous SQL scripts that would require manual execution by every developer involved.
 When dealing with multiple databases, such as the developer's local database, test database, and production database, migrations are a helpful solution for evolving a database schema. These changes to the schema are recorded in Delphi classes, which can then be committed to a version control system.
 
-# Supported databases and available examples:
+# Covered databases and available examples:
 
 |Name | Simple | Advanced | ORM | LargeScript Execution|
 |---|---|---|---|---|
@@ -14,7 +14,7 @@ When dealing with multiple databases, such as the developer's local database, te
 | **PostgreSQL** | ✅ | ✅ | - | - |
 | **Oracle** | ✅ | ✅ | - | - |
 
-# Covered Delphi Versions 
+# Supported Delphi Versions 
 ```delphi
 Delphi XE5
 Delphi XE6
