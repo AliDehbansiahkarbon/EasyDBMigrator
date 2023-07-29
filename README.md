@@ -1,17 +1,19 @@
-# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
+# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDBMigrator/assets/5601608/964264bf-ed9e-405f-9047-673ac1428ebc)
+
 
 <br />
 
 <a href="https://www.buymeacoffee.com/adehbanr" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 <br />
-<img src="https://img.shields.io/github/license/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="license">
-<img src="https://img.shields.io/github/forks/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="forks">
-<img src="https://img.shields.io/github/stars/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="stars">
-<img src="https://img.shields.io/github/watchers/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="watchers">
+
+<!--img alt="MIT" src="https://img.shields.io/github/license/AliDehbansiahkarbon/EasyDBMigrator">
+<img src="https://img.shields.io/github/forks/AliDehbansiahkarbon/EasyDBMigrator" alt="forks">
+<img src="https://img.shields.io/github/stars/AliDehbansiahkarbon/EasyDBMigrator" alt="stars">
+<img src="https://img.shields.io/github/watchers/AliDehbansiahkarbon/EasyDBMigrator" alt="watchers">
 <br />
-<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/issues"><img src="https://img.shields.io/github/issues-closed/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="issues"></a>
-<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/pulls"><img src="https://img.shields.io/github/issues-pr-closed/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="pulls"></a>
-<img src="https://img.shields.io/github/last-commit/AliDehbansiahkarbon/ChatGPTWizard.svg" alt="last-commit">
+<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/issues"><img src="https://img.shields.io/github/issues-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="issues"></a>
+<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/pulls"><img src="https://img.shields.io/github/issues-pr-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="pulls"></a>
+<img src="https://img.shields.io/github/last-commit/AliDehbansiahkarbon/ChatGPTWizard.svg" alt="last-commit" -->
 
 
 ## EasyDbMigrator is a database migration library designed for Delphi. It simplifies database evolution and is available in both 32-Bit and 64-Bit versions.
