@@ -143,14 +143,18 @@ begin
     end;
   end;
 end;
-{$IF CompilerVersion >= 30}
+
 procedure TSQLConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string);
 var
   LvStreamReader: TStreamReader;
   LvLine: string;
   LvStatement: string;
   LvLineNumber: Integer;
+  {$IF CompilerVersion >= 30}
   LvTask: ITask;
+  {$ELSE}
+  LvThread: TThread;
+  {$ENDIF}
   LvLogExecutions: Boolean;
 begin
   if Assigned(FParentRunner) and Assigned(FParentRunner.Config) then
@@ -160,7 +164,11 @@ begin
 
   if FileExists(AScriptPath) then
   begin
+    {$IF CompilerVersion >= 30}
     LvTask := TTask.Run(
+    {$ELSE}
+    LvThread := TThread.CreateAnonymousThread(
+    {$ENDIF}
     procedure
     begin
       LvLineNumber := 1;
@@ -171,7 +179,7 @@ begin
         while not LvStreamReader.EndOfStream do
         begin
           LvLine := LvStreamReader.ReadLine;
-          if not LvLine.Trim.ToLower.Equals(ADelimiter) then
+          if not LvLine.Trim.ToLower.Equals(ADelimiter.Trim.ToLower) then
           begin
             if not ((LeftStr(LvLine.Trim, 2) = '/*') or (RightStr(LvLine.Trim, 2) = '*/') or (LeftStr(LvLine.Trim, 2) = '--')) then
               LvStatement := LvStatement + ' ' + RemoveCommentFromTSQL(LvLine)
@@ -201,76 +209,15 @@ begin
         LvStreamReader.Free;
       end;
     end);
-  end
-  else
-    Logger.Log(atFileExecution, 'Script file doesn''t exists.');
-end;
-{$ELSE}
-procedure TSQLConnection.ExecuteScriptFile(AScriptPath: string; ADelimiter: string);
-var
-  LvStreamReader: TStreamReader;
-  LvLine: string;
-  LvStatement: string;
-  LvLineNumber: Integer;
-  LvThread: TThread;
-  LvLogExecutions: Boolean;
-begin
-  if Assigned(FParentRunner) and Assigned(FParentRunner.Config) then
-    LvLogExecutions := FParentRunner.Config.LogAllExecutionsStat
-  else
-    LvLogExecutions := False;
-
-  if FileExists(AScriptPath) then
-  begin
-    LvThread := TThread.CreateAnonymousThread(
-      procedure
-      begin
-        LvLineNumber := 1;
-        LvStreamReader := TStreamReader.Create(AScriptPath, TEncoding.UTF8);
-        LvLine := EmptyStr;
-        LvStatement := EmptyStr;
-        try
-          while not LvStreamReader.EndOfStream do
-          begin
-            LvLine := LvStreamReader.ReadLine;
-            if not LvLine.Trim.ToLower.Equals(ADelimiter) then
-            begin
-              if not ((LeftStr(LvLine.Trim, 2) = '/*') or (RightStr(LvLine.Trim, 2) = '*/') or (LeftStr(LvLine.Trim, 2) = '--')) then
-                LvStatement := LvStatement + ' ' + RemoveCommentFromTSQL(LvLine)
-            end
-            else
-            begin
-              if not LvStatement.Trim.IsEmpty then
-              begin
-                try
-                  try
-                    if LvLogExecutions then
-                      Logger.Log(atFileExecution, 'Line: ' + LvLineNumber.ToString + ' successfully executed');
-
-                    ExecuteAdHocQuery(LvStatement);
-                  except on E: Exception  do
-                    Logger.Log(atFileExecution, 'Error on Line: ' + LvLineNumber.ToString + #13 + E.Message);
-                  end;
-                finally
-                  LvStatement := EmptyStr;
-                end;
-              end;
-            end;
-            Inc(LvLineNumber);
-          end;
-          Logger.Log(atFileExecution, 'Done!');
-        finally
-          LvStreamReader.Free;
-        end;
-      end
-    );
+    {$IF CompilerVersion < 30}
     LvThread.FreeOnTerminate := True;
     LvThread.Start;
+    {$ENDIF}
   end
   else
     Logger.Log(atFileExecution, 'Script file doesn''t exists.');
 end;
-{$IFEND}
+
 function TSQLConnection.RemoveCommentFromTSQL(const ASQLLine: string): string;
 var
   LvCommentIndex: Integer;
