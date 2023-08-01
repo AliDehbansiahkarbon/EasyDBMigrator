@@ -61,7 +61,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
+  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2702',
   procedure
   begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
@@ -72,7 +72,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2703',
   procedure
   begin
     Runner.SQL.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
@@ -83,7 +83,7 @@ begin
   end
   ));
   //============================================
-  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
+  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2704',
   procedure
   var LvScript: string;
   begin
@@ -162,7 +162,7 @@ begin
   mmoLog.Lines.BeginUpdate;
   mmoLog.Lines.Add('========== ' + DateTimeToStr(Now) + ' ==========');
   mmoLog.Lines.Add('Action Type: ' + GetEnumName(TypeInfo(TActionTypes), Ord(AActionType)));
-  mmoLog.Lines.Add('Exception: ' + AException);
+  mmoLog.Lines.Add('Msg: ' + AException);
   mmoLog.Lines.Add('Class Name: ' + IfThen(AClassName.IsEmpty, 'N/A', AClassName));
   mmoLog.Lines.Add('Version: ' + IfThen(AVersion = 0, 'N/A', IntToStr(AVersion)));
   mmoLog.Lines.EndUpdate;
