@@ -103,7 +103,7 @@ begin
   FreeAndNil(FConfig);
 
   if Assigned(FOrm) then
-    FOrm.Free;
+    FreeAndNil(FOrm);
 
   inherited;
 end;

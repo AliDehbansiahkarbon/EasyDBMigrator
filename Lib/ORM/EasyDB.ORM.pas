@@ -412,7 +412,7 @@ begin
   FCreateList.Free;
   FAlterList.Free;
   FDeleteList.Free;
-
+  FInstance := nil;
   inherited Destroy;
 end;
 
