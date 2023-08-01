@@ -1,10 +1,26 @@
-# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDB/assets/5601608/99f201d8-8705-469c-97f3-f01e90904261)
+# EasyDBMigrator ![EasyDBMigrator](https://github.com/AliDehbansiahkarbon/EasyDBMigrator/assets/5601608/964264bf-ed9e-405f-9047-673ac1428ebc)
+
+
+<br />
+
+<a href="https://www.buymeacoffee.com/adehbanr" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<br />
+
+<!--img alt="MIT" src="https://img.shields.io/github/license/AliDehbansiahkarbon/EasyDBMigrator">
+<img src="https://img.shields.io/github/forks/AliDehbansiahkarbon/EasyDBMigrator" alt="forks">
+<img src="https://img.shields.io/github/stars/AliDehbansiahkarbon/EasyDBMigrator" alt="stars">
+<img src="https://img.shields.io/github/watchers/AliDehbansiahkarbon/EasyDBMigrator" alt="watchers">
+<br />
+<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/issues"><img src="https://img.shields.io/github/issues-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="issues"></a>
+<a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/pulls"><img src="https://img.shields.io/github/issues-pr-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="pulls"></a>
+<img src="https://img.shields.io/github/last-commit/AliDehbansiahkarbon/ChatGPTWizard.svg" alt="last-commit" -->
+
 
 ## EasyDbMigrator is a database migration library designed for Delphi. It simplifies database evolution and is available in both 32-Bit and 64-Bit versions.
 ## Migrations are structured objects designed to alter your database schema. They provide an alternative to creating numerous SQL scripts that would require manual execution by every developer involved.
 When dealing with multiple databases, such as the developer's local database, test database, and production database, migrations are a helpful solution for evolving a database schema. These changes to the schema are recorded in Delphi classes, which can then be committed to a version control system.
 
-# Supported databases and available examples:
+# Covered databases and available examples:
 
 |Name | Simple | Advanced | ORM | LargeScript Execution|
 |---|---|---|---|---|
@@ -14,7 +30,7 @@ When dealing with multiple databases, such as the developer's local database, te
 | **PostgreSQL** | ✅ | ✅ | - | - |
 | **Oracle** | ✅ | ✅ | - | - |
 
-# Covered Delphi Versions 
+# Supported Delphi Versions 
 ```delphi
 Delphi XE5
 Delphi XE6
@@ -31,7 +47,7 @@ Delphi 11.0 Alexandria
 # How it works?
 To use the library, simply incorporate the units into your projects, implement migrations, and execute the migrator. It's that simple.
 
-# Is it possible to use it for other databases?
+# Can it be utilized with other databases?
 Certainly! You can seamlessly integrate it with your environment. Kindly refer to the integration section for more details.
 
 # How to use it?
