@@ -67,3 +67,4 @@ __recovery/
 
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
+/Sample projects/SQL SERVER/Large Script/Script/AdventureWorks2019_Full.sql

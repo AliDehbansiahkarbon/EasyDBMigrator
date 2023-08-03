@@ -59,6 +59,13 @@ type
     DatabaseName: string;
   end;
 
+  TFirebirdConnectionParams = record
+    Host: string;
+    Database: string;
+    UserName: string;
+    Pass: string;
+  end;
+
   IRunner = interface
     ['{DECF074C-109F-488F-A97D-4B3C68FB4F35}']
 
