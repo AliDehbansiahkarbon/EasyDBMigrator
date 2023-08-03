@@ -2,8 +2,8 @@ object frmMain: TfrmMain
   Left = 0
   Top = 0
   BorderStyle = bsToolWindow
-  Caption = 'Firebird Simple'
-  ClientHeight = 492
+  Caption = 'frmMain'
+  ClientHeight = 489
   ClientWidth = 488
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -59,7 +59,7 @@ object frmMain: TfrmMain
   end
   object mmoLog: TMemo
     Left = 16
-    Top = 74
+    Top = 70
     Width = 465
     Height = 403
     ScrollBars = ssVertical

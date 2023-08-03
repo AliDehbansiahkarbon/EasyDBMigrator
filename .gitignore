@@ -68,3 +68,18 @@ __recovery/
 # Boss dependency manager vendor folder https://github.com/HashLoad/boss
 modules/
 /Sample projects/SQL SERVER/Large Script/Script/AdventureWorks2019_Full.sql
+/Sample projects/Firebird/Simple/*.res
+/Sample projects/MariaDB/Advance/*.res
+/Sample projects/MariaDB/Large Script/*.res
+/Sample projects/MariaDB/ORM/*.res
+/Sample projects/MariaDB/Simple/*.res
+/Sample projects/MySQL/Advance/*.res
+/Sample projects/MySQL/Large Script/*.res
+/Sample projects/MySQL/Simple/*.res
+/Sample projects/MySQL/Simple_ORM/*.res
+/Sample projects/Oracle/Advance/*.res
+/Sample projects/Oracle/Simple/*.res
+/Sample projects/PostgreSQL/Advance/*.res
+/Sample projects/PostgreSQL/Simple/*.res
+/Sample projects/SQL SERVER/Advance/*.res
+/Resource/*.png

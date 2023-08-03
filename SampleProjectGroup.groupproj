@@ -54,6 +54,9 @@
         <Projects Include="Sample projects\Firebird\Simple\EasyDB_Firebird_Simple.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Sample projects\Firebird\Advance\EasyDB_Firebird_Advance.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -215,14 +218,23 @@
     <Target Name="EasyDB_Firebird_Simple:Make">
         <MSBuild Projects="Sample projects\Firebird\Simple\EasyDB_Firebird_Simple.dproj" Targets="Make"/>
     </Target>
+    <Target Name="EasyDB_Firebird_Advance">
+        <MSBuild Projects="Sample projects\Firebird\Advance\EasyDB_Firebird_Advance.dproj"/>
+    </Target>
+    <Target Name="EasyDB_Firebird_Advance:Clean">
+        <MSBuild Projects="Sample projects\Firebird\Advance\EasyDB_Firebird_Advance.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EasyDB_Firebird_Advance:Make">
+        <MSBuild Projects="Sample projects\Firebird\Advance\EasyDB_Firebird_Advance.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_MySQL_LargeScript;EasyDB_MariaDB_Simple;EasyDB_MariaDB_Advance;EadyDB_MariaDB_LargeScript;EasyDB_MariaDB_ORM;EasyDB_PostgreSQL_Simple;EasyDB_PostgreSQL_Advance;EasyDB_Oracle_Simple;EasyDB_Oracle_Advance;EasyDB_Firebird_Simple"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple;EasyDB_SQLServer_Advance;EasyDB_SQLServer_ORM;EasyDB_SQLServer_LargeScript;EasyDB_MySQL_Simple;EasyDB_MySQL_Advance;EasyDB_MySQL_ORM;EasyDB_MySQL_LargeScript;EasyDB_MariaDB_Simple;EasyDB_MariaDB_Advance;EadyDB_MariaDB_LargeScript;EasyDB_MariaDB_ORM;EasyDB_PostgreSQL_Simple;EasyDB_PostgreSQL_Advance;EasyDB_Oracle_Simple;EasyDB_Oracle_Advance;EasyDB_Firebird_Simple;EasyDB_Firebird_Advance"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_MySQL_LargeScript:Clean;EasyDB_MariaDB_Simple:Clean;EasyDB_MariaDB_Advance:Clean;EadyDB_MariaDB_LargeScript:Clean;EasyDB_MariaDB_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean;EasyDB_PostgreSQL_Advance:Clean;EasyDB_Oracle_Simple:Clean;EasyDB_Oracle_Advance:Clean;EasyDB_Firebird_Simple:Clean"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Clean;EasyDB_SQLServer_Advance:Clean;EasyDB_SQLServer_ORM:Clean;EasyDB_SQLServer_LargeScript:Clean;EasyDB_MySQL_Simple:Clean;EasyDB_MySQL_Advance:Clean;EasyDB_MySQL_ORM:Clean;EasyDB_MySQL_LargeScript:Clean;EasyDB_MariaDB_Simple:Clean;EasyDB_MariaDB_Advance:Clean;EadyDB_MariaDB_LargeScript:Clean;EasyDB_MariaDB_ORM:Clean;EasyDB_PostgreSQL_Simple:Clean;EasyDB_PostgreSQL_Advance:Clean;EasyDB_Oracle_Simple:Clean;EasyDB_Oracle_Advance:Clean;EasyDB_Firebird_Simple:Clean;EasyDB_Firebird_Advance:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_MySQL_LargeScript:Make;EasyDB_MariaDB_Simple:Make;EasyDB_MariaDB_Advance:Make;EadyDB_MariaDB_LargeScript:Make;EasyDB_MariaDB_ORM:Make;EasyDB_PostgreSQL_Simple:Make;EasyDB_PostgreSQL_Advance:Make;EasyDB_Oracle_Simple:Make;EasyDB_Oracle_Advance:Make;EasyDB_Firebird_Simple:Make"/>
+        <CallTarget Targets="EasyDB_SQLServer_Simple:Make;EasyDB_SQLServer_Advance:Make;EasyDB_SQLServer_ORM:Make;EasyDB_SQLServer_LargeScript:Make;EasyDB_MySQL_Simple:Make;EasyDB_MySQL_Advance:Make;EasyDB_MySQL_ORM:Make;EasyDB_MySQL_LargeScript:Make;EasyDB_MariaDB_Simple:Make;EasyDB_MariaDB_Advance:Make;EadyDB_MariaDB_LargeScript:Make;EasyDB_MariaDB_ORM:Make;EasyDB_PostgreSQL_Simple:Make;EasyDB_PostgreSQL_Advance:Make;EasyDB_Oracle_Simple:Make;EasyDB_Oracle_Advance:Make;EasyDB_Firebird_Simple:Make;EasyDB_Firebird_Advance:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
     <ItemGroup Condition="'$(BuildGroup)'=='OriginalSamples'">
@@ -264,6 +276,12 @@
         </BuildGroupProject>
         <BuildGroupProject Include="Sample projects\MySQL\Large Script\EasyDB_MySQL_LargeScript.dproj">
             <ProjectGuid>{6D6D50D4-D04F-4234-8DC1-E95B360E7288}</ProjectGuid>
+            <Configurations>Debug</Configurations>
+            <Platforms>Win32</Platforms>
+            <Enabled>False</Enabled>
+        </BuildGroupProject>
+        <BuildGroupProject Include="Sample projects\Firebird\Advance\EasyDB_Firebird_Advance.dproj">
+            <ProjectGuid>{17430AF1-9749-4A88-A931-C3A8D9CEA2FF}</ProjectGuid>
             <Configurations>Debug</Configurations>
             <Platforms>Win32</Platforms>
             <Enabled>False</Enabled>

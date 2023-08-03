@@ -4,8 +4,8 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, System.StrUtils, System.TypInfo,
-
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, System.TypInfo, System.StrUtils,
+  UCustomers, UUsers, UInvoices,
   EasyDB.Core,
   EasyDB.Logger,
   EasyDB.Migration,
@@ -21,10 +21,10 @@ type
     mmoLog: TMemo;
     pbTotal: TProgressBar;
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure btnUpgradeDatabaseClick(Sender: TObject);
     procedure btnDowngradeDatabaseClick(Sender: TObject);
     procedure btnAddMigrationsClick(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
   private
     Runner: TFirebirdRunner;
     procedure OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
@@ -41,90 +41,44 @@ implementation
 
 procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
-  Runner.Clear;
-  Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
-  procedure
-  var LvScript: string;
-  begin
-    LvScript := 'CREATE TABLE TbUsers ( ' + #10
-     + '    ID INT NOT NULL PRIMARY KEY, ' + #10
-     + '    UserName VARCHAR(100), ' + #10
-     + '    Pass VARCHAR(100) ' + #10
-     + '    );';
+  //Modern way
+  Runner.Clear
+  .Add(TUsersMgr_202301010001.Create)
+  .Add(TUsersMgr_202301010002.Create)
+  .Add(TUsersMgr_202301010003.Create)
+  .Add(TCustomersMgr_202301010005.Create)
+  .Add(TCustomersMgr_202301010010.Create)
+  .Add(TInvoicesMgr_202301010005.Create)
+  .Add(TInvoicesMgr_202301010010.Create);
 
-    with Runner.Firebird do
-    begin
-      if not DoesTbExist('TbUsers') then
-        ExecuteAdHocQuery(LvScript);
-    end;
-  end,
-  procedure
-  begin
-    with Runner.Firebird do
-    begin
-      if DoesTbExist('TbUsers') then
-        ExecuteAdHocQuery('DROP TABLE TbUsers');
-    end;
-  end
-  ));
-  //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010002, 'Ali', 'Task number #2701',
-  procedure
-  begin
-    Runner.Firebird.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField2 VARCHAR(50)');
-  end,
-  procedure
-  begin
-    Runner.Firebird.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP NewField2');
-  end
-  ));
-  //============================================
-  Runner.Add(TMigration.Create('TbUsers', 202301010003, 'Ali', 'Task number #2702',
-  procedure
-  begin
-    Runner.Firebird.ExecuteAdHocQuery('ALTER TABLE TbUsers ADD NewField3 INT');
-  end,
-  procedure
-  begin
-    Runner.Firebird.ExecuteAdHocQuery('ALTER TABLE TbUsers DROP NewField3');
-  end
-  ));
-  //============================================
-  Runner.Add(TMigration.Create('TbCustomers', 202301010003, 'Alex', 'Task number #2702',
-  procedure
-  var LvScript: string;
-  begin
-    with Runner.Firebird do
-    begin
-      if not DoesTbExist('TbCustomers') then
-      begin
-        LvScript := 'CREATE TABLE TbCustomers ( ' + #10
-        + ' ID INT NOT NULL PRIMARY KEY, ' + #10
-        + ' Name VARCHAR(100), ' + #10
-        + ' Family VARCHAR(100) ' + #10
-        + ' );';
-        ExecuteAdHocQuery(LvScript);
-      end;
-    end;
-  end,
-  procedure
-  begin
-    with Runner.Firebird do
-    begin
-      if DoesTbExist('TbCustomers') then
-        Runner.Firebird.ExecuteAdHocQuery('DROP TABLE TbCustomers');
-    end;
-  end
-  ));
+  // Classic Way
+{
+  Runner.Clear;
+  Runner.MigrationList.Add(TUsersMgr_202301010001.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010002.Create);
+  Runner.MigrationList.Add(TUsersMgr_202301010003.Create);
+
+  Runner.MigrationList.Add(TCustomersMgr_202301010005.Create);
+  Runner.MigrationList.Add(TCustomersMgr_202301010010.Create);
+
+  Runner.MigrationList.Add(TInvoicesMgr_202301010005.Create);
+  Runner.MigrationList.Add(TInvoicesMgr_202301010010.Create);
+}
 end;
 
 procedure TfrmMain.btnDowngradeDatabaseClick(Sender: TObject);
 begin
-  Runner.DowngradeDatabase(StrToInt64Def(edtVersion.Text, 0));
+  Runner.DowngradeDatabase(StrToInt64(edtVersion.Text));
 end;
 
 procedure TfrmMain.btnUpgradeDatabaseClick(Sender: TObject);
 begin
+  if Runner.MigrationList.Count = 0 then
+  begin
+    ShowMessage('You should add at least one migration object.');
+    Exit;
+  end;
+
   Runner.UpgradeDatabase;
 end;
 
