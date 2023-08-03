@@ -29,6 +29,7 @@ When dealing with multiple databases, such as the developer's local database, te
 | **MariaDB** | ✅ | ✅ | ✅ | ✅ |
 | **PostgreSQL** | ✅ | ✅ | - | - |
 | **Oracle** | ✅ | ✅ | - | - |
+| **Firebird** | ✅ | ✅ | - | - |
 
 # Supported Delphi Versions 
 ```delphi
