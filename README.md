@@ -45,6 +45,7 @@ Delphi 10.2 Tokyo
 Delphi 10.3 Rio
 Delphi 10.4 Sydney
 Delphi 11.0 Alexandria
+Delphi 12 Athens
 ```
 
 # How it works?
