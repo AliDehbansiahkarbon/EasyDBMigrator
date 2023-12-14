@@ -49,8 +49,6 @@ object frmMain: TfrmMain
     ReadOnly = True
     ScrollBars = ssVertical
     TabOrder = 2
-    ExplicitTop = 64
-    ExplicitWidth = 929
   end
   object btnClear: TButton
     Left = 151
