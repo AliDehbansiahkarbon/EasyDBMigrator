@@ -1,3 +1,9 @@
+{***************************************************}
+{                                                   }
+{   Auhtor: Ali Dehbansiahkarbon(adehban@gmail.com) }
+{   GitHub: https://github.com/AliDehbansiahkarbon  }
+{                                                   }
+{***************************************************}
 unit EasyDB.ConnectionManager.Base;
 
 interface

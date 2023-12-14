@@ -1,3 +1,9 @@
+{***************************************************}
+{                                                   }
+{   Auhtor: Ali Dehbansiahkarbon(adehban@gmail.com) }
+{   GitHub: https://github.com/AliDehbansiahkarbon  }
+{                                                   }
+{***************************************************}
 unit UMain;
 
 interface
@@ -137,7 +143,10 @@ begin
     .LogAllExecutions(True)// Optional
     .UseInternalThread(True)// Optional - executes asynchronously and doesn't block the screen
     .SetProgressbar(pbTotal)// Optional
-    .DelayedExecution(500); //Just for test
+    .DelayedExecution(100); //Just for test
+
+//    .SetProgressbar(pbTotal, 10)// This will do the real job faster
+//    .DelayedExecution(1); //This will do the real job faster
 
   {Use this line if you don't need local log}
   Runner.AddLogger.OnLog := OnLog;

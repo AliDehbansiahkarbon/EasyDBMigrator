@@ -1,3 +1,9 @@
+{***************************************************}
+{                                                   }
+{   Auhtor: Ali Dehbansiahkarbon(adehban@gmail.com) }
+{   GitHub: https://github.com/AliDehbansiahkarbon  }
+{                                                   }
+{***************************************************}
 unit EasyDB.Core;
 
 interface
@@ -88,17 +94,22 @@ type
     FUseInternalThread: Boolean;
     FProgressBar: TProgressBar;
     FDelay: Cardinal;
+    /// <remarks>
+    /// Must be in Percentage.
+    /// </remarks>
+    FProgressSteps: Integer;
   public
     constructor Create;
     function LogAllExecutions(AValue: Boolean): TConfig;
     function UseInternalThread(AValue: Boolean): TConfig;
-    function SetProgressbar(AProgressbar: TProgressBar): TConfig;
+    function SetProgressbar(AProgressbar: TProgressBar; AProgressStep: Integer = 1): TConfig;
     function DelayedExecution(ADelay: Cardinal): TConfig;
 
     property ProgressBar: TProgressBar read FProgressBar;
     property UseThreadStat: Boolean read FUseInternalThread;
     property LogAllExecutionsStat: Boolean read FLogAllExecutions;
     property Delay: Cardinal read FDelay;
+    property ProgressSteps: Integer read FProgressSteps write FProgressSteps;
   end;
 
 implementation
@@ -145,9 +156,10 @@ begin
   Result := Self;
 end;
 
-function TConfig.SetProgressbar(AProgressbar: TProgressBar): TConfig;
+function TConfig.SetProgressbar(AProgressbar: TProgressBar; AProgressStep: Integer): TConfig;
 begin
   FProgressBar := AProgressbar;
+  FProgressSteps := AProgressStep;
   Result := Self;
 end;
 

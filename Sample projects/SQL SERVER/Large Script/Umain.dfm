@@ -31,8 +31,6 @@ object frmMain: TfrmMain
     Height = 17
     Anchors = [akLeft, akRight, akBottom]
     TabOrder = 1
-    ExplicitTop = 45
-    ExplicitWidth = 885
   end
   object RichEdit1: TRichEdit
     Left = 8

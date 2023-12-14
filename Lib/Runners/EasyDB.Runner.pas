@@ -1,3 +1,9 @@
+{***************************************************}
+{                                                   }
+{   Auhtor: Ali Dehbansiahkarbon(adehban@gmail.com) }
+{   GitHub: https://github.com/AliDehbansiahkarbon  }
+{                                                   }
+{***************************************************}
 unit EasyDB.Runner;
 
 interface
@@ -27,6 +33,8 @@ type
     FLogger: TLogger;
     FVersionToDowngrade: Int64;
     FOrm: TORM;
+    FLastPct: Integer;
+    FCurrPct: Integer;
 
     function GetLogger: TLogger;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
@@ -78,6 +86,8 @@ begin
   FMigrationList := TMigrations.Create;
   FMigrationList.OwnsObjects := True;
   FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
+  FLastPct := 0;
+  FCurrPct := 0;
 end;
 
 function TRunner.CreateInternalMigration(AExternalMigration: TMigration): TMigration;
@@ -302,7 +312,20 @@ begin
     if AZero then
       TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := 0; end)
     else
-      TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := FConfig.ProgressBar.Position + 1; end);
+      TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND},
+      procedure begin
+        if FConfig.ProgressSteps > 1 then
+        begin
+          FCurrPct := Round(FConfig.ProgressBar.Position / FConfig.ProgressBar.Max * 100);
+          if FCurrPct > FLastPct then
+          begin
+            FLastPct := FCurrPct;
+            FConfig.ProgressBar.Position := FCurrPct;
+            FConfig.ProgressBar.Update;
+          end;
+        end;
+        FConfig.ProgressBar.Position := FConfig.ProgressBar.Position + 1;
+      end);
   end;
 end;
 
