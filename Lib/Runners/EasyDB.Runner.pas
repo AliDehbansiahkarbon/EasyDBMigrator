@@ -269,8 +269,7 @@ begin
           Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempMigration.Version);
         end;
 
-        if Assigned(FConfig.ProgressBar) then
-          DoProgress;
+        DoProgress;
       end
       else if LvInternalMigration is TMigrationX then
       begin
@@ -287,24 +286,24 @@ begin
           Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempMigrationEx.AttribVersion);
         end;
 
-        if Assigned(FConfig.ProgressBar) then
-          DoProgress;
+        DoProgress;
       end;
     end;
   end;
 
   DownGradeVersionInfo(FVersionToDowngrade);
-
-  if Assigned(FConfig.ProgressBar) then
-    DoProgress(True);
+  DoProgress(True);
 end;
 
 procedure TRunner.DoProgress(AZero: Boolean);
 begin
-  if AZero then
-    TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := 0; end)
-  else
-    TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := FConfig.ProgressBar.Position + 1; end);
+  if Assigned(FConfig.ProgressBar) then
+  begin
+    if AZero then
+      TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := 0; end)
+    else
+      TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND}, procedure begin FConfig.ProgressBar.Position := FConfig.ProgressBar.Position + 1; end);
+  end;
 end;
 
 procedure TRunner.DoUpgrade;
@@ -364,8 +363,7 @@ begin
               Logger.Log(atUpgrade, E.Message, LvTempMigration.EntityName, LvTempVersion);
             end;
           end;
-          if Assigned(FConfig.ProgressBar) then
-            DoProgress;
+          DoProgress;
         end
         else if LvInternalMigration is TMigrationX then
         begin
@@ -392,15 +390,13 @@ begin
               Logger.Log(atUpgrade, E.Message, LvTempMigrationEx.AttribEntityName, LvTempVersion);
             end;
           end;
-          if Assigned(FConfig.ProgressBar) then
-            DoProgress;
+          DoProgress;
         end;
       end;
     end;
   finally
     LvWrittenVersions.Free;
-    if Assigned(FConfig.ProgressBar) then
-      DoProgress(True);
+    DoProgress(True);
   end;
 end;
 
