@@ -45,7 +45,11 @@ Delphi 10.2 Tokyo
 Delphi 10.3 Rio
 Delphi 10.4 Sydney
 Delphi 11.0 Alexandria
+Delphi 12 Athens
 ```
+# [Available on Getit Package Manager-ClickMe!](https://getitnow.embarcadero.com/EasyDBMigrator)
+![image](https://github.com/AliDehbansiahkarbon/EasyDBMigrator/assets/5601608/b693452d-19cc-4755-988f-3a22d071ed58)
+
 
 # How it works?
 To use the library, simply incorporate the units into your projects, implement migrations, and execute the migrator. It's that simple.
