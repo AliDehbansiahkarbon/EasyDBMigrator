@@ -187,7 +187,7 @@ begin
   LvRunner := TSQLRunner.Create(LvConnectionParams);
   LvRunner.Config
     .LogAllExecutions(True)// Optional
-    .UseInternalThread(False)// Better to run with a single thread(Only for Database creation)
+    .UseInternalThread(False)// Do not to run with UseInternalThread = True (Only for Database creation)
     .SetProgressbar(pbTotal)// Optional
     .DelayedExecution(500);// Optional
 

@@ -58,6 +58,7 @@ type
     function Clear: TRunner;
 
     procedure UpgradeDatabase;
+    procedure SetProgressBarMinMax(AMin: Integer; AMax: Integer);
     procedure DowngradeDatabase(AVersion: Int64);
     procedure ArrangeMigrationList(AArrangeMode: TArrangeMode);
     procedure SortDictionaryByField(ADict: TMigrationsDic; AArrangeMode: TArrangeMode; AIsMigrationX: Boolean);
@@ -144,10 +145,7 @@ begin
   try
     LvIsMigrationX := False;
     if Assigned(FConfig.ProgressBar) then
-    begin
-      FConfig.ProgressBar.Min := 0;
-      FConfig.ProgressBar.Max := FMigrationList.Count;
-    end;
+      SetProgressBarMinMax(0, FMigrationList.Count);
 
     for LvExternalMigration in FMigrationList do
     begin
@@ -420,6 +418,19 @@ begin
   finally
     LvWrittenVersions.Free;
     DoProgress(True);
+  end;
+end;
+
+procedure TRunner.SetProgressBarMinMax(AMin, AMax: Integer);
+begin
+  if Assigned(FConfig.ProgressBar) then
+  begin
+    TThread.Synchronize({$IF CompilerVersion >= 30}TThread.Current{$ELSE}TThread.CurrentThread{$IFEND},
+    procedure
+    begin
+      FConfig.ProgressBar.Min := AMin;
+      FConfig.ProgressBar.Max := AMax;
+    end)
   end;
 end;
 
