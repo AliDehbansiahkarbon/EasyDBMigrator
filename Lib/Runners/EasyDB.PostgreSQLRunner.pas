@@ -15,6 +15,7 @@ uses
   EasyDB.Migration,
   EasyDB.MigrationX,
   EasyDB.Runner,
+  EasyDB.Logger,
   EasyDB.ConnectionManager.PostgreSQL;
 
 type
@@ -28,7 +29,8 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AConnectionParams: TPgConnectionParams); overload;
+    constructor Create(AConnectionParams: TPgConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TPgConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
 
     property PG: TPgConnection read FPgConnection write FPgConnection;
@@ -40,17 +42,43 @@ implementation
 
 { TPgRunner }
 
-constructor TPgRunner.Create(AConnectionParams: TPgConnectionParams);
+constructor TPgRunner.Create(AConnectionParams: TPgConnectionParams; ALoggerEventHandler: TLoggerEventHandler);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FPgConnection:= TPgConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FPgConnection) then
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
+  FDbName := AConnectionParams.DatabaseName;
+  FSchema := AConnectionParams.Schema;
+end;
+
+constructor TPgRunner.Create(AConnectionParams: TPgConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FPgConnection:= TPgConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FPgConnection) then
+  begin
+    if not FileExists(ALocalLogFile) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
   FDbName := AConnectionParams.DatabaseName;
   FSchema := AConnectionParams.Schema;
 end;
 
 destructor TPgRunner.Destroy;
 begin
-  FPgConnection.Free;
+  if Assigned(FPgConnection) then
+    FPgConnection.Free;
   inherited;
 end;
 

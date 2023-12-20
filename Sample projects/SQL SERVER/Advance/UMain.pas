@@ -103,17 +103,28 @@ begin
     Schema := 'dbo';
   end;
 
-  Runner := TSQLRunner.Create(LvConnectionParams);
+{
+ Method 1
+   TLogger.Instance.OnLog := OnLog;
+   Runner := TSQLRunner.Create(LvConnectionParams);
+
+ Method 2
+   Runner := TSQLRunner.Create(LvConnectionParams, OnLog);   //Different usage is possible
+
+ Method 3
+   Runner := TSQLRunner.Create(LvConnectionParams, 'C:\Temp\EasyDBLog.txt'); Different usage is possible
+}
+  Runner := TSQLRunner.Create(LvConnectionParams, OnLog);
   Runner.Config
     .LogAllExecutions(True)  // Optional
     .UseInternalThread(True) // Optional
     .SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
-  Runner.AddLogger.OnLog := OnLog;
+  Runner.GetLogger.OnLog := OnLog;
 
   {Use this line if you need local log}
-  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+  //Runner.GetLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

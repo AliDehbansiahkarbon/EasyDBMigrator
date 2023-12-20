@@ -16,6 +16,7 @@ uses
   EasyDB.Migration,
   EasyDB.MigrationX,
   EasyDB.Runner,
+  EasyDB.Logger,
   EasyDB.ConnectionManager.MariaDB;
 
 type
@@ -28,7 +29,8 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AConnectionParams: TMariaDBConnectionParams); overload;
+    constructor Create(AConnectionParams: TMariaDBConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TMariaDBConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
 
     property MariaDB: TMariaDBConnection read FMariaDBConnection write FMariaDBConnection;
@@ -39,16 +41,38 @@ implementation
 
 { TMariaDBRunner }
 
-constructor TMariaDBRunner.Create(AConnectionParams: TMariaDBConnectionParams);
+constructor TMariaDBRunner.Create(AConnectionParams: TMariaDBConnectionParams; ALoggerEventHandler: TLoggerEventHandler);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FMariaDBConnection:= TMariaDBConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FMariaDBConnection) then
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
+  FSchema := AConnectionParams.Schema;
+end;
+
+constructor TMariaDBRunner.Create(AConnectionParams: TMariaDBConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FMariaDBConnection:= TMariaDBConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FMariaDBConnection) then
+      raise Exception.Create(NoConnectionMsg);
+
   FSchema := AConnectionParams.Schema;
 end;
 
 destructor TMariaDBRunner.Destroy;
 begin
-  FMariaDBConnection.Free;
+  if Assigned(FMariaDBConnection) then
+    FMariaDBConnection.Free;
   inherited;
 end;
 

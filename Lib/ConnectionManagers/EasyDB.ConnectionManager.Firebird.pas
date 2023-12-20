@@ -94,7 +94,10 @@ begin
   if Connect then
     Result := FInstance
   else
+  begin
+    Self.Free;
     Result := nil;
+  end;
 end;
 
 constructor TFirebirdConnection.Create;

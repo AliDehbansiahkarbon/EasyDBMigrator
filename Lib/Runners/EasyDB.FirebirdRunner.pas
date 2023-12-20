@@ -15,6 +15,7 @@ uses
   EasyDB.Migration,
   EasyDB.MigrationX,
   EasyDB.Runner,
+  EasyDB.Logger,
   EasyDB.ConnectionManager.Firebird;
 
 type
@@ -27,7 +28,8 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AConnectionParams: TFirebirdConnectionParams); overload;
+    constructor Create(AConnectionParams: TFirebirdConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TFirebirdConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
     property Firebird: TFirebirdConnection read FirebirdConnection write FirebirdConnection;
     property Database: string read FDatabase write FDatabase;
@@ -37,16 +39,37 @@ implementation
 
 { TFirebirdRunner }
 
-constructor TFirebirdRunner.Create(AConnectionParams: TFirebirdConnectionParams);
+constructor TFirebirdRunner.Create(AConnectionParams: TFirebirdConnectionParams; ALoggerEventHandler: TLoggerEventHandler);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FDatabase := AConnectionParams.Database;
   FirebirdConnection:= TFirebirdConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FirebirdConnection) then
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+end;
+
+constructor TFirebirdRunner.Create(AConnectionParams: TFirebirdConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FDatabase := AConnectionParams.Database;
+  FirebirdConnection:= TFirebirdConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+
+  if not Assigned(FirebirdConnection) then
+    raise Exception.Create(NoConnectionMsg);
 end;
 
 destructor TFirebirdRunner.Destroy;
 begin
-  FirebirdConnection.Free;
+  if Assigned(FirebirdConnection) then
+    FirebirdConnection.Free;
   inherited;
 end;
 

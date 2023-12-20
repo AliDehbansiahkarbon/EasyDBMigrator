@@ -15,6 +15,7 @@ uses
   EasyDB.Migration,
   EasyDB.MigrationX,
   EasyDB.Runner,
+  EasyDB.Logger,
   EasyDB.ConnectionManager.MySQL;
 
 type
@@ -27,7 +28,8 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AConnectionParams: TMySqlConnectionParams); overload;
+    constructor Create(AConnectionParams: TMySqlConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TMySqlConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
 
     property MySQL: TMySQLConnection read FMySQLConnection write FMySQLConnection;
@@ -38,16 +40,38 @@ implementation
 
 { TMySQLRunner }
 
-constructor TMySQLRunner.Create(AConnectionParams: TMySqlConnectionParams);
+constructor TMySQLRunner.Create(AConnectionParams: TMySqlConnectionParams; ALoggerEventHandler: TLoggerEventHandler);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FMySQLConnection:= TMySQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FMySQLConnection) then
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
+  FSchema := AConnectionParams.Schema;
+end;
+
+constructor TMySQLRunner.Create(AConnectionParams: TMySqlConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FMySQLConnection:= TMySQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if not Assigned(FMySQLConnection) then
+    raise Exception.Create(NoConnectionMsg);
+
   FSchema := AConnectionParams.Schema;
 end;
 
 destructor TMySQLRunner.Destroy;
 begin
-  FMySQLConnection.Free;
+  if Assigned(FMySQLConnection) then
+    FMySQLConnection.Free;
   inherited;
 end;
 

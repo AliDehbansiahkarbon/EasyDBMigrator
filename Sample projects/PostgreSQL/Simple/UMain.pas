@@ -170,10 +170,10 @@ begin
     .SetProgressbar(pbTotal); //Optional
 
   {Use this line if you don't need local log}
-  Runner.AddLogger.OnLog := OnLog;
+  Runner.GetLogger.OnLog := OnLog;
 
   {Use this line if you need local log}
-  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+  //Runner.GetLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TForm2.FormDestroy(Sender: TObject);

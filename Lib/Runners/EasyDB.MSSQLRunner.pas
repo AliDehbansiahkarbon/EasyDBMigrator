@@ -29,7 +29,8 @@ type
     function GetDatabaseVersion: Int64; override;
     procedure UpdateVersionInfo(AMigration: TMigrationBase; AInsertMode: Boolean = True); override;
   public
-    constructor Create(AConnectionParams: TSqlConnectionParams);
+    constructor Create(AConnectionParams: TSqlConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TSqlConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
 
     property SQL: TSQLConnection read FSQLConnection write FSQLConnection;
@@ -39,19 +40,47 @@ type
 
 implementation
 
-constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams);
+constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams; ALoggerEventHandler: TLoggerEventHandler);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
-  FSQLConnection.ParentRunner := Self;
+  if Assigned(FSQLConnection) then
+    FSQLConnection.ParentRunner := Self
+  else
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
   FDbName := AConnectionParams.DatabaseName;
   FSchema := AConnectionParams.Schema;
 end;
 
+constructor TSQLRunner.Create(AConnectionParams: TSqlConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FSQLConnection:= TSQLConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if Assigned(FSQLConnection) then
+    FSQLConnection.ParentRunner := Self
+  else
+  begin
+    if not FileExists(ALocalLogFile) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+end;
+
 destructor TSQLRunner.Destroy;
 begin
-  FSQLConnection.Free;
-  FSQLConnection := nil;
+  if Assigned(FSQLConnection) then
+  begin
+    FSQLConnection.Free;
+    FSQLConnection := nil;
+  end;
   inherited;
 end;
 

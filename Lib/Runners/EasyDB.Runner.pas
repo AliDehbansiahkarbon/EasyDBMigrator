@@ -36,13 +36,13 @@ type
     FLastPct: Integer;
     FCurrPct: Integer;
 
-    function GetLogger: TLogger;
     function CreateInternalMigration(AExternalMigration: TMigration): TMigration;
     function CreateInternalMigrationEx(AExternalMigrationEx: TMigrationX): TMigrationX;
     procedure SortArrayDesc(AArray: TArray<Int64>);
     procedure DoUpgrade;
     procedure DoDowngrade;
     procedure DoProgress(AZero: Boolean = False);
+    function AddLogger: TLogger;
   protected
     FRollBackAllByAnyError: Boolean;
 
@@ -53,7 +53,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    function AddLogger: TLogger;
+    function GetLogger: TLogger;
     function Add(AMigrationBase: TMigrationBase): TRunner;
     function Clear: TRunner;
 
@@ -89,6 +89,7 @@ begin
   FInternalMigrationList := TMigrationsDic.Create([doOwnsValues]);
   FLastPct := 0;
   FCurrPct := 0;
+  AddLogger;
 end;
 
 function TRunner.CreateInternalMigration(AExternalMigration: TMigration): TMigration;
@@ -128,6 +129,11 @@ end;
 function TRunner.AddLogger: TLogger;
 begin
   FLogger := TLogger.Instance;
+  Result := FLogger;
+end;
+
+function TRunner.GetLogger: TLogger;
+begin
   Result := FLogger;
 end;
 
@@ -215,11 +221,6 @@ begin
     {$IFEND}
   else
     DoDowngrade;
-end;
-
-function TRunner.GetLogger: TLogger;
-begin
-  Result := TLogger.Instance;
 end;
 
 procedure TRunner.DoDowngrade;

@@ -28,7 +28,8 @@ type
     procedure DownGradeVersionInfo(AVersionToDownGrade: Int64); override;
     function GetDatabaseVersion: Int64; override;
   public
-    constructor Create(AConnectionParams: TOracleConnectionParams); overload;
+    constructor Create(AConnectionParams: TOracleConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil); overload;
+    constructor Create(AConnectionParams: TOracleConnectionParams; ALocalLogFile: string); overload;
     destructor Destroy; override;
 
     property Oracle: TOracleConnection read FOracleConnection write FOracleConnection;
@@ -39,18 +40,48 @@ implementation
 
 {TOracleRunner}
 
-constructor TOracleRunner.Create(AConnectionParams: TOracleConnectionParams);
+constructor TOracleRunner.Create(AConnectionParams: TOracleConnectionParams; ALoggerEventHandler: TLoggerEventHandler = nil);
 begin
   inherited Create;
+  if Assigned(ALoggerEventHandler) then
+    GetLogger.OnLog := ALoggerEventHandler;
+
   FOracleConnection:= TOracleConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
-  FOracleConnection.ParentRunner := Self;
+  if Assigned(FOracleConnection) then
+    FOracleConnection.ParentRunner := Self
+  else
+  begin
+    if (not Assigned(ALoggerEventHandler)) and (not Assigned(TLogger.Instance.OnLog)) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
+  FDbName := AConnectionParams.DatabaseName;
+end;
+
+constructor TOracleRunner.Create(AConnectionParams: TOracleConnectionParams; ALocalLogFile: string);
+begin
+  inherited Create;
+  GetLogger.ConfigLocal(True, ALocalLogFile);
+
+  FOracleConnection:= TOracleConnection.Instance.SetConnectionParam(AConnectionParams).ConnectEx;
+  if Assigned(FOracleConnection) then
+    FOracleConnection.ParentRunner := Self
+  else
+  begin
+    if not FileExists(ALocalLogFile) then
+      raise Exception.Create(NoConnectionMsg);
+  end;
+
   FDbName := AConnectionParams.DatabaseName;
 end;
 
 destructor TOracleRunner.Destroy;
 begin
-  FOracleConnection.Free;
-  FOracleConnection := nil;
+  if Assigned(FOracleConnection) then
+  begin
+    FOracleConnection.Free;
+    FOracleConnection := nil;
+  end;
   inherited;
 end;
 

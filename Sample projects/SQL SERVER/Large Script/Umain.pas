@@ -70,7 +70,7 @@ begin
   end;
 
   TLogger.Instance.OnLog := OnLog;
-  Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner := TSQLRunner.Create(LvConnectionParams, OnLog);
   Runner.Config.UseInternalThread(True).LogAllExecutions(GetLogStatus);
   Runner.SQL.ExecuteScriptFile('..\..\Script\AdventureWorks2019_Minimal.sql', 'GO');
 end;

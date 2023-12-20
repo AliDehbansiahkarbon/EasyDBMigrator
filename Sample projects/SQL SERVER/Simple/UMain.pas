@@ -47,6 +47,12 @@ implementation
 
 procedure TfrmMain.btnAddMigrationsClick(Sender: TObject);
 begin
+  if not Assigned(Runner) then
+  begin
+    ShowMessage('The Runner object is null!');
+    Exit;
+  end;
+
   Runner.Clear;
   Runner.Add(TMigration.Create('TbUsers', 202301010001, 'Ali', 'Create table Users, #2701',
   procedure
@@ -138,6 +144,19 @@ begin
     Schema := 'dbo';
   end;
 
+{
+ Method 1
+   TLogger.Instance.OnLog := OnLog;
+   Runner := TSQLRunner.Create(LvConnectionParams);
+
+ Method 2
+   Runner := TSQLRunner.Create(LvConnectionParams, OnLog);   //Different usage is possible
+
+ Method 3
+   Runner := TSQLRunner.Create(LvConnectionParams, 'C:\Temp\EasyDBLog.txt'); Different usage is possible
+}
+
+  TLogger.Instance.OnLog := OnLog;
   Runner := TSQLRunner.Create(LvConnectionParams);
   Runner.Config
     .LogAllExecutions(True)// Optional
@@ -145,14 +164,15 @@ begin
     .SetProgressbar(pbTotal)// Optional
     .DelayedExecution(100); //Just for test
 
-//    .SetProgressbar(pbTotal, 10)// This will do the real job faster
-//    .DelayedExecution(1); //This will do the real job faster
+{    .SetProgressbar(pbTotal, 10)// This will do the real job faster
+    .DelayedExecution(1); //This will do the real job faster
+}
 
-  {Use this line if you don't need local log}
-  Runner.AddLogger.OnLog := OnLog;
+  {Optional - Use this line if you don't need local log}
+  Runner.GetLogger.OnLog := OnLog;
 
-  {Use this line if you need local log}
-  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+  {Optional - Use this line if you need local log}
+  //Runner.GetLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TfrmMain.FormDestroy(Sender: TObject);

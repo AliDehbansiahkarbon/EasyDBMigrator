@@ -13,6 +13,7 @@ uses
 const
   TB = 'EasyDBVersionInfo';
   WM_DONE = WM_USER + 1234;
+  NoConnectionMsg = 'The connection is not established properly, please check the configuration.';
 
 implementation
 

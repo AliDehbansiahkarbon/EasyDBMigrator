@@ -184,14 +184,14 @@ begin
     Schema := 'dbo';
   end;
 
-  LvRunner := TSQLRunner.Create(LvConnectionParams);
+  LvRunner := TSQLRunner.Create(LvConnectionParams, OnLog);
   LvRunner.Config
     .LogAllExecutions(True)// Optional
     .UseInternalThread(False)// Do not to run with UseInternalThread = True (Only for Database creation)
     .SetProgressbar(pbTotal)// Optional
     .DelayedExecution(500);// Optional
 
-  LvRunner.AddLogger.OnLog := OnLog;
+  LvRunner.GetLogger.OnLog := OnLog;
 
   try
     LvRunner.Clear;
@@ -265,7 +265,7 @@ begin
   if Assigned(Runner) then
     Runner.Free;
 
-  Runner := TSQLRunner.Create(LvConnectionParams);
+  Runner := TSQLRunner.Create(LvConnectionParams, OnLog);
   Runner.Config
     .LogAllExecutions(True)// Optional
     .UseInternalThread(True)// Optional
@@ -273,10 +273,10 @@ begin
     .DelayedExecution(500);// Optional
 
   {Use this line if you don't need local log}
-  Runner.AddLogger.OnLog := OnLog;
+  Runner.GetLogger.OnLog := OnLog;
 
   {Use this line if you need local log}
-  //Runner.AddLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
+  //Runner.GetLogger.ConfigLocal(True, 'C:\Temp\EasyDBLog.txt').OnLog := OnLog;
 end;
 
 procedure TForm1.OnLog(AActionType: TActionTypes; AException, AClassName: string; AVersion: Int64);
