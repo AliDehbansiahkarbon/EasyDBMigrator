@@ -1,0 +1,17 @@
+{
+  "id": "{CCE4E356-1505-4045-B2D7-113C0E9B8A41}",
+  "name": "EasyDBMigrator",
+  "picture": "Logo.png",
+  "licenses": [
+    {
+      "type": "MIT",
+      "file": "LICENSE"
+    }
+  ],
+  "platforms": "Win32",
+  "package_compiler_min": 31,
+  "package_compiler_max": 35,
+  "compiler_min": 31,
+  "compiler_max": 35,
+  "first_version": "v2.2.0.3"
+}
