@@ -321,7 +321,6 @@ begin
   case FOrm.GetTarget of
     ttSQLServer :
     begin
-
       case ADataType.ColType of
         ctBigInt: Result := ' BIGINT';
         ctInt: Result := ' INT';
@@ -342,22 +341,21 @@ begin
         ctDatetime2: Result := ' DATETIME2';
         ctChar: Result := ' CHAR(' + ADataType.ColSize.ToString + ')';
         ctVarchar: Result := ' VARCHAR(' + ADataType.ColSize.ToString + ')';
-        ctVarcharMmax: Result := ' VARCHAR(MAX)';
+        ctVarcharMax: Result := ' VARCHAR(MAX)';
         ctText: Result := ' TEXT';
         ctNchar: Result := ' NCHAR(' + ADataType.ColSize.ToString + ')';
         ctNvarchar: Result := ' NVARCHAR(' + ADataType.ColSize.ToString + ')';
         ctNtext: Result := ' NTEXT';
         ctBinary: Result := ' BINARY(' + ADataType.ColSize.ToString + ')';
         ctVarbinary: Result := ' VARBINARY(' + ADataType.ColSize.ToString + ')';
+        ctVarbinaryMax, ctLONGBLOB: Result := ' VARBINARY(MAX)';
         ctImage: Result := ' IMAGE';
         ctNone: Result := '';
       end;
-
     end;
 
     ttMySQL, ttMariaDB:
     begin
-
       case ADataType.ColType of
         ctBigInt: Result := ' BIGINT';
         ctInt: Result := ' INT';
@@ -378,17 +376,17 @@ begin
         ctDatetime2: Result := ' DATETIME ';
         ctChar: Result := ' CHAR(' + ADataType.ColSize.ToString + ')';
         ctVarchar: Result := ' VARCHAR(' + ADataType.ColSize.ToString + ')';
-        ctVarcharMmax: Result := ' LONGTEXT ';
+        ctVarcharMax: Result := ' LONGTEXT ';
         ctText: Result := ' Text';
         ctNchar: Result := ' NCHAR (' + ADataType.ColSize.ToString + ')';
         ctNvarchar: Result := ' NVARCHAR (' + ADataType.ColSize.ToString + ')';
         ctNtext: Result := ' LONGTEXT ';
         ctBinary: Result := ' BINARY(' + ADataType.ColSize.ToString + ')';
         ctVarbinary: Result := ' VARBINARY(' + ADataType.ColSize.ToString + ')';
+        ctVarbinaryMax, ctLONGBLOB: Result := ' LONGBLOB';
         ctImage: Result := ' BLOB';
         ctNone: Result := '';
       end;
-
     end;
   end;
 end;

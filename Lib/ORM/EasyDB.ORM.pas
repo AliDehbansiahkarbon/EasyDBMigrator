@@ -111,7 +111,13 @@ type
     function AsNtext: TDataType;
     function AsBinary(ASize: Integer): TDataType;
     function AsVarbinary(ASize: Integer): TDataType;
+    function AsVarBinaryMax: TDataType;
     function AsImage: TDataType;
+
+    /// <summary>
+    /// Intended for MySQL.
+    /// </summary>
+    function AsLONGBLOB: TDataType;
 
     /// <summary cref="readonly">readonly</summary>
     property DataType: TDataType read FDataType;
@@ -597,6 +603,12 @@ begin
   Exit(FDataType);
 end;
 
+function TColumn.AsLONGBLOB: TDataType;
+begin
+  FDataType := TDataType.Create(FParentTable, ctLONGBLOB);
+  Exit(FDataType);
+end;
+
 function TColumn.AsMoney: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctMoney);
@@ -675,6 +687,12 @@ begin
   Exit(FDataType);
 end;
 
+function TColumn.AsVarBinaryMax: TDataType;
+begin
+  FDataType := TDataType.Create(FParentTable, ctVarbinaryMax);
+  Exit(FDataType);
+end;
+
 function TColumn.AsVarchar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctVarchar, ASize);
@@ -683,7 +701,7 @@ end;
 
 function TColumn.AsVarcharMmax: TDataType;
 begin
-  FDataType := TDataType.Create(FParentTable, ctVarcharMmax);
+  FDataType := TDataType.Create(FParentTable, ctVarcharMax);
   Exit(FDataType);
 end;
 
