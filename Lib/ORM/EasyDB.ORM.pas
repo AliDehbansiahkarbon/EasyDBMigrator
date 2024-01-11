@@ -104,7 +104,7 @@ type
     function AsDatetime2: TDataType;
     function AsChar(ASize: Integer): TDataType;
     function AsVarchar(ASize: Integer): TDataType;
-    function AsVarcharMmax: TDataType;
+    function AsVarcharMax: TDataType;
     function AsText: TDataType;
     function AsNchar(ASize: Integer): TDataType;
     function AsNvarchar(ASize: Integer): TDataType;
@@ -699,7 +699,7 @@ begin
   Exit(FDataType);
 end;
 
-function TColumn.AsVarcharMmax: TDataType;
+function TColumn.AsVarcharMax: TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctVarcharMax);
   Exit(FDataType);
