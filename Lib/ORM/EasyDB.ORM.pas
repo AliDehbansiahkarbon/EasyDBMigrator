@@ -108,6 +108,7 @@ type
     function AsText: TDataType;
     function AsNchar(ASize: Integer): TDataType;
     function AsNvarchar(ASize: Integer): TDataType;
+    function AsNvarcharMax: TDataType;
     function AsNtext: TDataType;
     function AsBinary(ASize: Integer): TDataType;
     function AsVarbinary(ASize: Integer): TDataType;
@@ -636,6 +637,12 @@ end;
 function TColumn.AsNvarchar(ASize: Integer): TDataType;
 begin
   FDataType := TDataType.Create(FParentTable, ctNvarchar, ASize);
+  Exit(FDataType);
+end;
+
+function TColumn.AsNvarcharMax: TDataType;
+begin
+  FDataType := TDataType.Create(FParentTable, ctNvarcharMax);
   Exit(FDataType);
 end;
 
