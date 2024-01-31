@@ -91,7 +91,7 @@ A condition definition has been added to provide additional features such as add
 This is to prevent compiler prompts/hints for unused functions, if you want access to all functionalities, you can use "FullOptions" as a conditional definition of your project.
 
 ---
-# I have provided some samples and templates for your reference.👇
+# We have provided some samples and templates for your reference.👇
 - # Simple
 
 <details>
