@@ -345,6 +345,7 @@ begin
         ctText: Result := ' TEXT';
         ctNchar: Result := ' NCHAR(' + ADataType.ColSize.ToString + ')';
         ctNvarchar: Result := ' NVARCHAR(' + ADataType.ColSize.ToString + ')';
+        ctNvarcharMax: Result := ' NVARCHAR(MAX)';
         ctNtext: Result := ' NTEXT';
         ctBinary: Result := ' BINARY(' + ADataType.ColSize.ToString + ')';
         ctVarbinary: Result := ' VARBINARY(' + ADataType.ColSize.ToString + ')';
@@ -380,6 +381,7 @@ begin
         ctText: Result := ' Text';
         ctNchar: Result := ' NCHAR (' + ADataType.ColSize.ToString + ')';
         ctNvarchar: Result := ' NVARCHAR (' + ADataType.ColSize.ToString + ')';
+        ctNVarcharMax:Result:=' LONGTEXT ';
         ctNtext: Result := ' LONGTEXT ';
         ctBinary: Result := ' BINARY(' + ADataType.ColSize.ToString + ')';
         ctVarbinary: Result := ' VARBINARY(' + ADataType.ColSize.ToString + ')';

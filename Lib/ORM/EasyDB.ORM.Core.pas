@@ -15,8 +15,8 @@ type
 
   TColType = (ctBigInt, ctInt, ctSmallInt, ctTinyInt, ctBit, ctDecimal, ctNumeric, ctMoney, ctSmallMoney,
               ctFloat, ctReal, ctDateTime, ctSmallDateTime, ctDate, ctTime, ctDateTimeOffset, ctDatetime2,
-              ctChar, ctVarchar, ctVarcharmax, ctText, ctNchar, ctNvarchar, ctNtext, ctBinary, ctVarbinary,
-              ctVarbinaryMax, ctImage, ctLONGBLOB, ctNone);
+              ctChar, ctVarchar, ctVarcharMax, ctText, ctNchar, ctNvarchar, ctNvarcharMax, ctNtext, ctBinary,
+              ctVarbinary, ctVarbinaryMax, ctImage, ctLONGBLOB, ctNone);
 
   TAlterMode = (amAdd, amDrop, amEdit, amRename, amNone);
 
