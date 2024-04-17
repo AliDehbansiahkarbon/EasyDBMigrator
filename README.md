@@ -40,18 +40,15 @@ Delphi XE6
 Delphi XE7
 Delphi XE8
 Delphi 10 Seattle
-Delphi 10.1 Berlin
-Delphi 10.2 Tokyo
-Delphi 10.3 Rio
-Delphi 10.4 Sydney
-Delphi 11.0 Alexandria
-Delphi 12 Athens
+Delphi 10.x (10.1 Berlin, 10.2 Tokyo, 10.3 Rio, 10.4 Sydney)
+Delphi 11.x Alexandria
+Delphi 12.x Athens
 ```
 # [Available on Getit Package Manager-ClickMe!](https://getitnow.embarcadero.com/EasyDBMigrator)
 ![image](https://github.com/AliDehbansiahkarbon/EasyDBMigrator/assets/5601608/b693452d-19cc-4755-988f-3a22d071ed58)
 
 
-# How it works?
+# How does it work?
 To use the library, simply incorporate the units into your projects, implement migrations, and execute the migrator. It's that simple.
 
 ## (If you want to see some demo videos, please visit [here](https://www.youtube.com/playlist?list=PLsToBC7EKBNSkD-mwMN18TQbJ-lzistS7) or click on the below image👇👇)
