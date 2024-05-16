@@ -5,15 +5,18 @@
 
 <a href="https://www.buymeacoffee.com/adehbanr" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 <br />
-
-<!--img alt="MIT" src="https://img.shields.io/github/license/AliDehbansiahkarbon/EasyDBMigrator">
-<img src="https://img.shields.io/github/forks/AliDehbansiahkarbon/EasyDBMigrator" alt="forks">
-<img src="https://img.shields.io/github/stars/AliDehbansiahkarbon/EasyDBMigrator" alt="stars">
+<img alt="MIT" src="https://img.shields.io/github/license/AliDehbansiahkarbon/EasyDBMigrator"> <img src="https://img.shields.io/github/forks/AliDehbansiahkarbon/EasyDBMigrator" alt="forks"> <img src="https://img.shields.io/github/stars/AliDehbansiahkarbon/EasyDBMigrator" alt="stars">
 <img src="https://img.shields.io/github/watchers/AliDehbansiahkarbon/EasyDBMigrator" alt="watchers">
-<br />
 <a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/issues"><img src="https://img.shields.io/github/issues-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="issues"></a>
+<br />
 <a href="https://github.com/AliDehbansiahkarbon/EasyDBMigrator/pulls"><img src="https://img.shields.io/github/issues-pr-closed/AliDehbansiahkarbon/EasyDBMigrator" alt="pulls"></a>
-<img src="https://img.shields.io/github/last-commit/AliDehbansiahkarbon/ChatGPTWizard.svg" alt="last-commit" -->
+<img src="https://img.shields.io/github/last-commit/AliDehbansiahkarbon/EasyDBMigrator.svg" alt="last-commit">
+[![](https://tokei.rs/b1/github/AliDehbansiahkarbon/EasyDBMigrator?category=lines)](https://github.com/AliDehbansiahkarbon/EasyDBMigrator)
+[![](https://tokei.rs/b1/github/AliDehbansiahkarbon/EasyDBMigrator?category=code)](https://github.com/AliDehbansiahkarbon/EasyDBMigrator) 
+[![](https://tokei.rs/b1/github/AliDehbansiahkarbon/EasyDBMigrator?category=files)](https://github.com/AliDehbansiahkarbon/EasyDBMigrator)
+
+
+<br />
 
 # Are you fed up with developing a hundred lines of SQL scripts to keep your database updated/synced with your application? 
 # Here is the solution!
