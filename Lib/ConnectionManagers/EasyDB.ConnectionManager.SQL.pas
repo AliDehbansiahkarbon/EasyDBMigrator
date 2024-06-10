@@ -160,7 +160,7 @@ var
   LvStatement: string;
   LvLineNumber: Integer;
   {$IF CompilerVersion >= 30}
-  LvTask: ITask;
+  [unsafe] LvTask: ITask;
   {$ELSE}
   LvThread: TThread;
   {$ENDIF}
@@ -218,6 +218,7 @@ begin
         LvStreamReader.Free;
       end;
     end);
+
     {$IF CompilerVersion < 30}
     LvThread.FreeOnTerminate := True;
     LvThread.Start;
